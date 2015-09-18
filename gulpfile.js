@@ -1,14 +1,10 @@
-// NEXT:
-// npm: publish,download,test
-// bower, browserify
 
 /**
  * USAGE:
- * 	gulp (build | lint | watch | clean | help)
+ * 	gulp (build | lint | watch | clean | help )
  *  gulp test        # test all without loading RiLexicon
  *  gulp test.full     # test all
  *  gulp test --name RiString  # test one
- *  gulp test --name RiLexicon # test one
  */
 
 var del = require('del'),
@@ -65,12 +61,12 @@ gulp.task('make.lib', [ 'build.full', 'bower-update' ], function(done) {
 gulp.task('setup-npm', [ 'clean-npm' ], function(done) {
 
   // copy in the node readme
-  gulp.src('../README.node.md')
+  gulp.src('README.node.md')
     .pipe(rename('README.md'))
     .pipe(gulp.dest(nodeDir));
 
   // copy in other loose files
-  gulp.src(['../LICENSE', './package.json', './gulpfile.js'])
+  gulp.src(['./LICENSE', './package.json', './gulpfile.js'])
     .pipe(gulp.dest(nodeDir));
 
   // copy in the tests
