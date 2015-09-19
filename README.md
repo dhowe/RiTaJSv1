@@ -1,9 +1,6 @@
-
 [![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-brightgreen.svg" alt="npm version"></a> [![npm version](https://badge.fury.io/js/rita.svg)](https://www.npmjs.com/package/rita)
 
-
 ### RiTa.js: a generative language toolkit for JavaScript
-
 
 <a href="https://rednoise.org/rita"><img height=80 src="https://rednoise.org/rita/img/RiTa-logo3.png"/></a>
 
