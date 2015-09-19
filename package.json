@@ -30,7 +30,7 @@
   "scripts": {
     "test": "gulp test-npm"
   },
-  "dependencies": { },
+  "dependencies": {},
   "optionalDependencies": {
     "yamljs": "^0.2.3"
   },
