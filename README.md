@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS)<a href="http://badge.fury.io/js/rita"><img src="https://badge.fury.io/js/rita.svg" alt="npm version" height="19"></a>
+
+[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-brightgreen.svg" alt="npm version"></a> [![npm version](https://badge.fury.io/js/rita.svg)](https://www.npmjs.com/package/rita)
 
 
 ### RiTa.js: a generative language toolkit for JavaScript
@@ -18,7 +19,7 @@ RiTa.js is designed to an easy-to-use toolkit for experiments in natural languag
 * Reference:        http://www.rednoise.org/rita/reference/
 * License:          GPL (see included [LICENSE](https://github.com/dhowe/RiTaJS/blob/master/LICENSE) file)
 * Github Repo:      https://github.com/dhowe/RiTaJS/
-* Bug Tracker:      https://github.com/dhowe/RiTa/issues
+* Issues:      https://github.com/dhowe/RiTa/issues
 * Related:          [RiTa](https://github.com/dhowe/RiTa) (Java)
 
 
@@ -27,12 +28,12 @@ RiTa.js is designed to an easy-to-use toolkit for experiments in natural languag
 
 #### A simple sketch
 --------
-Create a new file on your desktop called 'first.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita-latest.micro.js), add the following lines, save and drag it into a browser:
+Create a new file on your desktop called 'first.html' and download the latest rita.js from [here](http://rednoise.org/rita/dist/rita.js), add the following lines, save and drag it into a browser:
 
 ```html
 <html>
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="./rita-latest.micro.js"></script>
+  <script src="./rita.js"></script>
   <script>
     window.onload = function() {
       $('#content').text(RiTa.tokenize("The elephant took a bite!"));
@@ -59,7 +60,7 @@ Create a new file on your desktop called 'first.html' and download the latest ri
 ```html
 <html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.3/p5.min.js"></script>
-  <script src="./rita-latest.micro.js"></script>
+  <script src="./rita.js"></script>
   <script>
   function setup() {
 

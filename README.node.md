@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS)
+[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-brightgreen.svg" alt="npm version"></a> [![npm version](https://badge.fury.io/js/rita.svg)](https://www.npmjs.com/package/rita)
 
 
 ## RiTa: a generative language toolkit for JavaScript
 
-<a href="http://rednoise.org/rita"><img height=80 src="http://rednoise.org/rita/img/RiTa-logo3.png"/></a>
+<a href="http://rednoise.org/rita"><img height="80" src="http://rednoise.org/rita/img/RiTa-logo3.png"/></a>
 
 ### [The RiTa website](http://rednoise.org/rita)
 
@@ -14,9 +14,10 @@ About the project
 * Author:   [Daniel C. Howe](http://rednoise.org/daniel)
 * License: 			 GPL (see included [LICENSE](https://github.com/dhowe/RiTaJS/blob/master/LICENSE) file for full license)
 * Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
-* Github Repo:       [https://github.com/dhowe/RiTa](https://github.com/dhowe/RiTa)
-* Bug Tracker:       [https://github.com/dhowe/RiTa/issues](https://github.com/dhowe/RiTa/issues)
+* Github Repo:       [https://github.com/dhowe/RiTaJS](https://github.com/dhowe/RiTa)
+* Issues:       [https://github.com/dhowe/RiTa/issues](https://github.com/dhowe/RiTa/issues)
 * Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
+* Related:          [RiTa](https://github.com/dhowe/RiTa) (Java)
 
 In [node.js](http://nodejs.org/)
 --------
@@ -61,7 +62,7 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
     b. Then, from a terminal/shell:
 
   ```bash
-  $ git clone https://github.com/dhowe/RiTa.git
+  $ git clone https://github.com/dhowe/RiTaJS.git
   ```
 
 - Now navigate into the project folder and install dependencies via npm.
