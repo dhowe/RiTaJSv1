@@ -25,6 +25,7 @@ var del = require('del'),
 
 var testDir = 'test',
   destDir = 'dist',
+  npm = '/usr/local/bin/npm',
   nodeDir = destDir+'/node/rita',
   tmpDir = '/tmp',
   srcDir = 'src',
@@ -35,7 +36,7 @@ var testDir = 'test',
 
 // do npm pack on whatever is already in the dist dir
 gulp.task('npm.build', ['setup-npm'], function(done) {
-  exec('npm pack '+nodeDir, function (err, stdout, stderr) {
+  exec(npm + ' pack '+nodeDir, function (err, stdout, stderr) {
     log("Packing "+nodeDir+'/'+stdout);
     stderr && console.error(stderr);
     del(destDir+'/node'); // remove the build dir
@@ -44,9 +45,9 @@ gulp.task('npm.build', ['setup-npm'], function(done) {
 });
 
 // do npm publish on an already created .tgz file
-gulp.task('npm.publish', [], function(done) {
+gulp.task(npm + ' publish', [], function(done) {
   var tgz = 'rita-'+version+'.tgz';
-  exec('npm publish '+tgz, function (err, stdout, stderr) {
+  exec('/usr/local/bin/npm publish '+tgz, function (err, stdout, stderr) {
     log("Publishing "+tgz, stdout);
     stderr && console.error(stderr);
     done(err);
