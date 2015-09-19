@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS)<a href="http://badge.fury.io/js/rita"><img src="https://badge.fury.io/js/rita.svg" alt="npm version" height="19"></a>
+[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/RiTaJS)<a href="http://badge.fury.io/js/rita"><img src="https://badge.fury.io/js/rita.svg" alt="npm version" height="20"></a>
 
 
 ### RiTa.js: a generative language toolkit for JavaScript
