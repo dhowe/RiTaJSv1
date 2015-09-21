@@ -25,12 +25,12 @@ RiTa.js is designed to an easy-to-use toolkit for experiments in natural languag
 
 #### A simple sketch
 --------
-Create a new file on your desktop called 'first.html' and download the latest rita.js from [here](http://rednoise.org/rita/dist/rita.js), add the following lines, save and drag it into a browser:
+Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
 
 ```html
 <html>
-  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="./rita.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="./rita.min.js"></script>
   <script>
     window.onload = function() {
       $('#content').text(RiTa.tokenize("The elephant took a bite!"));
@@ -52,12 +52,12 @@ console.log(rs.features());
 
 #### With [p5.js](http://p5js.org/)
 --------
-Create a new file on your desktop called 'first.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita-latest.micro.js), add the following lines, save and drag it into a browser:
+Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
 
 ```html
 <html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.3/p5.min.js"></script>
-  <script src="./rita.js"></script>
+  <script src="./rita.min.js"></script>
   <script>
   function setup() {
 
@@ -97,15 +97,18 @@ Now use browserify to pack all the required modules into bundle.js
 ```
 $ browserify main.js -o bundle.js
 ```
-Create an html file with a single script tag as below, then open it in a web browser and check the output in the 'Web Console'
+Create create a file called 'test.html' with a single script tag as below, then open it in a web browser and check the output in the 'Web Console'
 ```html
 <script src="bundle.js"></script>
 ```
 
 #### With [bower](http://bower.io/)
 --------
-
-To install, choose a directory and do:
+Install [bower](http://bower.io/) (if you haven't already)
+```
+$ sudo npm install -g bower
+```
+Choose a directory and do:
 
 ```bash
 $ bower install rita
@@ -129,12 +132,12 @@ Now, create a file called 'test.html', add the following lines, save, and open i
 
 #### With [processing.js](http://processingjs.org)
 --------
-Create a new file on your desktop called 'first.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita-latest.micro.js), add the following lines, save and drag it into a browser:
+Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
 
 ```html
 <html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
-  <script src="./rita-latest.micro.js"></script>
+  <script src="./rita.min.js"></script>
   <script type="text/processing" data-processing-target="processing-canvas">
     void setup() {
 
