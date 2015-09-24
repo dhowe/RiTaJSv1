@@ -6,10 +6,9 @@
   <script src="../../lib/p5.dom.js"></script>
   <script src="../../../dist/rita.js"></script>
   <script>
-    // TODO: add a message if the word is not found
 
     var word = 'window',
-      data, kwic;
+      data, kwic, input;
 
     function preload() {
       data = loadStrings('../../data/kafka.txt');
@@ -24,11 +23,12 @@
       input.size(70);
       input.position(width / 2 - 50, 15);
 
-      button = createButton('UPDATE');
+      var button = createButton('UPDATE');
       button.position(width / 2 + 30, 15);
       button.mousePressed(newWord);
-
-      updateKWIC();
+      
+      input.elt.focus();
+      newWord();
     }
 
     function updateKWIC() {
@@ -45,32 +45,50 @@
       text('search:', 200, 21);
 
       textSize(18);
-      var tw = textWidth(word) / 2;
-      for (var i = 0; i < kwic.length; i++) {
-
-        //console.log(display[i]);
-        var parts = kwic[i].split(word);
-        var x = width / 2,
-          y = i * 20 + 50;
-
-        fill(0);
-        textAlign(RIGHT);
-        text(parts[0], x - tw, y);
-
-        fill(200, 0, 0);
+      
+      if (kwic.length == 0) {
+        
         textAlign(CENTER);
-        text(word, x, y);
-
-        fill(0);
-        textAlign(LEFT);
-        text(parts[1], x + tw, y);
+        text("Word not found", width / 2, height / 2);
+      }
+      
+      else {
+        
+        var tw = textWidth(word) / 2;
+        
+        for (var i = 0; i < kwic.length; i++) {
+          
+          //console.log(display[i]);
+          var parts = kwic[i].split(word);
+          var x = width / 2,
+          y = i * 20 + 50;
+          
+          fill(0);
+          textAlign(RIGHT);
+          text(parts[0], x - tw, y);
+          
+          fill(200, 0, 0);
+          textAlign(CENTER);
+          text(word, x, y);
+          
+          fill(0);
+          textAlign(LEFT);
+          text(parts[1], x + tw, y);
+          }
       }
     }
 
     function newWord() {
       word = input.value();
+      input.elt.placeholder = word;
       updateKWIC();
       input.value('');
+    }
+    
+    function keyPressed() {
+      if (keyCode == 13) {
+        newWord();
+      }
     }
   </script>
 </head>
