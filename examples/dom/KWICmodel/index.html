@@ -13,10 +13,10 @@
     var fillColor, textAlignment = LEFT;
     var kafkaString, $container;
     var word = 'window',
-      display, opts;
+      kwic, opts;
 
     const WIDTH = 600,
-      HEIGHT = 400;
+      HEIGHT = 600;
 
     $(document).ready(function () {
 
@@ -49,7 +49,7 @@
       $textInput.val("");
       $("#textInput").attr("placeholder", word);
 
-      display = RiTa.kwic(kafkaString, word, opts);
+      kwic = RiTa.kwic(kafkaString, word, opts);
       drawText();
     }
 
@@ -57,20 +57,20 @@
 
       $container = $("#container");
       $container.width(WIDTH).height(HEIGHT);
+      $container.css("background-color", "rgb(250, 250, 250)");
       $("#textInput").attr("placeholder", word);
 
       opts = {
 
         ignorePunctuation: true,
         ignoreStopWords: true,
-        storeSentences: true,
-        wordCount: 5
+        wordCount: 6
       };
 
       RiTa.loadString('../../data/kafka.txt', function (data) {
 
         kafkaString = data;
-        display = RiTa.kwic(kafkaString, word, opts);
+        kwic = RiTa.kwic(kafkaString, word, opts);
 
         drawText();
       });
@@ -79,9 +79,9 @@
     function drawText() {
 
       $("#container").empty();
-      $("#container").css('background-color', 'rgb(255, 255, 255)');
+      $("#container").css('background-color', 'rgb(250, 250, 250)');
 
-      if (display.length == 0) {
+      if (kwic.length == 0) {
 
         textAlign(CENTER);
         text("Word not found", WIDTH / 2, HEIGHT / 2);
@@ -89,10 +89,10 @@
 
         var tw = textWidth(word) / 2;
 
-        for (var i = 0; i < display.length; i++) {
+        for (var i = 0; i < kwic.length; i++) {
 
-          console.log(display[i]);
-          var parts = display[i].split(word);
+          // console.log(kwic[i]);
+          var parts = kwic[i].split(word);
           var x = WIDTH / 2,
             y = i * 20 + 25;
 
@@ -174,12 +174,12 @@
 
   <style>
     body {
-      // font-family:"Courier New", Courier, monospace;
-      font-size: 13px;
+      font-family: serif;
+      font-size: 18px;
     }
 
     #container {
-      position: relative;
+      position: absolute;
       overflow: hidden;
     }
 
@@ -195,14 +195,22 @@
       left: 305px;
       z-index: 1;
     }
+    
+    #label {
+      position: absolute;
+      left: 210px;
+      z-index: 1;
+      font-size: 14px;
+    }
   </style>
 
 </head>
 
 <body>
+  <span id="label">search: </span>
   <input type="text" id="textInput">
-  <button type="button" id="button">search</button>
-  <div id='container'></div>
+  <button type="button" id="button">UPDATE</button>
+  <div id="container"></div>
 </body>
 
 </html>
