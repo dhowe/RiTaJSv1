@@ -15,7 +15,7 @@ void setup()
   rts[2] = new RiText(this, "a haiku", width / 2, 145);
 
   grammar = new RiGrammar(this);
-  grammar.loadFrom("../../data/haiku.json");
+  grammar.loadFrom("../../data/haiku.yaml");
 }
 
 void draw()
