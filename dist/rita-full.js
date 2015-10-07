@@ -243,11 +243,21 @@ var RiTa = {
     if (adjustPunctuationSpacing) {
 
       var newStr = arr[0] || E;
+      var needDelim = true;
       for (var i = 1; i < arr.length; i++) {
 
         if (arr[i]) {
-
-          if (!RiTa.isPunctuation(arr[i]))
+          
+          // fix to iss223
+          if ((arr[i - 1]).match(/[\.,:]/g) && arr[i] == '\"') {
+            newStr += delim;
+            needDelim = false;
+          }
+          // check if the first if-condition is true in the last iteration, if so, skip adding delim
+          else if (!needDelim) {
+            needDelim = true;
+          }
+          else if (!RiTa.isPunctuation(arr[i]))
             newStr += delim;
 
           newStr += arr[i];

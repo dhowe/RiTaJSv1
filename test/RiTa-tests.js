@@ -1250,6 +1250,16 @@ var runtests = function() {
       var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
+      
+      input = ["felt", "before", ".", "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\""];
+      expected = "felt before. \"Oh, God\", he thought, \"";
+      output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+      
+      input = ["She", "screamed", ":", "\"", "Oh", "God", "!", "\""];
+      expected = "She screamed: \"Oh God!\"";
+      output = RiTa.untokenize(input);
+      deepEqual(output, expected);
     });
 
     test("testConcordance", function() {
