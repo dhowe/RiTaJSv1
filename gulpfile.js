@@ -47,7 +47,7 @@ gulp.task('npm.build', ['setup-npm'], function(done) {
 // do npm publish on an already created .tgz file
 gulp.task('npm.publish', ['npm.build'], function(done) {
   var tgz = 'rita-'+version+'.tgz';
-  exec(npm + ' publish -f '+tgz, function (err, stdout, stderr) {
+  exec(npm + ' publish '+tgz, function (err, stdout, stderr) {
     log("Publishing "+tgz, stdout);
     stderr && console.error(stderr);
     done(err);
