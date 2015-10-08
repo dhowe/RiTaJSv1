@@ -285,6 +285,7 @@ function sourceFiles(includeLex) {
 
   src.push(srcDir + '/footer.js');
 
+  //console.log(src);
   return src;
 }
 
