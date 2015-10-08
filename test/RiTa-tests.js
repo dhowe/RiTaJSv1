@@ -26,7 +26,7 @@ var testResults = [{
   }]
 }];
 
-var runtests = function() {
+var runtests = function () {
 
     RiTa.SILENT = 1;
 
@@ -34,12 +34,12 @@ var runtests = function() {
 
     QUnit.module("RiTa", {
 
-      setup: function() {},
-      teardown: function() {}
+      setup: function () {},
+      teardown: function () {}
     });
 
     // ------------------------------------------------------------------------
-    test("testGetSyllables", function() { // new-style
+    test("testGetSyllables", function () { // new-style
 
       if (noLexicon()) return;
 
@@ -51,7 +51,7 @@ var runtests = function() {
       }
     });
 
-    test("testGetSyllablesOrig", function() { // old-style
+    test("testGetSyllablesOrig", function () { // old-style
 
       var result, txt, answer;
 
@@ -83,19 +83,21 @@ var runtests = function() {
 
     // ------------------------------------------------------------------------
 
-    test("testConstants", function() {
+    test("testConstants", function () {
 
       ok(RiTa.VERSION);
     });
 
-    test("testMinEditDistance", function() {
+    test("testMinEditDistance", function () {
 
       // testMinEditDistanceArray()
-      var arr1 = ['The', 'dog', 'ate'], arr2 = ['The', 'cat', 'ate'];
+      var arr1 = ['The', 'dog', 'ate'],
+        arr2 = ['The', 'cat', 'ate'];
       equal(RiTa.minEditDistance(arr1, arr2, false), 1);
       equal(RiTa.minEditDistance(arr1, arr2, true), 1 / 3.0);
 
-      var arr1 = ['The', 'dog', 'ate'], arr2 = [];
+      var arr1 = ['The', 'dog', 'ate'],
+        arr2 = [];
       equal(RiTa.minEditDistance(arr1, arr2, false), 3);
       equal(RiTa.minEditDistance(arr1, arr2, true), 1);
 
@@ -105,24 +107,28 @@ var runtests = function() {
       equal(RiTa.minEditDistance(arr1, arr2, true), 2 / 3);
 
       // test testMinEditDistanceString()
-      var arr1 = 'The dog', arr2 = 'The cat';
+      var arr1 = 'The dog',
+        arr2 = 'The cat';
       equal(RiTa.minEditDistance(arr1, arr2, false), 3);
       equal(RiTa.minEditDistance(arr1, arr2, true), 3 / 7);
 
-      var arr1 = 'The dog', arr2 = '';
+      var arr1 = 'The dog',
+        arr2 = '';
       equal(RiTa.minEditDistance(arr1, arr2, false), 7);
       equal(RiTa.minEditDistance(arr1, arr2, true), 1);
 
-      arr1 = "fefnction"; arr2 = "faunctional";
+      arr1 = "fefnction";
+      arr2 = "faunctional";
       equal(RiTa.minEditDistance(arr1, arr2, false), 4);
       equal(RiTa.minEditDistance(arr1, arr2, true), 4 / 11);
 
-      arr1 = "intention"; arr2 = "execution";
+      arr1 = "intention";
+      arr2 = "execution";
       equal(RiTa.minEditDistance(arr1, arr2, false), 5);
       equal(RiTa.minEditDistance(arr1, arr2, true), 5 / 9);
     });
 
-    test("testEnv", function() {
+    test("testEnv", function () {
       var mode = RiTa.env();
       var inNode = (typeof module != 'undefined' && module.exports);
       inNode && ok(mode == RiTa.NODE);
@@ -131,7 +137,7 @@ var runtests = function() {
       inBrowser && ok(mode == RiTa.JS);
     });
 
-    test("testIsAbbreviation", function() {
+    test("testIsAbbreviation", function () {
 
       ok(RiTa.isAbbreviation("Dr."));
       ok(RiTa.isAbbreviation("dr."));
@@ -175,7 +181,7 @@ var runtests = function() {
       ok(!RiTa.isAbbreviation(1));
     });
 
-    test("testIsQuestion", function() {
+    test("testIsQuestion", function () {
 
       ok(RiTa.isQuestion("what"));
       ok(RiTa.isQuestion("what"));
@@ -202,8 +208,7 @@ var runtests = function() {
       ok(!RiTa.isQuestion(""));
     });
 
-
-    test("testIsSentenceEnd", function() {
+    test("testIsSentenceEnd", function () {
 
       var words = 'The dog ate the small baby. Then it threw up.'.split(' ');
       ok(RiTa.isSentenceEnd(words[5], words[6])); // true
@@ -214,8 +219,7 @@ var runtests = function() {
       // TODO: needs more tests
     });
 
-
-    test("testIsW_Question", function() {
+    test("testIsW_Question", function () {
 
       ok(RiTa.isW_Question("What the"));
       ok(RiTa.isW_Question("What is it"));
@@ -231,8 +235,7 @@ var runtests = function() {
 
     });
 
-
-    test("testRandomItem", function() {
+    test("testRandomItem", function () {
 
       var toks = RiTa.tokenize("The boy, dressed in red, ate an apple.!?");
       for (var i = 0; i < toks.length * 2; i++) {
@@ -250,7 +253,7 @@ var runtests = function() {
       }
     });
 
-    test("testRandomOrdering", function() {
+    test("testRandomOrdering", function () {
 
       var result = RiTa.randomOrdering(5);
       equal(result.length, 5);
@@ -265,7 +268,7 @@ var runtests = function() {
       }
     });
 
-    test("testSplitSentences", function() {
+    test("testSplitSentences", function () {
 
       // TODO: check Penn-Treebank splitting rules
       var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
@@ -304,8 +307,7 @@ var runtests = function() {
       deepEqual(RiTa.splitSentences(""), [""]);
     });
 
-
-    test("testStripPunctuation", function() {
+    test("testStripPunctuation", function () {
 
       //strip/trimPunctuation "����������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^
       var res = RiTa.stripPunctuation("$%He%^&ll,o,");
@@ -349,8 +351,7 @@ var runtests = function() {
 
     });
 
-
-    test("testTrimPunctuation", function() {
+    test("testTrimPunctuation", function () {
 
       var res = RiTa.trimPunctuation("$%He&^ll,o,");
       equal(res, "He&^ll,o");
@@ -367,7 +368,7 @@ var runtests = function() {
       deepEqual(RiTa.trimPunctuation(1234), 1234);
     });
 
-    test("testIsPunctuation", function() {
+    test("testIsPunctuation", function () {
 
       ok(!RiTa.isPunctuation("What the"));
       ok(!RiTa.isPunctuation("What ! the"));
@@ -425,7 +426,14 @@ var runtests = function() {
 
     });
 
-    test("testTokenize", function() {
+    test("testTokenize", function () {
+
+      var input = '"Oh God," he thought.';
+      var expected = ['"', 'Oh', 'God', ',', '"', 'he', 'thought', '.'];
+      var output = RiTa.tokenize(input);
+      //console.log(expected);
+      //console.log(output);
+      deepEqual(output, expected);
 
       var input = "The boy, dressed in red, ate an apple.";
       var expected = ["The", "boy", ",", "dressed", "in", "red", ",", "ate", "an", "apple", "."];
@@ -478,7 +486,70 @@ var runtests = function() {
       deepEqual(words, ["closed"]);
     });
 
-    test("testDistance", function() {
+    test("testUntokenize", function () {
+
+      equal(RiTa.untokenize([""]), "");
+
+      var expected = "The boy, dressed in red, ate an apple.";
+      var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate", "an", "apple", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var expected = "The boy screamed, 'Where is my apple?'";
+      var input = ["The", "boy", "screamed", ",", "'Where", "is", "my", "apple", "?", "'"];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var outputs = ["A simple sentence.",
+        "that's why this is our place).",
+      ];
+
+      var inputs = [
+        ["A", "simple", "sentence", "."],
+        ["that's", "why", "this", "is", "our", "place", ")", "."],
+      ];
+
+      ok(inputs.length == outputs.length);
+
+      for (var i = 0; i < inputs.length; i++) {
+        var result = RiTa.untokenize(inputs[i]);
+        deepEqual(result, outputs[i]);
+      }
+
+      var expected = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
+      var input = ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var input = ["why", "?", "Me", "?", "huh", "?", "!"];
+      var expected = "why? Me? huh?!";
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var input = ["123", "123", "1", "2", "3", "1", ",", "1", "1", ".", "1", "23", ".", "45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
+      var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+    });
+
+    /*test("testTokenizeAndBack", function () {
+
+      var testStrings = [
+        'A simple sentence.', '(that\'s why this is our place).',
+        'The boy, dressed in red, ate an apple.',
+        'Dr. Chan is talking slowly with Mr. Cheng, and the\'re friends.',
+        'The boy screamed, "Where is my apple?"',
+        'The boy screamed, \'Where is my apple?\'',
+      ];
+
+      for (var i = 0; i < testStrings.length; i++) {
+        var tokens = RiTa.tokenize(testStrings[i]);
+        var output = RiTa.untokenize(tokens);
+        equal(output, testStrings[i]);
+      }
+    });*/
+
+    test("testDistance", function () {
 
       equal(1, RiTa.distance(1, 3, 2, 3));
       equal(28, RiTa.distance(30, 1, 2, 1));
@@ -486,7 +557,7 @@ var runtests = function() {
       equal(5.0990195135927845, RiTa.distance(3, 3, 8, 4));
     });
 
-    test("testRandom", function() {
+    test("testRandom", function () {
 
       // float random()
       var answer = RiTa.random();
@@ -582,7 +653,7 @@ var runtests = function() {
       ok(answer2 < 5.1);
     });
 
-    test("testGetPhonemes", function() {
+    test("testGetPhonemes", function () {
 
       var result = RiTa.getPhonemes("");
       var answer = "";
@@ -612,13 +683,11 @@ var runtests = function() {
       equal(result, answer);
     });
 
-
-    test("testGetPosTags", function() {
+    test("testGetPosTags", function () {
 
       var result = RiTa.getPosTags("mammal");
       var answer = ["nn"];
       deepEqual(result, answer);
-
 
       var result = RiTa.getPosTags("asfaasd");
       var answer = ["nn"];
@@ -681,7 +750,7 @@ var runtests = function() {
 
     });
 
-    test("testGetPosTags(sns)", function() {
+    test("testGetPosTags(sns)", function () {
 
       if (noLexicon()) return;
 
@@ -693,7 +762,7 @@ var runtests = function() {
       }
     });
 
-    test("testGetPosTagsInline", function() {
+    test("testGetPosTagsInline", function () {
 
       var result = RiTa.getPosTagsInline("");
       var answer = "";
@@ -723,7 +792,7 @@ var runtests = function() {
       equal(result, answer);
     });
 
-    test("testGetStresses", function() {
+    test("testGetStresses", function () {
 
       var result = RiTa.getStresses("");
       var answer = "";
@@ -757,7 +826,7 @@ var runtests = function() {
       equal(result, answer);
     });
 
-    test("testGetWordCount", function() {
+    test("testGetWordCount", function () {
 
       var result = RiTa.getWordCount("123 1231 hi");
       deepEqual(result, 3);
@@ -829,7 +898,7 @@ var runtests = function() {
         equal("", result);
     });*/
 
-    test("testStem(lancaster)", function() {
+    test("testStem(lancaster)", function () {
 
       if (!RiTa.stem_Lancaster) {
         console.warn("[INFO] RiTa-tests: skipping lancaster tests");
@@ -870,7 +939,7 @@ var runtests = function() {
       equal(RiTa.stem("cakes", type), "cak");
     });
 
-    test("testStem(porter)", function() {
+    test("testStem(porter)", function () {
 
       var type = 'Porter';
 
@@ -902,7 +971,7 @@ var runtests = function() {
       equal(RiTa.stem(test, type), result);
     });
 
-    test("testStem(pling)", function() {
+    test("testStem(pling)", function () {
 
       var type = 'Pling';
 
@@ -929,13 +998,13 @@ var runtests = function() {
       equal(RiTa.stem("happiness", type), "happiness");
       equal(RiTa.stem("terrible", type), "terrible");
 
-      var test =  "Stemming is funnier than a bummer";
+      var test = "Stemming is funnier than a bummer";
       var result = "stemming is funnier than a bummer";
       // TODO: RiTa.stem(pling) JS decapitalizes input whereas the java version does not
       equal(RiTa.stem(test, type), result);
     });
 
-    test("testLTSEngine", function() {
+    test("testLTSEngine", function () {
 
       if (noLexicon()) return;
 
@@ -1007,7 +1076,7 @@ var runtests = function() {
       equal(result, answer);
     });
 
-    test("testPluralize", function() {
+    test("testPluralize", function () {
 
       equal("blondes", RiTa.pluralize("blonde"));
       equal("eyes", RiTa.pluralize("eye"));
@@ -1059,7 +1128,7 @@ var runtests = function() {
       equal("corpora", RiTa.pluralize("corpus"));
     });
 
-    test("testSingularize", function() {
+    test("testSingularize", function () {
 
       equal("blonde", RiTa.singularize("blondes"));
       equal("eye", RiTa.singularize("eyes"));
@@ -1135,7 +1204,7 @@ var runtests = function() {
       equal("", RiTa.singularize(""));
     });
 
-    test("testGetPastParticiple", function() {
+    test("testGetPastParticiple", function () {
 
       equal(RiTa.getPastParticiple("sleep"), "slept");
       equal(RiTa.getPastParticiple("withhold"), "withheld");
@@ -1165,7 +1234,7 @@ var runtests = function() {
       equal(RiTa.getPastParticiple("study"), "studied");
     });
 
-    test("testGetPresentParticiple", function() {
+    test("testGetPresentParticiple", function () {
 
       equal(RiTa.getPresentParticiple("sleep"), "sleeping");
       equal(RiTa.getPresentParticiple("withhold"), "withholding");
@@ -1202,64 +1271,16 @@ var runtests = function() {
       equal(RiTa.getPresentParticiple(" study"), "studying");
       //tab space
       equal(RiTa.getPresentParticiple(""), "");
-
     });
 
-    test("testUntokenize", function() {
-
-      equal(RiTa.untokenize([""]), "");
-
-      var expected = "The boy, dressed in red, ate an apple.";
-      var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate", "an", "apple", "."];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-
-      var expected = "The boy screamed, 'Where is my apple?'";
-      var input = ["The", "boy", "screamed", ",", "'Where", "is", "my", "apple", "?", "'"];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var outputs = ["A simple sentence.",
-        "that's why this is our place).",
-      ];
-
-      var inputs = [
-        ["A", "simple", "sentence", "."],
-        ["that's", "why", "this", "is", "our", "place", ")", "."],
-      ];
-
-      ok(inputs.length == outputs.length);
-
-      for (var i = 0; i < inputs.length; i++) {
-        var result = RiTa.untokenize(inputs[i]);
-        deepEqual(result, outputs[i]);
-      }
-
-      var expected = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
-      var input = ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var input = ["why", "?", "Me", "?", "huh", "?", "!"];
-      var expected = "why? Me? huh?!";
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var input = ["123", "123", "1", "2", "3", "1", ",", "1", "1", ".", "1", "23", ".", "45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
-      var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-    });
-
-    test("testConcordance", function() {
+    test("testConcordance", function () {
 
       var data = RiTa.concordance("The dog ate the cat");
 
-      equal( Object.keys(data).length, 5);
-      equal(data["the"],1);
-      equal(data["The"],1);
-      equal(data["THE"],undefined);
+      equal(Object.keys(data).length, 5);
+      equal(data["the"], 1);
+      equal(data["The"], 1);
+      equal(data["THE"], undefined);
 
       data = RiTa.concordance("The dog ate the cat", {
         ignoreCase: false,
@@ -1267,31 +1288,33 @@ var runtests = function() {
         ignorePunctuation: false,
       });
 
-      equal( Object.keys(data).length, 5); // same results
-      equal(data["the"],1);
-      equal(data["The"],1);
-      equal(data["THE"],undefined);
+      equal(Object.keys(data).length, 5); // same results
+      equal(data["the"], 1);
+      equal(data["The"], 1);
+      equal(data["THE"], undefined);
 
       data = RiTa.concordance("The dog ate the cat", {
         ignoreCase: true
       });
 
-      equal( Object.keys(data).length, 4);
-      equal(data["the"],2);
-      equal(data["The"],undefined);
-      equal(data["THE"],undefined);
+      equal(Object.keys(data).length, 4);
+      equal(data["the"], 2);
+      equal(data["The"], undefined);
+      equal(data["THE"], undefined);
     });
 
-    test("testKwic", function() {
+    test("testKwic", function () {
       var s = "The dog ate the cat. The bear Ate the honey";
-      var lines = RiTa.kwic(s,"ate");
-      equal(lines.length,1);
-      var opts = { ignoreCase: true };
-      lines = RiTa.kwic(s,"ate",opts);
-      equal(lines.length,2);
+      var lines = RiTa.kwic(s, "ate");
+      equal(lines.length, 1);
+      var opts = {
+        ignoreCase: true
+      };
+      lines = RiTa.kwic(s, "ate", opts);
+      equal(lines.length, 2);
     });
 
-    test("testConjugate", function() {
+    test("testConjugate", function () {
 
       // TODO: Check against RiTa-java (why are these all doubling?)
 
@@ -1353,7 +1376,6 @@ var runtests = function() {
 
       var a = ["swam", "needed", "opened", ""];
       ok(a.length === s.length);
-
 
       for (var i = 0; i < s.length; i++) {
         var c = RiTa.conjugate(s[i], args);
@@ -1468,9 +1490,9 @@ var runtests = function() {
         ok(1);
         return true;
       }
-    } var lexWarningRiTa = false;
+    }
+    var lexWarningRiTa = false;
 
   } // end runtests
-
 
 if (typeof exports != 'undefined') runtests();
