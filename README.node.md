@@ -67,7 +67,7 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
 
 - Now navigate into the project folder and install dependencies via npm.
   ```bash
-  $ cd js && npm install
+  $ npm install
   ```
 
 - To create the library from src, use gulp.
