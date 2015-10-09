@@ -181,10 +181,10 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
     ```bash
     $ git clone https://github.com/dhowe/RiTaJS.git
     ```
-3. Now install dependencies via npm.
+3. Now navigate into the project folder and install dependencies via npm.
 
   ```bash
-  $ npm install
+  $  cd RiTaJS && npm install
   ```
 4. To create the library from src, use gulp.
 
