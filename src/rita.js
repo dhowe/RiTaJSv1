@@ -173,8 +173,7 @@ var RiTa = {
   getPosTags: function(words, useWordNetTags) {
     return (useWordNetTags) ? RiTa._tagForWordNet(words) : RiTa._tagForPENN(words);
   },
-
-  // TODO: example
+  
   getPosTagsInline: function(words, delimiter) {
 
     if (!words || !words.length) return E;
@@ -223,8 +222,7 @@ var RiTa = {
   upperCaseFirst: function(s) {
     return s.charAt(0).toUpperCase() + s.substring(1);
   },
-
-  // TODO: 2 examples (regular & irregular) in docs
+  
   pluralize: function(word) {
 
     if (!strOk(word)) return E;
@@ -244,8 +242,6 @@ var RiTa = {
 
     return DEFAULT_PLURAL_RULE.fire(word);
   },
-
-  // TODO: 2 examples (regular & irregular) in docs
 
   singularize: function(word) {
 
@@ -272,9 +268,6 @@ var RiTa = {
   },
 
   tokenize: function(words, regex) {
-
-    //TODO: 2 examples for doc comment, one with 1 arg,
-    // one with 2 (a regex that splits on spaces)
 
     if (!is(words,S)) return [];
 
