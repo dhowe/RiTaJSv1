@@ -3,7 +3,7 @@
 (function(window, undefined) {
 
 var E= '', SP= ' ', EA= [], N= 'number', S= 'string', O= 'object',
-  A= 'array', B= 'boolean', R= 'regexp', F= 'function';
+  A= 'array', B= 'boolean', R= 'regexp', F= 'function', BN = '\n';
 
 function makeClass() { // from: Resig, TODO: make work with strict
   return function(args) {
