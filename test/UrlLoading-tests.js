@@ -34,6 +34,25 @@ var runtests = function() {
         });
     });
 
+    asyncTest("RiTa.loadStrings1(file)", function() {
+
+        RiTa.loadStrings(filePath + "sentence1.json", function(s) {
+            ok(s && s.length > 1);
+            //console.log(s);
+            ok(JSON.parse(s.join('\n')));
+            start();
+        });
+    });
+
+    asyncTest("RiTa.loadStrings2(file)", function() {
+
+        RiTa.loadStrings(filePath + "sentence2.json", function(s) {
+            ok(s && s.length > 1);
+            ok(JSON.parse(s.join('\n')));
+            start();
+        });
+    });
+
     asyncTest("RiTa.testLoadConcordance", function () {  // SLOW
 
         RiTa.loadString(filePath + "kafka.txt", function (txt) {
@@ -421,23 +440,23 @@ var runtests = function() {
 
           var ts = +new Date();
           var id = setInterval(function() {
-              if (rm.ready()) {
-                  ok(rm.size());
 
-                  // TODO: 1 or 2 more better tests here
-                  clearInterval(id);
-                  start();
+              if (rm.ready()) {
+                ok(rm.size());
+
+                // TODO: 2 more better tests here
+                clearInterval(id);
+                start();
 
               } else {
 
-                  var now = +new Date();
-                  if (now - ts > 5000) {
-                      equal("no result", 0);
-                      start();
-                      clearInterval(id);
-                  }
+                var now = +new Date();
+                if (now - ts > 5000) {
+                    equal("no result", 0);
+                    start();
+                    clearInterval(id);
+                }
               }
-
           }, 50);
       });
     }
