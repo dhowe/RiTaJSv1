@@ -67,12 +67,8 @@ function drawText() {
     for (var i = 0; i < kwic.length; i++) {
 
       var parts = kwic[i].split(word);
-<<<<<<< 2f8c9ea518f5098d7cf0675cd131a9e27a0f19eb
-      var x = WIDTH / 2, y = i * 20 + 40;
-=======
       var x = WIDTH / 2,
         y = i * 20 + 65;
->>>>>>> Update KWICModel dom example
 
       if (y > HEIGHT - 30) return;
 
