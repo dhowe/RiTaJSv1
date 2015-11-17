@@ -1,4 +1,5 @@
 gulpfile-*.js
+examples/lib/p5.js
 node_modules
 dist/node
 rita-*.tgz

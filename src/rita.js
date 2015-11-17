@@ -173,7 +173,7 @@ var RiTa = {
   getPosTags: function(words, useWordNetTags) {
     return (useWordNetTags) ? RiTa._tagForWordNet(words) : RiTa._tagForPENN(words);
   },
-  
+
   getPosTagsInline: function(words, delimiter) {
 
     if (!words || !words.length) return E;
@@ -222,7 +222,7 @@ var RiTa = {
   upperCaseFirst: function(s) {
     return s.charAt(0).toUpperCase() + s.substring(1);
   },
-  
+
   pluralize: function(word) {
 
     if (!strOk(word)) return E;
@@ -500,7 +500,7 @@ var RiTa = {
 
   fireDataLoaded: function(url, callback, data) {
 
-    log('fireDataLoaded: '+url, callback, data);
+    //log('fireDataLoaded: '+url, callback, data);
     return (callback) ? callback(data, url) :
       RiTaEvent({
         name: 'RiTaLoader',
@@ -4744,8 +4744,6 @@ var PLURAL_RULES = [
   };
 
 // ///////////////////////////// End Functions ////////////////////////////////////
-
-var hasP5 = (typeof p5 !== 'undefined');
 
 if (!RiTa.SILENT && console)
   console.log('[INFO] RiTaJS.version [' + RiTa.VERSION + ']');

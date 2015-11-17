@@ -1,8 +1,6 @@
 
 /*jshint -W069 */
 
-// TODO: compress
-
 if (window) { // for browser
 
   window['RiTa'] = RiTa;
@@ -23,6 +21,11 @@ if (window) { // for browser
   module.exports['RiLexicon'] = RiLexicon;
   module.exports['RiTaEvent'] = RiTaEvent;
 }
+
+// if (typeof p5 !== 'undefined') {
+//   p5.prototype.registerPreloadMethod('loadFrom', RiGrammar.prototype);
+//   p5.prototype.registerPreloadMethod('loadFrom', RiMarkov.prototype);
+// }
 
 /*jshint +W069 */
 

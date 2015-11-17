@@ -3,7 +3,7 @@
 
 var runtests = function() {
 
-    var allowLocalWebServer = false;
+    var allowLocalWebServer = true;
 
     RiTa.SILENT = 1;
 
@@ -392,9 +392,11 @@ var runtests = function() {
     // SOME TESTS ON THE LOCAL WEBSERVER -- ignore unless allowRemote=true
     if (allowLocalWebServer) {
 
+      var serverPath = "http://localhost/ritajs/test/html/data/";
+
       asyncTest("RiTa.loadString1(url)", function() {
 
-          RiTa.loadString("http://localhost/ritajs/test/data/sentence1.json", function(s) {
+          RiTa.loadString(serverPath+"sentence1.json", function(s) {
 
               ok(s && s.length > 100);
               ok(JSON.parse(s));
@@ -404,7 +406,7 @@ var runtests = function() {
 
       asyncTest("RiTa.loadString2(url)", function() {
 
-          RiTa.loadString("http://localhost/ritajs/test/data/kafka.txt", function(s) {
+          RiTa.loadString(serverPath+"kafka.txt", function(s) {
               ok(s && s.length > 65536);
               start();
           });
@@ -413,7 +415,7 @@ var runtests = function() {
       asyncTest("RiGrammar.loadFrom(Url)", function() {
 
           var grammar = new RiGrammar();
-          grammar.loadFrom("http://localhost/ritajs/test/data/haikuGrammar.json");
+          grammar.loadFrom(serverPath+"/haikuGrammar.json");
 
           var ts = +new Date();
           var id = setInterval(function() {
@@ -436,12 +438,13 @@ var runtests = function() {
       asyncTest("RiMarkov.loadFromUrl", function() { // SLOW
 
           var rm = new RiMarkov(3);
-          rm.loadFrom("http://localhost/ritajs/test/data/kafka.txt");
+          rm.loadFrom(serverPath+"kafka.txt");
 
           var ts = +new Date();
           var id = setInterval(function() {
 
               if (rm.ready()) {
+                //console.log("RiMarkov.loadFromUrl: "+rm.size());
                 ok(rm.size());
 
                 // TODO: 2 more better tests here

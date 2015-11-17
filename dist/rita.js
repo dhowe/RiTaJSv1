@@ -351,7 +351,7 @@ var RiTa = {
   upperCaseFirst: function(s) {
     return s.charAt(0).toUpperCase() + s.substring(1);
   },
-  
+
   pluralize: function(word) {
 
     if (!strOk(word)) return E;
@@ -629,7 +629,7 @@ var RiTa = {
 
   fireDataLoaded: function(url, callback, data) {
 
-    log('fireDataLoaded: '+url, callback, data);
+    //log('fireDataLoaded: '+url, callback, data);
     return (callback) ? callback(data, url) :
       RiTaEvent({
         name: 'RiTaLoader',
@@ -4874,15 +4874,11 @@ var PLURAL_RULES = [
 
 // ///////////////////////////// End Functions ////////////////////////////////////
 
-var hasP5 = (typeof p5 !== 'undefined');
-
 if (!RiTa.SILENT && console)
   console.log('[INFO] RiTaJS.version [' + RiTa.VERSION + ']');
 
 
 /*jshint -W069 */
-
-// TODO: compress
 
 if (window) { // for browser
 
@@ -4904,6 +4900,11 @@ if (window) { // for browser
   module.exports['RiLexicon'] = RiLexicon;
   module.exports['RiTaEvent'] = RiTaEvent;
 }
+
+// if (typeof p5 !== 'undefined') {
+//   p5.prototype.registerPreloadMethod('loadFrom', RiGrammar.prototype);
+//   p5.prototype.registerPreloadMethod('loadFrom', RiMarkov.prototype);
+// }
 
 /*jshint +W069 */
 
