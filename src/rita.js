@@ -776,7 +776,6 @@ RiMarkov.prototype = {
     this.isSentenceAware = (a.length > 1 && !a[1]) ? false : true;
     this.allowDuplicates = (a.length > 2 && !a[2]) ? false : true;
     this.printIgnoredText = false;
-    this.smoothing = false;
   },
 
   _initArgs: function() {
@@ -941,16 +940,6 @@ RiMarkov.prototype = {
     return res;
   },
 
-  useSmoothing: function(value) {
-
-    if (arguments.length) {
-
-      this.smoothing = value;
-      return this;
-    }
-    return this.smoothing;
-  },
-
   sentenceAware: function() {
 
     if (arguments.length > 0)
@@ -1037,7 +1026,7 @@ RiMarkov.prototype = {
         var node = this.root;
         for (var i = 0; i < toAdd.length; i++) {
           if (node.token) {
-            node = node.addChild(toAdd[i], this.smoothing ? 2 : 1);
+            node = node.addChild(toAdd[i], 1);
           }
         }
       }
@@ -1326,7 +1315,7 @@ RiMarkov.prototype = {
           add = add.substring(RiMarkov._SSDLM.length);
           var parent = node;
 
-          node = node.addChild(add, this.smoothing ? 2 : 1);
+          node = node.addChild(add, 1);
           node.isSentenceStart = true;
 
           if (parent.isRoot()) {
@@ -1334,7 +1323,7 @@ RiMarkov.prototype = {
           }
 
         } else
-          node = node.addChild(add, this.smoothing ? 2 : 1);
+          node = node.addChild(add, 1);
       }
     }
   },
