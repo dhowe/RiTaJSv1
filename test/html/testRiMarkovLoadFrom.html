@@ -1,0 +1,22 @@
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.17/p5.js"></script>
+  <script type="text/javascript" src="../../dist/rita.js"></script>
+  <script>
+
+    var rm;
+
+    function preload() {
+
+        rm = new RiMarkov(3);
+        rm.loadFrom("http://localhost/ritajs/test/html/data/kafka.txt");
+    }
+
+    function setup() {
+      createCanvas(500, 500);
+      text(rm.size(), 20, 20);
+    }
+
+  </script>
+</head>
+</html>
