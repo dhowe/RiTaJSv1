@@ -472,18 +472,35 @@ var runtests = function () {
 
       deepEqual(RiTa.tokenize(""), [""]);
 
-      var input = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
-      //var expected = ["Dr.", "Chan", "is", "talking", "slowly", "with", "Mr.", "Cheng", ",", "and", "they're", "friends", "."];
-      var expected = ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."];
-      var output = RiTa.tokenize(input);
-      deepEqual(output, expected);
-
       var txt = "The dog";
-      var words = RiTa.tokenize(txt);
-      deepEqual(words, ["The", "dog"]);
+      deepEqual(RiTa.tokenize(txt), ["The", "dog"]);
 
-      var words = RiTa.tokenize("closed");
-      deepEqual(words, ["closed"]);
+      // contractions -------------------------
+
+      var txt1 = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
+      var txt2 = "He can't didn't couldn't shouldn't wouldn't eat.";
+      var txt3 = "Shouldn't he eat?";
+      var txt4 = "It's not that I can't.";
+      var txt5 = "We've found the cat.";
+      var txt6 = "We didn't find the cat.";
+
+      RiTa.SPLIT_CONTRACTIONS = false;
+      deepEqual(RiTa.tokenize(txt1), ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."]);
+      deepEqual(RiTa.tokenize(txt2), ["He", "can't", "didn't", "couldn't", "shouldn't", "wouldn't", "eat", "."]);
+      deepEqual(RiTa.tokenize(txt3), ["Shouldn't", "he", "eat", "?"]);
+      deepEqual(RiTa.tokenize(txt4), ["It's", "not", "that", "I", "can't", "."]);
+      deepEqual(RiTa.tokenize(txt5), ["We've", "found", "the", "cat", "."]);
+      deepEqual(RiTa.tokenize(txt6), ["We", "didn't", "find", "the", "cat", "."]);
+
+      RiTa.SPLIT_CONTRACTIONS = true;
+      deepEqual(RiTa.tokenize(txt1), ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they", "are", "friends", "."]);
+      deepEqual(RiTa.tokenize(txt2), ["He", "can", "not", "did", "not", "could", "not", "should", "not", "would", "not", "eat", "."]);
+      deepEqual(RiTa.tokenize(txt3), ["Should","not", "he", "eat", "?"]);
+      deepEqual(RiTa.tokenize(txt4), ["It", "is", "not", "that", "I", "can", "not", "."]);
+      deepEqual(RiTa.tokenize(txt5), ["We","have", "found", "the", "cat", "."]);
+      deepEqual(RiTa.tokenize(txt6), ["We", "did", "not", "find", "the", "cat", "."]);
+      RiTa.SPLIT_CONTRACTIONS = false;
+
     });
 
     test("testUntokenize", function () {
@@ -491,7 +508,8 @@ var runtests = function () {
       equal(RiTa.untokenize([""]), "");
 
       var expected = "The boy, dressed in red, ate an apple.";
-      var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate", "an", "apple", "."];
+      var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate",
+        "an", "apple", "."];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
 
@@ -532,14 +550,21 @@ var runtests = function () {
       deepEqual(output, expected);
     });
 
-    /*test("testTokenizeAndBack", function () {
+    test("testTokenizeAndBack", function () {
 
+      // TODO: why are these still failing?
       var testStrings = [
-        'A simple sentence.', '(that\'s why this is our place).',
+        //'(that\'s why this is our place).',
+        //'The boy screamed, "Where is my apple?"',
+        'A simple sentence.',
         'The boy, dressed in red, ate an apple.',
-        'Dr. Chan is talking slowly with Mr. Cheng, and the\'re friends.',
-        'The boy screamed, "Where is my apple?"',
         'The boy screamed, \'Where is my apple?\'',
+        "Dr. Chan is talking slowly with Mr. Cheng, and they're friends.",
+        "He can't didn't couldn't shouldn't wouldn't eat.",
+        "Shouldn't he eat?",
+        "It's not that I can't.",
+        "We've found the cat.",
+        "We didn't find the cat."
       ];
 
       for (var i = 0; i < testStrings.length; i++) {
@@ -547,7 +572,7 @@ var runtests = function () {
         var output = RiTa.untokenize(tokens);
         equal(output, testStrings[i]);
       }
-    });*/
+    });
 
     test("testDistance", function () {
 

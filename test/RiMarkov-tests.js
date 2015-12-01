@@ -650,25 +650,6 @@ var runtests = function() {
 		equal(rm.getProbability("The"), 0.2);
 	});
 
-	test("testUseSmoothing()", function() {
-
-		var rm = new RiMarkov(3);
-		rm.useSmoothing(false);
-		rm.loadTokens(RiTa.tokenize(sample));
-
-		var rm2 = new RiMarkov(3);
-		rm2.useSmoothing(true);
-		rm2.loadTokens(RiTa.tokenize(sample));
-		notEqual(rm2.getProbability("one"), rm.getProbability("one"));
-
-		var p1 = rm.getProbability("personal");
-		var p2 = rm2.getProbability("personal");
-		// console.log(p1 + " ?= "+p2);
-		notEqual(p1, p2);
-
-		// more tests?? yes
-	});
-
 	test("testSentenceAware()", function() {
 
 		var rm = new RiMarkov(3, false);
