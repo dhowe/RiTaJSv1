@@ -3,7 +3,7 @@
 
 var runtests = function() {
 
-    var allowLocalWebServer = true;
+    var allowLocalWebServer = false;
 
     RiTa.SILENT = 1;
 
