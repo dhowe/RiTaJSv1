@@ -30,7 +30,9 @@
   "scripts": {
     "test": "gulp test-npm"
   },
+
   "dependencies": {},
+  "tonicExampleFilename": "examples/tonic.js",
   "optionalDependencies": {
     "yamljs": "^0.2.3"
   },
