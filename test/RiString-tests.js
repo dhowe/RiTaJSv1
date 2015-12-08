@@ -52,7 +52,7 @@ var runtests = function () {
 
     if (noLexicon()) return;
 
-    var features = RiString("Mom & Dad, waiting for the car, ate a steak.").analyze().features();
+    var features = RiString("Mom and Dad, waiting for the car, ate a steak.").analyze().features();
     ok(features);
 
     equal(features.phonemes, "m-aa-m ae-n-d d-ae-d , w-ey-t-ih-ng f-ao-r dh-ax k-aa-r , ey-t ey s-t-ey-k .");

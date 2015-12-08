@@ -20,9 +20,6 @@ var testResults = [{
   }, {
     input: 'The dog ran faster than the other dog. But the other dog was prettier.',
     output: 'dh-ax d-ao-g r-ae-n f-ae-s/t-er dh-ae-n dh-ax ah-dh/er d-ao-g . b-ah-t dh-ax ah-dh/er d-ao-g w-aa-z p-r-ih-t/iy/er .'
-  }, {
-    input: '@#$%&*()',
-    output: '@ # $ % ae-n-d * ( )'
   }]
 }];
 
@@ -40,6 +37,8 @@ var runtests = function () {
 
     // ------------------------------------------------------------------------
     test("testGetSyllables", function () { // new-style
+
+      console.log(RiTa.ALL_PHONES.length);
 
       if (noLexicon()) return;
 
@@ -74,10 +73,6 @@ var runtests = function () {
       txt = 'The Laggin Dragon';
       result = RiTa.getSyllables(txt);
       answer = 'dh-ax l-ae/g-ih-n d-r-ae-g/aa-n';
-      equal(result, answer);
-
-      result = RiTa.getSyllables('@#$%&*()');
-      answer = '@ # $ % ae-n-d * ( )';
       equal(result, answer);
     });
 
@@ -1038,25 +1033,13 @@ var runtests = function () {
       var answer = "ae-s-d-f-g-ax-s-d-ae-s-d-ae-s-d-ae-s-d-s-ao-d-ae-s-f";
       equal(result, answer);
 
-      var result = RiTa.getPhonemes("HTERE ^%&*^ IS ^(*^*() fsfa");
-      var answer = "t-ih-r ^ % ae-n-d *^ ih-z ^ ( *^* ( ) f-s-f-ax";
-      equal(result, answer);
-
       //getStresses
       var result = RiTa.getStresses("deMOcracy, dependaBIlity, phoTOgraphy, geOLogy");
       var answer = "0/1/0/0 , 0/1/0/1/0/0 , 0/1/0/0 , 0/1/0/0";
       equal(result, answer);
 
-      var result = RiTa.getStresses("@#$%^&*()");
-      var answer = "@ # $ % ^ 1 * ( )";
-      equal(result, answer);
-
       var result = RiTa.getStresses("asdfgasdasdasdasdsadasf");
       var answer = "1/0/1/1/1/1/1";
-      equal(result, answer);
-
-      var result = RiTa.getStresses("HTERE ^%&*^ IS ^(*^*() fsfa");
-      var answer = "1 ^ % 1 *^ 1 ^ ( *^* ( ) 0";
       equal(result, answer);
 
       //getSyllables
@@ -1094,10 +1077,6 @@ var runtests = function () {
 
       var result = RiTa.getSyllables("asdfgasdasdasdasdsadasf");
       var answer = "ae-s-d-f/g-ax-s/d-ae-s/d-ae-s/d-ae-s-d/s-ao/d-ae-s-f";
-      equal(result, answer);
-
-      var result = RiTa.getSyllables("HTERE ^%&*^ IS ^(*^*() fsfa");
-      var answer = "t-ih-r ^ % ae-n-d *^ ih-z ^ ( *^* ( ) f-s-f-ax";
       equal(result, answer);
     });
 
