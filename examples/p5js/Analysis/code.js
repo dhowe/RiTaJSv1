@@ -72,7 +72,7 @@ function generateEvent() { // called every 4 sec by timer
   }
   
   addStress(ss, sy, bubbles);
-  addSyllabus(sy, bubbles);  
+  addSyllables(sy, bubbles);  
 }
 
 function Bubble(phoneme,x) {
@@ -138,16 +138,16 @@ function Bubble(phoneme,x) {
   }
 }
 
-function addSyllabus(syllabus,bubbles)  {
+function addSyllables(syllables,bubbles)  {
 
-   //Split each syllabo
-   var syllabo = syllabus.split("/");
+   //Split each syllable
+   var syllable = syllables.split("/");
 
    //record the past phonemes number
    var past = 0;
    
-    for (var i = 0; i < syllabo.length; i++) {
-     var phs=syllabo[i].split("-");
+    for (var i = 0; i < syllable.length; i++) {
+     var phs=syllable[i].split("-");
 
       for (var j = 1; j < phs.length; j++)
         bubbles[past+j].adjustDistance(-20*j);
@@ -160,7 +160,7 @@ function addStress(stresses,syllables,bubbles){
   //Split each stress
    var stress = stresses.split("/");
 
-  //Split each syllabo
+  //Split each syllable
    var syllable = syllables.split("/");
 
   // Count phonemes in each syllable
