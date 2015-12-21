@@ -1130,6 +1130,8 @@ var runtests = function () {
       equal("stimuli", RiTa.pluralize("stimulus"));
       equal("alumni", RiTa.pluralize("alumnus"));
       equal("corpora", RiTa.pluralize("corpus"));
+      equal("menus", RiTa.pluralize("menu"));
+
     });
 
     test("testSingularize", function () {
@@ -1204,6 +1206,16 @@ var runtests = function () {
       equal(RiTa.singularize("stimuli"), "stimulus");
       equal(RiTa.singularize("alumni"), "alumnus");
       equal(RiTa.singularize("corpora"), "corpus");
+
+      equal("man", RiTa.singularize("men"));
+      equal("woman", RiTa.singularize("women"));
+      equal("congressman", RiTa.singularize("congressmen"));
+      equal("alderman", RiTa.singularize("aldermen"));
+      equal("freshman", RiTa.singularize("freshmen"));
+      equal("fireman", RiTa.singularize("firemen"));
+      equal("grandchild", RiTa.singularize("grandchildren"));
+      equal("menu", RiTa.singularize("menus"));
+      equal("guru", RiTa.singularize("gurus"));
 
       equal("", RiTa.singularize(""));
     });

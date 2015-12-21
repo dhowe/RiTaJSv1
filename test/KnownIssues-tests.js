@@ -92,6 +92,13 @@ var runtests = function () {
         var answer = [ "average", "ravage", "cabbage" ];
         deepEqual(result, answer);
     });
+    
+    test("RiTa.singularize", function () { // TODO: Cyrus
+
+        equal(RiTa.singularize("menus"),"menu");
+        equal(RiTa.singularize("gurus"),"guru");
+    });
+
 
     test("RiTa.conjugate", function () {
 

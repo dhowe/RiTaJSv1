@@ -2,6 +2,7 @@ var pos = " ",word,sy,ph,ss;
 var bubbles = [];
 var maxWordLength = 12;
 var colors = [];
+var tagsDict;
 
 function setup() {
 
@@ -185,8 +186,8 @@ function addStress(stresses,syllables,bubbles){
 
 function tagName(tag) {
 
-  if (tagsDict == null) {
-    var tagsDict = {"n" : "Noun", "v" : "Verb", "r" : "Adverb","a":"Adjective"};
+  if (!tagsDict) {
+    tagsDict = {"n" : "Noun", "v" : "Verb", "r" : "Adverb","a":"Adjective"};
   }
 
   return tag == null ? null : tagsDict[tag];
