@@ -38,8 +38,6 @@ var runtests = function () {
     // ------------------------------------------------------------------------
     test("testGetSyllables", function () { // new-style
 
-      console.log(RiTa.ALL_PHONES.length);
-
       if (noLexicon()) return;
 
       var func = RiTa.getSyllables,

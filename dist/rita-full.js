@@ -130,7 +130,9 @@ function get(obj) {
 'use strict';
 
 var RiLexicon = makeClass(); // stub
+
 RiLexicon.enabled = false;
+
 RiLexicon.prototype.init = function() {
     throw Error('RiLexicon is not available -- ' +
       'if needed, make sure to include rilexicon.js');
@@ -169,7 +171,7 @@ var RiTa = {
   SENTENCE_BOUNDARY: "|",
   VOWELS: "aeiou",
   ABBREVIATIONS: ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
-  ALL_PHONES: ['aa','ae','ah','ao','aw','ax','ay','b','ch','d','dh', 'eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'],
+  ALL_PHONES: ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'],
 
   /* The infinitive verb form  - 'to eat an apple' */
   INFINITIVE: 1,
@@ -24688,7 +24690,7 @@ function _dict() { return {
 'cramped': ['k-r-ae1-m-p-t','jj'],
 'cramps': ['k-r-ae1-m-p-s','nns'],
 'crams': ['k-r-ae1-m-z','vbz'],
-'cranberry: ['k-r-ae1-n-b eh1-r iy','nn'],
+'cranberry': ['k-r-ae1-n-b eh1-r iy','nn'],
 'crane': ['k-r-ey1-n','nn vb'],
 'cranes': ['k-r-ey1-n-z','nns'],
 'crank': ['k-r-ae1-ng-k','vb nn'],
@@ -28129,7 +28131,6 @@ function _dict() { return {
 'equivalent': ['ih-k w-ih1-v ax-l ax-n-t','nn jj'],
 'equivalents': ['ih-k w-ih1-v ax-l ax-n-t-s','nns'],
 'equivocal': ['ih-k w-ih1-v ax-k ax-l','jj'],
-'er': ['er','uh'],
 'era': ['eh1-r ax','nn'],
 'eradicate': ['ih-r ae1-d ax-k ey1-t','vb'],
 'eradicated': ['ih-r ae1-d ax-k ey1-t ih-d','vbn vbd'],
@@ -28155,7 +28156,6 @@ function _dict() { return {
 'eroding': ['ih-r ow1-d ih-ng','vbg'],
 'erosion': ['ih-r ow1-zh ax-n','nn'],
 'erotic': ['ih-r aa1-t ih-k','jj'],
-'err': ['eh1-r','vbp vb'],
 'errand': ['eh1-r ax-n-d','nn'],
 'errant': ['eh1-r ax-n-t','jj'],
 'erratic': ['ih-r ae1-t ih-k','jj'],
@@ -28165,7 +28165,6 @@ function _dict() { return {
 'erroneously': ['eh-r ow1-n iy ax-s l-iy','rb'],
 'error': ['eh1-r er','nn'],
 'errors': ['eh1-r er-z','nns'],
-'errs': ['eh1-r-z','vbz'],
 'ersatz': ['eh1-r-s aa1-t-s','jj'],
 'erstwhile': ['er1-s t-w-ay1-l','jj'],
 'erudite': ['eh1-r ax-d ay1-t','jj'],
@@ -31944,8 +31943,6 @@ function _dict() { return {
 'hitters': ['hh-ih1-t er-z','nns'],
 'hitting': ['hh-ih1-t ih-ng','vbg nn'],
 'hive': ['hh-ay1-v','nn'],
-'hmmm': ['hh-m','uh'],
-'ho': ['hh-ow1','uh'],
 'hoard': ['hh-ao1-r-d','nn vb vbp'],
 'hoarding': ['hh-ao1-r-d ih-ng','nn vbg'],
 'hoards': ['hh-ao1-r-d-z','nns'],
@@ -38189,7 +38186,7 @@ function _dict() { return {
 'outdone': ['aw1-t d-ah1-n','vbn'],
 'outdoor': ['aw1-t d-ao1-r','jj'],
 'outdoors': ['aw1-t d-ao1-r-z','rb nn'],
-'outdoorsman': ['aw1-t d-ao-r-z m-ax-n','nn'],
+'outdoorsman': ['aw1-t d-ao-r-z m-ah-n','nn'],
 'outer': ['aw1-t er','jj'],
 'outfield': ['aw1-t f-iy1-l-d','nn'],
 'outfielder': ['aw1-t f-iy1-l-d er','nn'],
@@ -41525,7 +41522,6 @@ function _dict() { return {
 'razor': ['r-ey1-z er','nn'],
 'razorback': ['r-ey1-z er-b ae1-k','nn'],
 'razors': ['r-ey1-z er-z','nns'],
-'re': ['r-ey1','nn'],
 'reach': ['r-iy1-ch','vb vbp nn'],
 'reached': ['r-iy1-ch-t','vbn vbd'],
 'reaches': ['r-iy1-ch ax-z','vbz nns'],
@@ -44260,7 +44256,6 @@ function _dict() { return {
 'serenely': ['s-er iy1-n ax-l iy','rb'],
 'serenity': ['s-er eh1-n ax-t iy','nn'],
 'serfs': ['s-er1-f-s','nns'],
-'serge': ['s-er1-jh','nn'],
 'sergeant': ['s-aa1-r-jh ax-n-t','nn'],
 'sergeants': ['s-aa1-r-jh ax-n-t-s','nns'],
 'serial': ['s-ih1-r iy ax-l','jj nn'],
@@ -45993,7 +45988,6 @@ function _dict() { return {
 'squirreled': ['s-k-w-er1 ax-l-d','vbn'],
 'squirt': ['s-k-w-er1-t','nn'],
 'squirted': ['s-k-w-er1-t ax-d','vbd'],
-'st': ['s-t-r-iy1-t','nn'],
 'stab': ['s-t-ae1-b','nn'],
 'stabbed': ['s-t-ae1-b-d','vbd vbn'],
 'stabbing': ['s-t-ae1-b ih-ng','vbg'],
@@ -51179,8 +51173,6 @@ function _dict() { return {
 'yawn': ['y-ao1-n','nn vb'],
 'yawning': ['y-ao1-n ih-ng','vbg jj'],
 'yawns': ['y-ao1-n-z','nns'],
-'ye': ['y-iy1','prp sym nn'],
-'yea': ['y-ey1','nn'],
 'yeah': ['y-ae1','uh nn'],
 'year': ['y-ih1-r','nn jj'],
 'yearago': ['y-ih1-r ax-g ow','jj'],
@@ -51217,16 +51209,13 @@ function _dict() { return {
 'yielded': ['y-iy1-l-d ax-d','vbd vbn'],
 'yielding': ['y-iy1-l-d ih-ng','vbg jj nn'],
 'yields': ['y-iy1-l-d-z','nns vbz'],
-'yip': ['y-ih1-p','nn'],
 'yodel': ['y-ow1-d ax-l','nn'],
 'yodeling': ['y-ow1-d ax-l ih-ng','vbg'],
 'yoga': ['y-ow1-g ax','nn'],
 'yogurt': ['y-ow1-g er-t','nn'],
 'yoke': ['y-ow1-k','nn'],
 'yolk': ['y-ow1-k','nn'],
-'yon': ['y-aa1-n','rb'],
 'yonder': ['y-aa1-n-d er','nn'],
-'yore': ['y-ao1-r','prp$ nn rb'],
 'you': ['y-uw1','prp vbp rp'],
 'young': ['y-ah1-ng','jj nn nns'],
 'younger': ['y-ah1-ng-g er','jjr'],
@@ -51294,9 +51283,8 @@ RiLexicon.enabled = true;
 RiLexicon.prototype = {
 
   init: function() {
-
+	  
     this.reload();
-    //console.log("Init::Creating RiLexicon!");
   },
 
   clear: function() {
@@ -51673,7 +51661,6 @@ RiLexicon.prototype = {
    * delimited by dashes (phonemes) and semi-colons (words).
    * For example, the 4 syllables of the phrase
    * 'The dog ran fast' are "dh-ax:d-ao-g:r-ae-n:f-ae-s-t".
-   * @returns {string} the phonemes for each syllable of each word
    */
   _getSyllables: function(word) {
 
@@ -51701,11 +51688,9 @@ RiLexicon.prototype = {
 
       if (RiTa.isPunctuation(wordArr[i])) continue;
 
-      // raw[i] = wordArr[i].length
       raw[i] = this._getRawPhones(wordArr[i]);
 
       if (!raw[i].length) return E;
-      //err("Unable to lookup (need LTSEngine): "+wordArr[i]);
 
       raw[i] = raw[i].replace(/ /g, "-");
     }
@@ -51756,12 +51741,7 @@ RiLexicon.prototype = {
     return this.data;
   },
 
-  /*
-   * Returns the raw (RiTa-format) dictionary entry for the given word
-   * @returns {array} a 2-element array of strings,
-   * the first is the stress and syllable data,
-   * the 2nd is the pos data, or null if the word is not found
-   */
+  /* Returns the raw (RiTa-format) dictionary entry for the given word   */
   _lookupRaw: function(word) {
 
     word = word.toLowerCase();
@@ -51941,41 +51921,14 @@ function intersect() {
   return ret;
 }
 
-/////////////////////////////////////////////////////////////////////////
 // RiLetterToSound (adapted from FreeTTS text-to-speech)
-/////////////////////////////////////////////////////////////////////////
 
 var LetterToSound = makeClass();
 
 LetterToSound.RULES = _RiTa_LTS;
-
-/*
- * Entry in file represents the total number of states in the file. This
- * should be at the top of the file. The format should be "TOTAL n" where n is
- * an integer value.
- */
 LetterToSound.TOTAL = "TOTAL";
-
-/*
- * Entry in file represents the beginning of a new letter index. This should
- * appear before the list of a new set of states for a particular letter. The
- * format should be "INDEX n c" where n is the index into the state machine
- * array and c is the character.
- */
 LetterToSound.INDEX = "INDEX";
-
-/*
- * Entry in file represents a state. The format should be "STATE i c t f"
- * where 'i' represents an index to look at in the decision string, c is the
- * character that should match, t is the index of the state to go to if there
- * is a match, and f is the of the state to go to if there isn't a match.
- */
 LetterToSound.STATE = "STATE";
-
-/*
- * Entry in file represents a final state. The format should be "PHONE p"
- * where p represents a phone string that comes from the phone table.
- */
 LetterToSound.PHONE = "PHONE";
 
 /*
@@ -51997,34 +51950,13 @@ LetterToSound.prototype = {
 
   init: function() {
 
-    /*
-     * The indices of the starting points for letters in the state machine.
-     */
     this.letterIndex = {};
-
-    /*
-     * An array of characters to hold a string for checking against a rule. This
-     * will be reused over and over again, so the goal was just to have a single
-     * area instead of new'ing up a new one for every word. The name choice is to
-     * match that in Flite's <code>cst_lts.c</code>.
-     */
     this.fval_buff = [];
-
-    /*
-     * The LTS state machine. Entries can be String or State. An ArrayList could
-     * be used here -- I chose not to because I thought it might be quicker to
-     * avoid dealing with the dynamic resizing.
-     */
     this.stateMachine = null;
-
-    /*
-     * The number of states in the state machine.
-     */
     this.numStates = 0;
 
     // add the rules to the object (static?)
     for (var i = 0; i < LetterToSound.RULES.length; i++) {
-
       this.parseAndAdd(LetterToSound.RULES[i]);
     }
   },
@@ -52045,8 +51977,7 @@ LetterToSound.prototype = {
     throw Error("Unexpected type: " + type);
   },
 
-  /* Creates a word from the given input line and add it to the state machine.
-	   It expects the TOTAL line to come before any of the states.*/
+  // Creates a word from an input line and adds it to the state machine 
   parseAndAdd: function(line) {
 
     var tokenizer = new StringTokenizer(line, SP);
@@ -52094,7 +52025,7 @@ LetterToSound.prototype = {
       result[i] = ph ? ph.join(delim) : E;
     }
 
-    return result.join(delim);
+    return result.join(delim).replace(/ax/g, 'ah');
   },
 
   _computePhones: function(word) {
@@ -52126,9 +52057,6 @@ LetterToSound.prototype = {
     // Create "000#word#000", uggh
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
 
-    // For each character in the word, create a WINDOW_SIZE
-    // context on each size of the character, and then ask the
-    // state machine what's next
     for (var pos = 0; pos < word.length; pos++) {
 
       for (var i = 0; i < LetterToSound.WINDOW_SIZE; i++) {
@@ -52188,9 +52116,7 @@ LetterToSound.prototype = {
   }
 };
 
-/////////////////////////////////////////////////////////////////////////
 // DecisionState
-/////////////////////////////////////////////////////////////////////////
 
 var DecisionState = makeClass();
 
@@ -52198,18 +52124,6 @@ DecisionState.TYPE = 1;
 
 DecisionState.prototype = {
 
-  /*
-   * Class constructor.
-   *
-   * @param index
-   *          the index into a string for comparison to c
-   * @param c
-   *          the character to match in a string at index
-   * @param qtrue
-   *          the state to go to in the state machine on a match
-   * @param qfalse
-   *          the state to go to in the state machine on no match
-   */
   init: function(index, c, qtrue, qfalse) {
 
     this.c = c;
@@ -52219,36 +52133,22 @@ DecisionState.prototype = {
   },
 
   type: function() {
-
     return "DecisionState";
   },
 
-  /*
-   * Gets the next state to go to based upon the given character sequence.
-   *
-   * @param chars the characters for comparison
-   *
-   * @returns an index into the state machine.
-   */
-  //public var getNextState(char[] chars)
   getNextState: function(chars) {
 
     return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
   },
 
-  /*
-   * Outputs this <code>State</code> as though it came from the text input
-   * file.
-   */
+
   toString: function() {
     return this.STATE + " " + this.index + " " + this.c + " " + this.qtrue + " " + this.qfalse;
   }
 
-}; // end DecisionState
+}; 
 
-// ///////////////////////////////////////////////////////////////////////
 // FinalState
-// ///////////////////////////////////////////////////////////////////////
 
 var FinalState = makeClass();
 
@@ -52256,9 +52156,7 @@ FinalState.TYPE = 2;
 
 FinalState.prototype = {
 
-  /*
-   * Constructor: the string "epsilon" is used to indicate an empty list.
-   */
+  // "epsilon" is used to indicate an empty list.
   init: function(phones) {
 
     this.phoneList = [];
@@ -52266,7 +52164,6 @@ FinalState.prototype = {
     if (phones === ("epsilon")) {
       this.phoneList = null;
     } else if (is(phones, A)) {
-
       this.phoneList = phones;
     } else {
       var i = phones.indexOf('-');
@@ -52279,10 +52176,7 @@ FinalState.prototype = {
     }
   },
 
-  type: function() {
-
-    return "FinalState";
-  },
+  type: function() { return "FinalState"; },
 
   /*
    * Appends the phone list for this state to the given <code>ArrayList</code>.
@@ -52295,10 +52189,6 @@ FinalState.prototype = {
       array.push(this.phoneList[i]);
   },
 
-  /*
-   * Outputs this <code>State</code> as though it came from the text input
-   * file. The string "epsilon" is used to indicate an empty list.
-   */
   toString: function() {
 
     if (!this.phoneList) {

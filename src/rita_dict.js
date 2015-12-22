@@ -6676,7 +6676,7 @@ function _dict() { return {
 'cramped': ['k-r-ae1-m-p-t','jj'],
 'cramps': ['k-r-ae1-m-p-s','nns'],
 'crams': ['k-r-ae1-m-z','vbz'],
-'cranberry: ['k-r-ae1-n-b eh1-r iy','nn'],
+'cranberry': ['k-r-ae1-n-b eh1-r iy','nn'],
 'crane': ['k-r-ey1-n','nn vb'],
 'cranes': ['k-r-ey1-n-z','nns'],
 'crank': ['k-r-ae1-ng-k','vb nn'],

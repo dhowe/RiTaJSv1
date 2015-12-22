@@ -4,9 +4,8 @@ RiLexicon.enabled = true;
 RiLexicon.prototype = {
 
   init: function() {
-
+	  
     this.reload();
-    //console.log("Init::Creating RiLexicon!");
   },
 
   clear: function() {
@@ -383,7 +382,6 @@ RiLexicon.prototype = {
    * delimited by dashes (phonemes) and semi-colons (words).
    * For example, the 4 syllables of the phrase
    * 'The dog ran fast' are "dh-ax:d-ao-g:r-ae-n:f-ae-s-t".
-   * @returns {string} the phonemes for each syllable of each word
    */
   _getSyllables: function(word) {
 
@@ -411,11 +409,9 @@ RiLexicon.prototype = {
 
       if (RiTa.isPunctuation(wordArr[i])) continue;
 
-      // raw[i] = wordArr[i].length
       raw[i] = this._getRawPhones(wordArr[i]);
 
       if (!raw[i].length) return E;
-      //err("Unable to lookup (need LTSEngine): "+wordArr[i]);
 
       raw[i] = raw[i].replace(/ /g, "-");
     }
@@ -466,12 +462,7 @@ RiLexicon.prototype = {
     return this.data;
   },
 
-  /*
-   * Returns the raw (RiTa-format) dictionary entry for the given word
-   * @returns {array} a 2-element array of strings,
-   * the first is the stress and syllable data,
-   * the 2nd is the pos data, or null if the word is not found
-   */
+  /* Returns the raw (RiTa-format) dictionary entry for the given word   */
   _lookupRaw: function(word) {
 
     word = word.toLowerCase();
@@ -651,41 +642,14 @@ function intersect() {
   return ret;
 }
 
-/////////////////////////////////////////////////////////////////////////
 // RiLetterToSound (adapted from FreeTTS text-to-speech)
-/////////////////////////////////////////////////////////////////////////
 
 var LetterToSound = makeClass();
 
 LetterToSound.RULES = _RiTa_LTS;
-
-/*
- * Entry in file represents the total number of states in the file. This
- * should be at the top of the file. The format should be "TOTAL n" where n is
- * an integer value.
- */
 LetterToSound.TOTAL = "TOTAL";
-
-/*
- * Entry in file represents the beginning of a new letter index. This should
- * appear before the list of a new set of states for a particular letter. The
- * format should be "INDEX n c" where n is the index into the state machine
- * array and c is the character.
- */
 LetterToSound.INDEX = "INDEX";
-
-/*
- * Entry in file represents a state. The format should be "STATE i c t f"
- * where 'i' represents an index to look at in the decision string, c is the
- * character that should match, t is the index of the state to go to if there
- * is a match, and f is the of the state to go to if there isn't a match.
- */
 LetterToSound.STATE = "STATE";
-
-/*
- * Entry in file represents a final state. The format should be "PHONE p"
- * where p represents a phone string that comes from the phone table.
- */
 LetterToSound.PHONE = "PHONE";
 
 /*
@@ -707,34 +671,13 @@ LetterToSound.prototype = {
 
   init: function() {
 
-    /*
-     * The indices of the starting points for letters in the state machine.
-     */
     this.letterIndex = {};
-
-    /*
-     * An array of characters to hold a string for checking against a rule. This
-     * will be reused over and over again, so the goal was just to have a single
-     * area instead of new'ing up a new one for every word. The name choice is to
-     * match that in Flite's <code>cst_lts.c</code>.
-     */
     this.fval_buff = [];
-
-    /*
-     * The LTS state machine. Entries can be String or State. An ArrayList could
-     * be used here -- I chose not to because I thought it might be quicker to
-     * avoid dealing with the dynamic resizing.
-     */
     this.stateMachine = null;
-
-    /*
-     * The number of states in the state machine.
-     */
     this.numStates = 0;
 
     // add the rules to the object (static?)
     for (var i = 0; i < LetterToSound.RULES.length; i++) {
-
       this.parseAndAdd(LetterToSound.RULES[i]);
     }
   },
@@ -755,8 +698,7 @@ LetterToSound.prototype = {
     throw Error("Unexpected type: " + type);
   },
 
-  /* Creates a word from the given input line and add it to the state machine.
-	   It expects the TOTAL line to come before any of the states.*/
+  // Creates a word from an input line and adds it to the state machine 
   parseAndAdd: function(line) {
 
     var tokenizer = new StringTokenizer(line, SP);
@@ -804,7 +746,7 @@ LetterToSound.prototype = {
       result[i] = ph ? ph.join(delim) : E;
     }
 
-    return result.join(delim);
+    return result.join(delim).replace(/ax/g, 'ah');
   },
 
   _computePhones: function(word) {
@@ -836,9 +778,6 @@ LetterToSound.prototype = {
     // Create "000#word#000", uggh
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
 
-    // For each character in the word, create a WINDOW_SIZE
-    // context on each size of the character, and then ask the
-    // state machine what's next
     for (var pos = 0; pos < word.length; pos++) {
 
       for (var i = 0; i < LetterToSound.WINDOW_SIZE; i++) {
@@ -898,9 +837,7 @@ LetterToSound.prototype = {
   }
 };
 
-/////////////////////////////////////////////////////////////////////////
 // DecisionState
-/////////////////////////////////////////////////////////////////////////
 
 var DecisionState = makeClass();
 
@@ -908,18 +845,6 @@ DecisionState.TYPE = 1;
 
 DecisionState.prototype = {
 
-  /*
-   * Class constructor.
-   *
-   * @param index
-   *          the index into a string for comparison to c
-   * @param c
-   *          the character to match in a string at index
-   * @param qtrue
-   *          the state to go to in the state machine on a match
-   * @param qfalse
-   *          the state to go to in the state machine on no match
-   */
   init: function(index, c, qtrue, qfalse) {
 
     this.c = c;
@@ -929,36 +854,22 @@ DecisionState.prototype = {
   },
 
   type: function() {
-
     return "DecisionState";
   },
 
-  /*
-   * Gets the next state to go to based upon the given character sequence.
-   *
-   * @param chars the characters for comparison
-   *
-   * @returns an index into the state machine.
-   */
-  //public var getNextState(char[] chars)
   getNextState: function(chars) {
 
     return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
   },
 
-  /*
-   * Outputs this <code>State</code> as though it came from the text input
-   * file.
-   */
+
   toString: function() {
     return this.STATE + " " + this.index + " " + this.c + " " + this.qtrue + " " + this.qfalse;
   }
 
-}; // end DecisionState
+}; 
 
-// ///////////////////////////////////////////////////////////////////////
 // FinalState
-// ///////////////////////////////////////////////////////////////////////
 
 var FinalState = makeClass();
 
@@ -966,9 +877,7 @@ FinalState.TYPE = 2;
 
 FinalState.prototype = {
 
-  /*
-   * Constructor: the string "epsilon" is used to indicate an empty list.
-   */
+  // "epsilon" is used to indicate an empty list.
   init: function(phones) {
 
     this.phoneList = [];
@@ -976,7 +885,6 @@ FinalState.prototype = {
     if (phones === ("epsilon")) {
       this.phoneList = null;
     } else if (is(phones, A)) {
-
       this.phoneList = phones;
     } else {
       var i = phones.indexOf('-');
@@ -989,10 +897,7 @@ FinalState.prototype = {
     }
   },
 
-  type: function() {
-
-    return "FinalState";
-  },
+  type: function() { return "FinalState"; },
 
   /*
    * Appends the phone list for this state to the given <code>ArrayList</code>.
@@ -1005,10 +910,6 @@ FinalState.prototype = {
       array.push(this.phoneList[i]);
   },
 
-  /*
-   * Outputs this <code>State</code> as though it came from the text input
-   * file. The string "epsilon" is used to indicate an empty list.
-   */
   toString: function() {
 
     if (!this.phoneList) {
