@@ -1028,7 +1028,7 @@ var runtests = function () {
 
       //getPhonemes
       var result = RiTa.getPhonemes("asdfgasdasdasdasdsadasf");
-      var answer = "ae-s-d-f-g-ax-s-d-ae-s-d-ae-s-d-ae-s-d-s-ao-d-ae-s-f";
+      var answer = "ae-s-d-f-g-ah-s-d-ae-s-d-ae-s-d-ae-s-d-s-ao-d-ae-s-f";
       equal(result, answer);
 
       //getStresses
@@ -1074,7 +1074,7 @@ var runtests = function () {
       equal(result, answer);
 
       var result = RiTa.getSyllables("asdfgasdasdasdasdsadasf");
-      var answer = "ae-s-d-f/g-ax-s/d-ae-s/d-ae-s/d-ae-s-d/s-ao/d-ae-s-f";
+      var answer = "ae-s-d-f/g-ah-s/d-ae-s/d-ae-s/d-ae-s-d/s-ao/d-ae-s-f";
       equal(result, answer);
     });
 
