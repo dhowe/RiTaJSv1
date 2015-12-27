@@ -85,8 +85,8 @@ var runtests = function () {
 
     features = RiString("1 2 7").analyze().features();
     ok(features);
-    equal(features.phonemes, "w-ah-n t-uw s-eh-v-ax-n");
-    equal(features.syllables, "w-ah-n t-uw s-eh/v-ax-n");
+    equal(features.phonemes, "w-ah-n t-uw s-eh-v-ah-n");
+    equal(features.syllables, "w-ah-n t-uw s-eh/v-ah-n");
     equal(features.stresses, "0 0 1/0");
 
     features = RiString("*").analyze().features();
