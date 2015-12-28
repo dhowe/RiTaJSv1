@@ -571,7 +571,7 @@ var runtests = function() {
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 2);
-    var answer = ["an", "and", "ho", "sand", "thou", "us"];
+    var answer = [ 'an', 'and', 'sand', 'thou', 'us' ];
     deepEqual(result, answer);
 
     var result = lex.substrings("banana", 1);
