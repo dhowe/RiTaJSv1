@@ -893,7 +893,7 @@ var runtests = function() {
 
     re = lex.lexicalData();
     result = re.the;
-    answer = ["dh-ax", "dt"];
+    answer = ["dh-ah", "dt"];
 
     deepEqual(result, answer);
 
