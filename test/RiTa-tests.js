@@ -13,13 +13,13 @@ var testResults = [{
     output: ''
   }, {
     input: 'The Laggin Dragon',
-    output: 'dh-ax l-ae/g-ih-n d-r-ae-g/aa-n'
+    output: 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n'
   }, {
     input: 'The emperor had no clothes on.',
-    output: 'dh-ax eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .'
+    output: 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .'
   }, {
     input: 'The dog ran faster than the other dog. But the other dog was prettier.',
-    output: 'dh-ax d-ao-g r-ae-n f-ae-s/t-er dh-ae-n dh-ax ah-dh/er d-ao-g . b-ah-t dh-ax ah-dh/er d-ao-g w-aa-z p-r-ih-t/iy/er .'
+    output: 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .'
   }]
 }];
 
