@@ -779,13 +779,13 @@ var runtests = function() {
     var output2 = lex._getPhonemes(word);
     var output3 = lex._getStresses(word);
 
-    var expected1 = "ae-b/er/ey-sh/ax-n-z";
+    var expected1 = "ae/b-er/ey/sh-ah-n-z";
     equal(output1, expected1);
 
-    var expected2 = "ae-b-er-ey-sh-ax-n-z";
+    var expected2 = "ae-b-er-ey-sh-ah-n-z";
     equal(output2, expected2);
 
-    var expected3 = "1/0/1/0";
+    var expected3 = "0/0/1/0";
     equal(output3, expected3);
   });
 
