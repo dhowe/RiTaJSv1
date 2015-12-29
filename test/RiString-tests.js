@@ -1293,8 +1293,8 @@ var runtests = function () {
     ok(ph && sy && st);
 
 
-    equal(ph, "dh-ax l-ae-g-ih-n d-r-ae-g-aa-n");
-    equal(sy, "dh-ax l-ae/g-ih-n d-r-ae-g/aa-n");
+    equal(ph, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
+    equal(sy, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(st, "0 1/1 1/0");
   });
 
