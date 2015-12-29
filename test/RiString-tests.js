@@ -55,8 +55,8 @@ var runtests = function () {
     var features = RiString("Mom and Dad, waiting for the car, ate a steak.").analyze().features();
     ok(features);
 
-    equal(features.phonemes, "m-aa-m ae-n-d d-ae-d , w-ey-t-ih-ng f-ao-r dh-ax k-aa-r , ey-t ey s-t-ey-k .");
-    equal(features.syllables, "m-aa-m ae-n-d d-ae-d , w-ey-t/ih-ng f-ao-r dh-ax k-aa-r , ey-t ey s-t-ey-k .");
+    equal(features.phonemes, "m-aa-m ae-n-d d-ae-d , w-ey-t-ih-ng f-ao-r dh-ah k-aa-r , ey-t ey s-t-ey-k .");
+    equal(features.syllables, "m-aa-m ae-n-d d-ae-d , w-ey/t-ih-ng f-ao-r dh-ah k-aa-r , ey-t ey s-t-ey-k .");
     equal(features.stresses, "1 1 1 , 1/0 1 0 1 , 1 1 1 .");
 
     var features = RiString("123").analyze().features();
@@ -67,14 +67,14 @@ var runtests = function () {
 
     features = RiString("The dog ran faster than the other dog.  But the other dog was prettier.").analyze().features();
     ok(features);
-    equal(features.phonemes, "dh-ax d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ax ah-dh-er d-ao-g . b-ah-t dh-ax ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .");
-    equal(features.syllables, "dh-ax d-ao-g r-ae-n f-ae-s/t-er dh-ae-n dh-ax ah-dh/er d-ao-g . b-ah-t dh-ax ah-dh/er d-ao-g w-aa-z p-r-ih-t/iy/er .");
+    equal(features.phonemes, "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .");
+    equal(features.syllables, "dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .");
     equal(features.stresses, "0 1 1 1/0 1 0 1/0 1 . 1 0 1/0 1 1 1/0/0 .");
 
     features = RiString("The laggin dragon").analyze().features();
     ok(features);
-    equal(features.phonemes, "dh-ax l-ae-g-ih-n d-r-ae-g-aa-n");
-    equal(features.syllables, "dh-ax l-ae/g-ih-n d-r-ae-g/aa-n");
+    equal(features.phonemes, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
+    equal(features.syllables, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(features.stresses, "0 1/1 1/0");
 
     features = RiString(".").analyze().features();
