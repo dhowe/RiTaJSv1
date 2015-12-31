@@ -89,13 +89,13 @@ var runtests = function() {
   test("testAlliterations(int)", function() {
 
     var result = lex.alliterations("dog", 15);
-    ok(result.length == 3);
+    ok(result.length == 0);
 
     var result = lex.alliterations("cat", 16);
     //for (var i = 0; i < result.length; i++)
       //console.log(i + ") " + result[i]);
 
-    ok(result.length == 7); // TODO: check this
+    ok(result.length == 6); // TODO: check this
 
     // TODO: better tests
   });
