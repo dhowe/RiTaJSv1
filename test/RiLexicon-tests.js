@@ -468,12 +468,6 @@ var runtests = function() {
     ok(!lex.isRhyme("apple", "polo"));
     ok(!lex.isRhyme("this", "these"));
 
-    ok(lex.isRhyme("solo", "tomorrow"));
-    ok(lex.isRhyme("tomorrow", "solo"));
-    ok(lex.isRhyme("SOLO", "tomorrow"));
-    ok(lex.isRhyme("solo", "TomorRow"));
-    ok(lex.isRhyme("soLo", "toMORrow"));
-
     ok(lex.isRhyme("cat", "hat"));
     ok(lex.isRhyme("yellow", "mellow"));
     ok(lex.isRhyme("toy", "boy"));
