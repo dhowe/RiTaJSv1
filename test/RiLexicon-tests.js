@@ -671,7 +671,7 @@ var runtests = function() {
   test("testLookupRaw", function() {
 
     var result = lex._lookupRaw("banana");
-    deepEqual(result, ["b-ax-n ae1-n ax", "nn"]);
+    deepEqual(result, ["b-ah n-ae1 n-ah", "nn"]);
 
     var result = lex._lookupRaw("sand");
     deepEqual(result, ["s-ae1-n-d", "nn"]);
