@@ -831,11 +831,11 @@ var runtests = function () {
       equal(result, answer);
 
       var result = RiTa.getStresses("to preSENT, to exPORT, to deCIDE, to beGIN");
-      var answer = "1 0/1 , 1 0/1 , 1 0/1 , 1 0/1";
+      var answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
       equal(result, answer);
 
       var result = RiTa.getStresses("to present, to export, to decide, to begin");
-      var answer = "1 0/1 , 1 0/1 , 1 0/1 , 1 0/1";
+      var answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
       equal(result, answer);
 
       var txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
