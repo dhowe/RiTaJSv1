@@ -742,7 +742,7 @@ var runtests = function () {
       deepEqual(result, answer);
 
       var result = RiTa.getPosTags("assenting");
-      var answer = ["vbg"];
+      var answer = ["nn"];
       deepEqual(result, answer);
 
       var result = RiTa.getPosTags("Dave");
