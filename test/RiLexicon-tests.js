@@ -747,7 +747,7 @@ var runtests = function() {
   test("testGetSyllables", function() {
 
     var result = lex._getSyllables("The emperor had no clothes on.");
-    var answer = "dh-ax eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
+    var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
     equal(result, answer);
 
     var result = lex._getSyllables("@#$%*()");
