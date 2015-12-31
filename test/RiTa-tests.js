@@ -13,13 +13,13 @@ var testResults = [{
     output: ''
   }, {
     input: 'The Laggin Dragon',
-    output: 'dh-ax l-ae/g-ih-n d-r-ae-g/aa-n'
+    output: 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n'
   }, {
     input: 'The emperor had no clothes on.',
-    output: 'dh-ax eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .'
+    output: 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .'
   }, {
     input: 'The dog ran faster than the other dog. But the other dog was prettier.',
-    output: 'dh-ax d-ao-g r-ae-n f-ae-s/t-er dh-ae-n dh-ax ah-dh/er d-ao-g . b-ah-t dh-ax ah-dh/er d-ao-g w-aa-z p-r-ih-t/iy/er .'
+    output: 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .'
   }]
 }];
 
@@ -60,17 +60,17 @@ var runtests = function () {
 
       txt = 'The dog ran faster than the other dog. But the other dog was prettier.';
       result = RiTa.getSyllables(txt);
-      answer = 'dh-ax d-ao-g r-ae-n f-ae-s/t-er dh-ae-n dh-ax ah-dh/er d-ao-g . b-ah-t dh-ax ah-dh/er d-ao-g w-aa-z p-r-ih-t/iy/er .';
+      answer = 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .';
       equal(result, answer);
 
       txt = 'The emperor had no clothes on.';
       result = RiTa.getSyllables(txt);
-      answer = 'dh-ax eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .';
+      answer = 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .';
       equal(result, answer);
 
       txt = 'The Laggin Dragon';
       result = RiTa.getSyllables(txt);
-      answer = 'dh-ax l-ae/g-ih-n d-r-ae-g/aa-n';
+      answer = 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n';
       equal(result, answer);
     });
 
@@ -680,24 +680,24 @@ var runtests = function () {
       if (noLexicon()) return;
 
       var result = RiTa.getPhonemes("The");
-      var answer = "dh-ax";
+      var answer = "dh-ah";
       equal(result, answer);
 
       var result = RiTa.getPhonemes("The.");
-      var answer = "dh-ax .";
+      var answer = "dh-ah .";
       equal(result, answer);
 
       var result = RiTa.getPhonemes("The boy jumped over the wild dog.");
-      var answer = "dh-ax b-oy jh-ah-m-p-t ow-v-er dh-ax w-ay-l-d d-ao-g .";
+      var answer = "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g .";
       equal(result, answer);
 
       var result = RiTa.getPhonemes("The boy ran to the store.");
-      var answer = "dh-ax b-oy r-ae-n t-uw dh-ax s-t-ao-r .";
+      var answer = "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r .";
       equal(result, answer);
 
       var txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
       var result = RiTa.getPhonemes(txt);
-      var answer = "dh-ax d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ax ah-dh-er d-ao-g . b-ah-t dh-ax ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .";
+      var answer = "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .";
       equal(result, answer);
     });
 
@@ -742,7 +742,7 @@ var runtests = function () {
       deepEqual(result, answer);
 
       var result = RiTa.getPosTags("assenting");
-      var answer = ["vbg"];
+      var answer = ["nn"];
       deepEqual(result, answer);
 
       var result = RiTa.getPosTags("Dave");
@@ -831,11 +831,11 @@ var runtests = function () {
       equal(result, answer);
 
       var result = RiTa.getStresses("to preSENT, to exPORT, to deCIDE, to beGIN");
-      var answer = "1 0/1 , 1 0/1 , 1 0/1 , 1 0/1";
+      var answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
       equal(result, answer);
 
       var result = RiTa.getStresses("to present, to export, to decide, to begin");
-      var answer = "1 0/1 , 1 0/1 , 1 0/1 , 1 0/1";
+      var answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
       equal(result, answer);
 
       var txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
@@ -1062,15 +1062,15 @@ var runtests = function () {
       equal(result, answer);
 
       var result = RiTa.getSyllables("The three emperor had no clothes on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("The 3 emperor had no clothes on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("The 3 emperor! Had no clothes, on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er ! hh-ae-d n-ow k-l-ow-dh-z , aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er ! hh-ae-d n-ow k-l-ow-dh-z , aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("asdfgasdasdasdasdsadasf");
