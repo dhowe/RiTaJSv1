@@ -692,19 +692,19 @@ var runtests = function() {
 
 
     var result = lex._getPhonemes("The");
-    var answer = "dh-ax";
+    var answer = "dh-ah";
     equal(result, answer);
 
     var result = lex._getPhonemes("The.");
-    var answer = "dh-ax";
+    var answer = "dh-ah";
     equal(result, answer);
 
     var result = lex._getPhonemes("The boy jumped over the wild dog.");
-    var answer = "dh-ax b-oy jh-ah-m-p-t ow-v-er dh-ax w-ay-l-d d-ao-g";
+    var answer = "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g";
     equal(result, answer);
 
     var result = lex._getPhonemes("The boy ran to the store.");
-    var answer = "dh-ax b-oy r-ae-n t-uw dh-ax s-t-ao-r";
+    var answer = "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r";
     equal(result, answer);
 
     var result = lex._getPhonemes("");
