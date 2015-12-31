@@ -730,11 +730,11 @@ var runtests = function() {
     equal(result, answer);
 
     var result = lex._getStresses("to preSENT, to exPORT, to deCIDE, to beGIN");
-    var answer = "1 0/1 1 0/1 1 0/1 1 0/1";
+    var answer = "1 1/0 1 1/0 1 0/1 1 0/1";
     equal(result, answer);
 
     var result = lex._getStresses("to present, to export, to decide, to begin");
-    var answer = "1 0/1 1 0/1 1 0/1 1 0/1";
+    var answer = "1 1/0 1 1/0 1 0/1 1 0/1";
     equal(result, answer);
 
     var result = lex._getStresses("");
