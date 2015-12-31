@@ -1062,15 +1062,15 @@ var runtests = function () {
       equal(result, answer);
 
       var result = RiTa.getSyllables("The three emperor had no clothes on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("The 3 emperor had no clothes on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("The 3 emperor! Had no clothes, on.");
-      var answer = "dh-ax th-r-iy eh-m-p/er/er ! hh-ae-d n-ow k-l-ow-dh-z , aa-n .";
+      var answer = "dh-ah th-r-iy eh-m/p-er/er ! hh-ae-d n-ow k-l-ow-dh-z , aa-n .";
       equal(result, answer);
 
       var result = RiTa.getSyllables("asdfgasdasdasdasdsadasf");
