@@ -51515,12 +51515,14 @@ RiLexicon.prototype = {
   },
 
   isRhyme: function(word1, word2, useLTS) {
+    var phones1 = this._getRawPhones(word1, useLTS),
+        phones2 = this._getRawPhones(word2, useLTS);
 
-    if (!strOk(word1) || !strOk(word2) || equalsIgnoreCase(word1, word2))
+    if (!strOk(word1) || !strOk(word2) || equalsIgnoreCase(word1, word2) || phones2 === phones1)
       return false;
 
-    var p1 = this._lastStressedPhoneToEnd(word1, useLTS),
-      p2 = this._lastStressedPhoneToEnd(word2, useLTS);
+    var p1 = this._lastStressedVowelPhonemeToEnd(word1, useLTS),
+      p2 = this._lastStressedVowelPhonemeToEnd(word2, useLTS);
 
     return (strOk(p1) && strOk(p2) && p1 === p2);
   },
@@ -51750,7 +51752,7 @@ RiLexicon.prototype = {
 
       phones = this._letterToSound().getPhones(word);
 
-      //console.log("phones="+RiTa.asList(phones));
+      // console.log("phones="+RiTa.asList(phones));
       if (phones && phones.length)
         return RiString.syllabify(phones);
 
@@ -51792,6 +51794,30 @@ RiLexicon.prototype = {
       }
     }
     return E; // return null?
+  },
+
+  _lastStressedVowelPhonemeToEnd: function(word, useLTS) {
+
+    if (!strOk(word)) return E; // return null?
+
+    
+    var raw = this._lastStressedPhoneToEnd(word, useLTS);
+    if (!strOk(raw)) return E; // return null?
+
+    var syllables = raw.split(" ");
+    var lastSyllable = syllables[syllables.length - 1];
+    lastSyllable = lastSyllable.replace("[^a-z-1 ]", "");
+    
+    var idx = -1;
+    for (var i = 0; i < lastSyllable.length; i++) {
+      var c = lastSyllable.charAt(i);
+      if(this._isVowel(c)){
+        idx = i;
+        break;
+      }
+    }
+  word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
+   return lastSyllable.substring(idx);  
   },
 
   _lastStressedPhoneToEnd: function(word, useLTS) {
