@@ -545,7 +545,6 @@ var runtests = function() {
     ];
     
     for (var i = 0; i < notRhymes.length; i += 2) {
-      console.log(notRhymes[i] + " + "+notRhymes[i+1]+" -> "+lex.isRhyme(notRhymes[i], notRhymes[i+1]));
       ok(!lex.isRhyme(notRhymes[i], notRhymes[i+1]));
       ok(!lex.isRhyme(notRhymes[i+1], notRhymes[i]));  // either way should be the same
     }
