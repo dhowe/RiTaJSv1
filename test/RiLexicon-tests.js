@@ -462,9 +462,8 @@ var runtests = function() {
   });
 
 
-  test("testIsRhyme", function() {
+  test("testIsRhymeStringString", function() {
 
-    ok(!lex.isRhyme("solo ", "tomorrow"));
     ok(!lex.isRhyme("apple", "polo"));
     ok(!lex.isRhyme("this", "these"));
 
@@ -473,10 +472,83 @@ var runtests = function() {
     ok(lex.isRhyme("toy", "boy"));
     ok(lex.isRhyme("sieve", "give"));
 
+    ok(lex.isRhyme("solo", "tomorrow"));
+    ok(lex.isRhyme("tense", "sense"));
+    ok(lex.isRhyme("crab", "drab"));
+    ok(lex.isRhyme("shore", "more"));
+    ok(lex.isRhyme("mouse", "house"));
+    //why??
+    ok(!lex.isRhyme("hose", "house"));
+
+    ok(!lex.isRhyme("sieve", "mellow"));
     ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
     ok(!lex.isRhyme("solo", "yoyo"));
     ok(!lex.isRhyme("yoyo", "jojo"));
+    ok(!lex.isRhyme("yo", "bro"));
+    ok(!lex.isRhyme("swag", "grab"));
     ok(!lex.isRhyme("", ""));
+
+  });
+
+  test("testIsRhyme", function() {
+
+    lex = RiLexicon();
+
+    var rhymes = [ 
+    "candle", "handle", 
+    "fat", "cat",
+    "apple", "grapple",
+    "apple", "chapel",
+    "libel", "tribal",
+    "bugle", "frugal",
+    "arrested", "contested"
+    ];
+
+    for (var i = 0; i < rhymes.length; i += 2) {
+      //System.out.println(rhymes[i] + " + "+rhymes[i+1]+" -> "+lex.isRhyme(rhymes[i], rhymes[i+1]));
+      ok(lex.isRhyme(rhymes[i], rhymes[i+1]), rhymes[i]+"/"+rhymes[i+1]);
+      ok(lex.isRhyme(rhymes[i+1], rhymes[i]), rhymes[i+1]+"/"+rhymes[i]);
+    }
+    
+    var rhymeSet1 = [ 
+    "insincere", "persevere", "interfere",  // each should rhyme with the others
+    "career",  "year", "reappear", "brigadier", "pioneer", "rear", "near",
+    "beer", "fear", "sneer", "adhere", "veer", "volunteer", "pamphleteer",
+    "sear", "sincere", "smear", "gear", "deer", "here", "queer",
+    "financier", "cavalier", "rainier", "mutineer", "unclear", "racketeer",
+    "disappear", "austere", "veneer", "overhear", "auctioneer", "spear",
+    "pier", "sphere", "cashier", "ear", "steer",
+     "souvenir", "frontier", "chandelier", "shear", "clear",  "mere",
+    "premier", "rehear", "engineer", "cheer", "appear", "severe",
+    ];
+
+    for (var i = 0; i < rhymeSet1.length-1; i++) {
+      for (var j = 0; j < rhymeSet1.length; j++) {
+    
+    if (i != j){
+      //System.out.println(rhymeSet1[i] + " + "+rhymeSet1[j]+" -> "+lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+      ok(lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+    }
+    else
+      ok(!lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+      }
+    }
+    
+    var notRhymes = [
+    "not", "rhyme",
+    "deer", "dear",
+    "candle", "candle" ,
+    "hear","here",
+    "premiere","premier",
+    "peer","pear",
+    "sheer","shear"
+    ];
+    
+    for (var i = 0; i < notRhymes.length; i += 2) {
+      console.log(notRhymes[i] + " + "+notRhymes[i+1]+" -> "+lex.isRhyme(notRhymes[i], notRhymes[i+1]));
+      ok(!lex.isRhyme(notRhymes[i], notRhymes[i+1]));
+      ok(!lex.isRhyme(notRhymes[i+1], notRhymes[i]));  // either way should be the same
+    }
 
   });
 
