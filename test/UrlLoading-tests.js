@@ -167,7 +167,7 @@ var runtests = function() {
             // test ignorePunctuation
             args.ignorePunctuation = false;
             lines = RiTa.kwic(txt, ",",  args);
-            equal(lines.length, 1292);
+            equal(lines.length, 1091);
             args.ignorePunctuation = true;
             lines = RiTa.kwic(txt, ",",  args);
             equal(lines.length, 0);
@@ -203,6 +203,11 @@ var runtests = function() {
             equal(lines.length, 0);
             lines = RiTa.kwic(txt, "sister",  args);
             equal(lines.length, 0);
+
+            // test against issue #169
+            args.wordCount = 6;
+            lines = RiTa.kwic(txt, "door",  args);
+            equal(lines.length, 86);
 
             start();
         });
