@@ -41,13 +41,12 @@ var runtests = function() {
 
   test("testSize", function() {
 
-    ok(lex.size() > 30000);
+    ok(lex.size() > 29000);
   });
 
   test("testContainsWord", function() {
 
     ok(lex.containsWord("cat"));
-    ok(lex.containsWord("cats"));
     ok(!lex.containsWord("cated"));
     ok(lex.containsWord("funny"));
     ok(lex.containsWord("shit"));
@@ -285,10 +284,10 @@ var runtests = function() {
     //n
     ok(lex.isNoun("dogs"));
     ok(lex.isNoun("wind"));
-    ok(lex.isNoun("dolls"));
-    ok(lex.isNoun("frogs"));
-    ok(lex.isNoun("ducks"));
-    ok(lex.isNoun("flowers"));
+    ok(lex.isNoun("doll"));
+    ok(lex.isNoun("frog"));
+    ok(lex.isNoun("duck"));
+    ok(lex.isNoun("flower"));
     ok(lex.isNoun("fish"));
     ok(lex.isNoun("wet")); //+v/adj
 
@@ -566,10 +565,10 @@ var runtests = function() {
     deepEqual(result, ["torpedo"]);
 
     result = lex.similarByLetter("ice");
-    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "lice", "mice", "nice", "rice", "vice"]);
+    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "lice", "nice", "rice", "vice"]);
 
     result = lex.similarByLetter("ice", 1);
-    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "lice", "mice", "nice", "rice", "vice"]);
+    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "lice", "nice", "rice", "vice"]);
 
     result = lex.similarByLetter("ice", 2, true);
     ok(result.length > 10);
@@ -669,11 +668,11 @@ var runtests = function() {
   test("testSuperstrings", function() {
 
     var result = lex.superstrings("superm");
-    var answer = ["supermarket", "supermarkets"];
+    var answer = ["supermarket"];
     deepEqual(result, answer);
 
     var result = lex.superstrings("puni");
-    var answer = ["impunity", "punish", "punishable", "punished", "punishes", "punishing", "punishment", "punishments", "punitive", "unpunished"];
+    var answer = ["impunity", "punish", "punishable", "punished", "punishes", "punishing", "punishment", "punitive", "unpunished"];
     deepEqual(result, answer);
 
     var result = lex.superstrings("");
@@ -848,15 +847,15 @@ var runtests = function() {
 
   test("RiLexicon-gets", function() {
 
-    var word = "aberrations";
+    var word = "aberration";
     var output1 = lex._getSyllables(word);
     var output2 = lex._getPhonemes(word);
     var output3 = lex._getStresses(word);
 
-    var expected1 = "ae/b-er/ey/sh-ah-n-z";
+    var expected1 = "ae/b-er/ey/sh-ah-n";
     equal(output1, expected1);
 
-    var expected2 = "ae-b-er-ey-sh-ah-n-z";
+    var expected2 = "ae-b-er-ey-sh-ah-n";
     equal(output2, expected2);
 
     var expected3 = "0/0/1/0";
