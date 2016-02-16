@@ -26317,6 +26317,7 @@ function _dict() { return {
 'toll':['t-ow1-l','nn vb'],
 'tolls':['t-ow1-l-z','nns'],
 'tomato':['t-ah m-ey1 t-ow','nn'],
+'tomatoes':['t-ah m-ey1 t-ow-z','nns'],
 'tomb':['t-uw1-m','nn'],
 'tomblike':['t-uw1-m l-ay-k','jj'],
 'tombstone':['t-uw1-m s-t-ow-n','nn'],

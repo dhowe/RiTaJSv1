@@ -72,6 +72,7 @@ var runtests = function () {
       result = RiTa.getSyllables(txt);
       answer = 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n';
       equal(result, answer);
+
     });
 
     // ------------------------------------------------------------------------
@@ -699,6 +700,14 @@ var runtests = function () {
       var result = RiTa.getPhonemes(txt);
       var answer = "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .";
       equal(result, answer);
+
+      var result = RiTa.getPhonemes("flowers");
+      var answer = "f-l-aw-er-z";
+      equal(result, answer);
+
+      var result = RiTa.getPhonemes("mice");
+      var answer = "m-ay-s";
+      equal(result, answer);
     });
 
     test("testGetPosTags", function () {
@@ -716,6 +725,10 @@ var runtests = function () {
       deepEqual(result, answer);
 
       var result = RiTa.getPosTags("clothes");
+      var answer = ["nns"];
+      deepEqual(result, answer);
+
+      var result = RiTa.getPosTags("teeth");
       var answer = ["nns"];
       deepEqual(result, answer);
 
@@ -756,7 +769,7 @@ var runtests = function () {
       var result = RiTa.getPosTags("The boy, dressed in red, ate an apple.");
       var answer = ["dt", "nn", ",", "vbn", "in", "jj", ",", "vbd", "dt", "nn", "."];
       deepEqual(result, answer);
-
+      
       var txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
       var result = RiTa.getPosTags(txt);
       var answer = ["dt", "nn", "vbd", "rbr", "in", "dt", "jj", "nn", ".", "cc", "dt", "jj", "nn", "vbd", "jjr", "."];
@@ -792,6 +805,10 @@ var runtests = function () {
 
       var result = RiTa.getPosTagsInline("clothes");
       var answer = "clothes/nns";
+      deepEqual(result, answer);
+
+      var result = RiTa.getPosTagsInline("teeth");
+      var answer = "teeth/nns";
       deepEqual(result, answer);
 
       if (noLexicon()) return;

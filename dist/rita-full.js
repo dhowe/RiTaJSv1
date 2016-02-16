@@ -44333,6 +44333,7 @@ function _dict() { return {
 'toll':['t-ow1-l','nn vb'],
 'tolls':['t-ow1-l-z','nns'],
 'tomato':['t-ah m-ey1 t-ow','nn'],
+'tomatoes':['t-ah m-ey1 t-ow-z','nns'],
 'tomb':['t-uw1-m','nn'],
 'tomblike':['t-uw1-m l-ay-k','jj'],
 'tombstone':['t-uw1-m s-t-ow-n','nn'],
@@ -47407,7 +47408,15 @@ RiLexicon.prototype = {
 
   isNoun: function(word) {
 
-    return this._checkType(word, PosTagger.NOUNS);
+    var result = this._checkType(word, PosTagger.NOUNS);
+    if (!result) {
+      var singular = RiTa.singularize(word);
+      if (singular !== word) {
+        result = this._checkType(singular, PosTagger.NOUNS);
+        result && console.log('found plural noun: '+word+' ('+singular+')');
+      }
+    }
+    return result;
   },
 
   isAdverb: function(word) {

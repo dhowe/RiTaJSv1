@@ -284,9 +284,9 @@ var runtests = function() {
     //n
     ok(lex.isNoun("dogs"));
     ok(lex.isNoun("wind"));
-    ok(lex.isNoun("doll"));
-    ok(lex.isNoun("frog"));
-    ok(lex.isNoun("duck"));
+    ok(lex.isNoun("dolls"));
+    ok(lex.isNoun("frogs"));
+    ok(lex.isNoun("ducks"));
     ok(lex.isNoun("flower"));
     ok(lex.isNoun("fish"));
     ok(lex.isNoun("wet")); //+v/adj
@@ -860,6 +860,7 @@ var runtests = function() {
 
     var expected3 = "0/0/1/0";
     equal(output3, expected3);
+    
   });
 
   // below modify the lexicon.data field ================================
