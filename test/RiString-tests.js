@@ -77,6 +77,12 @@ var runtests = function () {
     equal(features.syllables, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(features.stresses, "0 1/1 1/0");
 
+    features = RiString("Tomatoes and apricots").analyze().features();
+    ok(features);
+    equal(features.phonemes, "t-ah-m-ey-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
+    equal(features.syllables, "t-ah/m-ey/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
+    equal(features.stresses, "0/1/0 1 1/0/0");
+
     features = RiString(".").analyze().features();
     ok(features);
     equal(features.phonemes, ".");
@@ -556,6 +562,10 @@ var runtests = function () {
     result = rs.pos();
     deepEqual(result, ["nns"]);
 
+    rs = new RiString("teeth");
+    result = rs.pos();
+    deepEqual(result, ["nns"]);
+
     if (noLexicon()) return;
 
     rs = new RiString("There is a cat.");
@@ -585,7 +595,10 @@ var runtests = function () {
     rs = new RiString("There is a cat.");
     result = rs.posAt(2);
     equal("dt", result);
-
+    
+    rs = new RiString("She bought a few knives.");
+    result = rs.posAt(4);
+    equal("nns", result);
     // out of range tests
 
     rs = new RiString("There is a cat.");
@@ -1296,6 +1309,22 @@ var runtests = function () {
     equal(ph, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
     equal(sy, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(st, "0 1/1 1/0");
+
+    var rs = RiString("Tomatoes and apricots").analyze();
+    ok(rs);
+    ok(rs.features());
+
+    if (noLexicon()) return;
+
+    var ph = rs.get(RiTa.PHONEMES);
+    var sy = rs.get(RiTa.SYLLABLES);
+    var st = rs.get(RiTa.STRESSES);
+    ok(ph && sy && st);
+
+
+    equal(ph, "t-ah-m-ey-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
+    equal(sy, "t-ah/m-ey/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
+    equal(st, "0/1/0 1 1/0/0");
   });
 
   test("testSet", function () {
