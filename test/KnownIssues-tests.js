@@ -2,41 +2,6 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
-    // TODO: Cyrus-next
-    test("RiTa.testTokenizeAndBack", function () {
-
-      // tokenizeAndBack (this is working in java)
-      var testStrings = [
-        'A simple sentence.', '(that\'s why this is our place).',
-        'The boy, dressed in red, ate an apple.',
-        'Dr. Chan is talking slowly with Mr. Cheng, and the\'re friends.',
-        'The boy screamed, "Where is my apple?"',
-        'The boy screamed, \'Where is my apple?\'',
-      ];
-
-      for (var i = 0; i < testStrings.length; i++) {
-        var tokens = RiTa.tokenize(testStrings[i]);
-        var output = RiTa.untokenize(tokens);
-        //console.log(expected,'\n',output);
-        equal(output, testStrings[i]);
-      }
-    });
-
-    test("RiTa.testUntokenize", function () {
-
-      // untokenize (this is broken in both java/js)
-      var input = ['"', 'Oh', 'God', ',', '"', 'he', 'thought', '.'];
-      var expected = '"Oh God," he thought.';
-      var output = RiTa.untokenize(input);
-      //console.log(expected,'\n',output);
-      deepEqual(output, expected);
-
-      var input = ['She', 'screamed', ':', '"', 'Oh', 'God', '!', '"'];
-      var expected = 'She screamed: "Oh God!"';
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-    });
-
     test("RiString.stripPunctuation(unicode)", function () {
 
         var res = RiTa.stripPunctuation("����������`',;:!?)He,;:!?)([].#l\"\\!@$%&}<>|+$%&}<>|+=-_\\o}<>|+=-_\\/*{^");

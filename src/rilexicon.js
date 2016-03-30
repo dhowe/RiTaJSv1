@@ -347,7 +347,15 @@ RiLexicon.prototype = {
 
   isNoun: function(word) {
 
-    return this._checkType(word, PosTagger.NOUNS);
+    var result = this._checkType(word, PosTagger.NOUNS);
+    if (!result) {
+      var singular = RiTa.singularize(word);
+      if (singular !== word) {
+        result = this._checkType(singular, PosTagger.NOUNS);
+        result && console.log('found plural noun: '+word+' ('+singular+')');
+      }
+    }
+    return result;
   },
 
   isAdverb: function(word) {
