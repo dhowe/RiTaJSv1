@@ -352,7 +352,7 @@ RiLexicon.prototype = {
       var singular = RiTa.singularize(word);
       if (singular !== word) {
         result = this._checkType(singular, PosTagger.NOUNS);
-        result && console.log('found plural noun: '+word+' ('+singular+')');
+        // result && console.log('found plural noun: '+word+' ('+singular+')');
       }
     }
     return result;
