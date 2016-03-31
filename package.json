@@ -23,10 +23,7 @@
     "mail": "daniel@rednoise.org",
     "url": "https://github.com/dhowe/RiTa/issues"
   },
-  "licenses": [{
-    "type": "GPL",
-    "url": "http://www.opensource.org/licenses/GPL-3.0"
-  }],
+  "license": "GPL-3.0",
   "scripts": {
     "test": "gulp test-npm"
   },
