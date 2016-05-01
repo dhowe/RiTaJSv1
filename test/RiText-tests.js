@@ -147,8 +147,8 @@ var runtests = function() {
 
     var features = RiText("the laggin dragon").analyze().features();
     ok(features);
-    equal(features.phonemes, "dh-ax l-ae-g-ih-n d-r-ae-g-aa-n");
-    equal(features.syllables, "dh-ax l-ae/g-ih-n d-r-ae-g/aa-n");
+    equal(features.phonemes, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
+    equal(features.syllables, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(features.stresses, "0 1/1 1/0");
 
     var features = RiText("123").analyze().features();
@@ -165,8 +165,8 @@ var runtests = function() {
 
     var features = RiText("1 2 7").analyze().features();
     ok(features);
-    equal(features.phonemes, "w-ah-n t-uw s-eh-v-ax-n");
-    equal(features.syllables, "w-ah-n t-uw s-eh/v-ax-n");
+    equal(features.phonemes, "w-ah-n t-uw s-eh-v-ah-n");
+    equal(features.syllables, "w-ah-n t-uw s-eh/v-ah-n");
     equal(features.stresses, "0 0 1/0");
   });
 

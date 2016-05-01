@@ -542,7 +542,7 @@ var runtests = function () {
       var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       var input = ['"', 'Oh', 'God', ',', '"', 'he', 'thought', '.'];
       var expected = '"Oh God," he thought.';
       var output = RiTa.untokenize(input);
@@ -779,7 +779,7 @@ var runtests = function () {
       var result = RiTa.getPosTags("The boy, dressed in red, ate an apple.");
       var answer = ["dt", "nn", ",", "vbn", "in", "jj", ",", "vbd", "dt", "nn", "."];
       deepEqual(result, answer);
-      
+
       var txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
       var result = RiTa.getPosTags(txt);
       var answer = ["dt", "nn", "vbd", "rbr", "in", "dt", "jj", "nn", ".", "cc", "dt", "jj", "nn", "vbd", "jjr", "."];
@@ -946,7 +946,7 @@ var runtests = function () {
     test("testStem(lancaster)", function () {
 
       if (!RiTa.stem_Lancaster) {
-        console.warn("[INFO] RiTa-tests: skipping lancaster tests");
+        console.warn("[INFO] RiTa-tests: skipping Lancaster tests");
         return ok(1);
       }
 
@@ -1313,7 +1313,7 @@ var runtests = function () {
       //tab space
       equal(RiTa.getPresentParticiple(""), "");
     });
-    
+
     test("testUntokenize", function() {
 
       equal(RiTa.untokenize([""]), "");
@@ -1359,12 +1359,12 @@ var runtests = function () {
       var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       input = ["felt", "before", ".", "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\""];
       expected = "felt before. \"Oh, God\", he thought, \"";
       output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       input = ["She", "screamed", ":", "\"", "Oh", "God", "!", "\""];
       expected = "She screamed: \"Oh God!\"";
       output = RiTa.untokenize(input);

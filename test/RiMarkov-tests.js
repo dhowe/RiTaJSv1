@@ -207,6 +207,12 @@ var runtests = function() {
 		ok(!sents.length);
 
 		//ok(!"need more tests","need more tests"); // TODO
+		//
+		var words = "The dog ate the cat";
+		var rm = new RiMarkov(3, false);
+		rm.loadText("My name is James");
+		var sents = rm.generateTokens(1);
+		ok(sents.length);
 
 		var words = "The dog ate the cat";
 		var rm = new RiMarkov(3, false);

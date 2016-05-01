@@ -4,7 +4,7 @@ RiLexicon.enabled = true;
 RiLexicon.prototype = {
 
   init: function() {
-	  
+
     this.reload();
   },
 
@@ -352,7 +352,7 @@ RiLexicon.prototype = {
       var singular = RiTa.singularize(word);
       if (singular !== word) {
         result = this._checkType(singular, PosTagger.NOUNS);
-        result && console.log('found plural noun: '+word+' ('+singular+')');
+        //result && console.log('found plural noun: '+word+' ('+singular+')');
       }
     }
     return result;
@@ -539,14 +539,14 @@ RiLexicon.prototype = {
 
     if (!strOk(word)) return E; // return null?
 
-    
+
     var raw = this._lastStressedPhoneToEnd(word, useLTS);
     if (!strOk(raw)) return E; // return null?
 
     var syllables = raw.split(" ");
     var lastSyllable = syllables[syllables.length - 1];
     lastSyllable = lastSyllable.replace("[^a-z-1 ]", "");
-    
+
     var idx = -1;
     for (var i = 0; i < lastSyllable.length; i++) {
       var c = lastSyllable.charAt(i);
@@ -556,7 +556,7 @@ RiLexicon.prototype = {
       }
     }
   word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
-   return lastSyllable.substring(idx);  
+   return lastSyllable.substring(idx);
   },
 
   _lastStressedPhoneToEnd: function(word, useLTS) {
@@ -732,7 +732,7 @@ LetterToSound.prototype = {
     throw Error("Unexpected type: " + type);
   },
 
-  // Creates a word from an input line and adds it to the state machine 
+  // Creates a word from an input line and adds it to the state machine
   parseAndAdd: function(line) {
 
     var tokenizer = new StringTokenizer(line, SP);
@@ -901,7 +901,7 @@ DecisionState.prototype = {
     return this.STATE + " " + this.index + " " + this.c + " " + this.qtrue + " " + this.qfalse;
   }
 
-}; 
+};
 
 // FinalState
 
