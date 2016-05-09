@@ -4923,7 +4923,7 @@ var PLURAL_RULES = [
 
 // ///////////////////////////// End Functions ////////////////////////////////////
 
-if (!RiTa.SILENT && console)
+if (!RiTa.SILENT && !isNode() && console)
   console.log('[INFO] RiTaJS.version [' + RiTa.VERSION + ']');
 
 
