@@ -1,3 +1,4 @@
+src/dicts
 gulpfile-*.js
 examples/lib/p5.js
 node_modules
