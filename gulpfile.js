@@ -67,7 +67,7 @@ gulp.task('setup-npm', [ 'clean-npm' ], function(done) {
     .pipe(gulp.dest(nodeDir));
 
   // copy in other loose files
-  gulp.src(['./LICENSE', './package.json', './gulpfile.js'])
+  gulp.src(['./LICENSE', './package.json', './gulpfile.js', 'examples/tonic.js'])
     .pipe(gulp.dest(nodeDir));
 
   // copy in the tests
