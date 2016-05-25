@@ -1,0 +1,35 @@
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.17/p5.js"></script>
+  <script>
+
+    var myLib = {
+      loadTest: function(callback) {
+
+        var result = { text: 'none', toString: function(){ return this.text; }};
+
+        setTimeout(function () {
+          result.text = 'got it';
+          callback(result);
+        }, 2000);
+
+        return result;
+      }
+    };
+
+    p5.prototype.registerPreloadMethod('loadTest', myLib);
+
+    var data;
+
+    function preload() {
+      data = myLib.loadTest();
+    }
+
+    function setup() {
+      createCanvas(500, 500);
+      data && text(data, 20, 20, 480, 480);
+    }
+
+  </script>
+</head>
+</html>

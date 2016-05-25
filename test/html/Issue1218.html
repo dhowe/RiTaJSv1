@@ -1,0 +1,31 @@
+<html>
+
+<head>
+  <title>test-load-strings (p5js)</title>
+  <script src="../../examples/lib/p5.js"></script>
+  <script src="../../dist/rita.js"></script>
+  <script>
+  
+  var isLoaded;
+  var myfonthandle;
+  function preload() {
+   //do nothing
+  }
+  function setup() {
+    var mycanvas = createCanvas(200, 200);
+    myfonthandle = loadFont('acmesa.ttf', assetloaded);
+  }
+  function draw() {
+    background(255);
+    if (isLoaded){
+      textFont(myfonthandle,36);
+      text("test", 100,100);
+    }
+  }
+  function assetloaded(){
+    isLoaded = true;
+  }
+  </script>
+</head>
+
+</html>
