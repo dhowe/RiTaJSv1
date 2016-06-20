@@ -556,6 +556,7 @@ var RiTa = {
     var sentenceArr = RiTa.tokenize(sentence);
 
     for (var i = 0; i < QUESTION_STARTS.length; i++) {
+  console.log(sentenceArr[0], QUESTION_STARTS[i]);
       if (equalsIgnoreCase(sentenceArr[0], QUESTION_STARTS[i]))
         return true;
     }
@@ -4038,9 +4039,10 @@ RE.prototype = {
 
 ////////////////////////////////// End Classes ///////////////////////////////////
 
-var QUESTION_STARTS = ["Was", "What", "When", "Where", "How", "Which", "If", "Who", "Is", "Could", "Might", "Will", "Does", "Why", "Are", "Have"];
+var QUESTION_STARTS =   [ "Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would",
+                          "How", "If", "Who", "Is", "Could", "Might", "Does", "Are", "Have" ];
 
-var W_QUESTION_STARTS = ["Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would" ];
+var W_QUESTION_STARTS = [ "Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would" ];
 
 var PUNCTUATION_CLASS = /[�`~\"\/'_\-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]/g; // TODO: add smart-quotes
 

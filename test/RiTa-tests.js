@@ -182,19 +182,11 @@ var runtests = function () {
       ok(RiTa.isQuestion("what is this"));
       ok(RiTa.isQuestion("what is this?"));
       ok(RiTa.isQuestion("Does it?"));
+      ok(RiTa.isQuestion("Would you believe it?"));
+      ok(RiTa.isQuestion("Have you been?"));
       ok(RiTa.isQuestion("Is this yours?"));
 
       ok(RiTa.isQuestion("Are you done?"));
-      // if "is" is true, "Are" should also be True (NICE!)
-
-      ok(RiTa.isQuestion("what is  this?"));
-      //extra space
-      ok(RiTa.isQuestion(" what is this? "));
-      //extra space
-      ok(RiTa.isQuestion("what is   this?"));
-      //extra double space
-      ok(RiTa.isQuestion("what    is  this?"));
-      //extra tab
       ok(RiTa.isQuestion("what is this? , where is that?"));
       ok(!RiTa.isQuestion("That is not a toy This is an apple"));
       ok(!RiTa.isQuestion("string"));
@@ -217,11 +209,12 @@ var runtests = function () {
 
       ok(RiTa.isW_Question("What the"));
       ok(RiTa.isW_Question("What is it"));
-      ok(RiTa.isW_Question("how is it?"));
       ok(RiTa.isW_Question("will is it."));
       ok(RiTa.isW_Question("Where is it?"));
-      ok(RiTa.isW_Question("How is it."));
+      ok(RiTa.isW_Question("Would ir be?"));
 
+      ok(!RiTa.isW_Question("how is it?"));
+      ok(!RiTa.isW_Question("How is it."));
       ok(!RiTa.isW_Question("Does it?"));
       ok(!RiTa.isW_Question("Is this yours?"));
       ok(!RiTa.isW_Question("Are you done?"));
