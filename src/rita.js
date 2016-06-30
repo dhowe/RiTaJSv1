@@ -556,7 +556,6 @@ var RiTa = {
     var sentenceArr = RiTa.tokenize(sentence);
 
     for (var i = 0; i < QUESTION_STARTS.length; i++) {
-  console.log(sentenceArr[0], QUESTION_STARTS[i]);
       if (equalsIgnoreCase(sentenceArr[0], QUESTION_STARTS[i]))
         return true;
     }

@@ -174,7 +174,7 @@ var runtests = function () {
       ok(!RiTa.isAbbreviation(undefined));
       ok(!RiTa.isAbbreviation(1));
     });
-
+    
     test("testIsQuestion", function () {
 
       ok(RiTa.isQuestion("what"));
@@ -193,6 +193,7 @@ var runtests = function () {
       ok(!RiTa.isQuestion("?"));
       ok(!RiTa.isQuestion(""));
     });
+
 
     test("testIsSentenceEnd", function () {
 
@@ -219,7 +220,6 @@ var runtests = function () {
       ok(!RiTa.isW_Question("Is this yours?"));
       ok(!RiTa.isW_Question("Are you done?"));
       ok(!RiTa.isW_Question(""));
-
     });
 
     test("testRandomItem", function () {
@@ -418,8 +418,7 @@ var runtests = function () {
       var input = '"Oh God," he thought.';
       var expected = ['"', 'Oh', 'God', ',', '"', 'he', 'thought', '.'];
       var output = RiTa.tokenize(input);
-      //console.log(expected);
-      //console.log(output);
+      //console.log(expected,output);
       deepEqual(output, expected);
 
       var input = "The boy, dressed in red, ate an apple.";
@@ -790,8 +789,8 @@ var runtests = function () {
 
       var checks = ["emphasis", "stress", "discus", "colossus", "fibrosis", "digitalis", "pettiness", "mess", "cleanliness", "orderliness", "bronchitis", "preparedness", "highness"];
       for (var i = 0, j = checks.length; i < j; i++) {
-        if (RiTa.getPosTags(checks[i])[0] !== 'nn')
-          console.log(checks[i] + ": " + RiTa.getPosTags(checks[i])[0]);
+        //if (RiTa.getPosTags(checks[i])[0] !== 'nn')
+          //console.log(checks[i] + ": " + RiTa.getPosTags(checks[i])[0]);
         deepEqual(RiTa.getPosTags(checks[i]), ["nn"]);
       }
     });
