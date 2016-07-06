@@ -20,6 +20,7 @@ var del = require('del'),
   sourcemaps = require('gulp-sourcemaps'),
   pjson = require('./package.json'),
   rename = require('gulp-rename'),
+  chmod = require('gulp-chmod'),
   exec = require('child_process').exec,
   version = pjson.version;
 
@@ -134,6 +135,7 @@ gulp.task('build-lex', ['clean'], function() {
     .pipe(replace('##version##', version))
     .pipe(concat(rita+'-full.js'))
     .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
 
@@ -143,6 +145,7 @@ gulp.task('build-nolex', [ 'clean' ], function() {
     .pipe(replace('##version##', version))
     .pipe(concat(rita+'.js'))
     .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
 
@@ -155,6 +158,7 @@ gulp.task('build-minify-lex', [ 'build-lex' ], function() {
     .pipe(gulpif(sourceMaps, sourcemaps.write('./')))
     .pipe(rename(rita+'-full.min.js'))
     .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
 
