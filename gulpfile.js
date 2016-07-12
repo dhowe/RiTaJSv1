@@ -79,9 +79,14 @@ gulp.task('setup-npm', [ 'clean-npm' ], function(done) {
   gulp.src(testDir + '/html/data/*')
     .pipe(gulp.dest(nodeDir + '/test/html/data/'));
 
-  // copy in the code
+  // copy in the (default) code
   gulp.src(destDir + '/rita-full.min.js')
     .pipe(rename('rita.js'))
+    .pipe(gulp.dest(nodeDir + '/lib'));
+
+  // copy in the (core-only) code
+  gulp.src(destDir + '/rita.min.js')
+    .pipe(rename('rita-tiny.js'))
     .pipe(gulp.dest(nodeDir + '/lib'));
 
   done();
