@@ -174,7 +174,7 @@ var runtests = function () {
       ok(!RiTa.isAbbreviation(undefined));
       ok(!RiTa.isAbbreviation(1));
     });
-    
+
     test("testIsQuestion", function () {
 
       ok(RiTa.isQuestion("what"));
@@ -780,6 +780,33 @@ var runtests = function () {
       var result = RiTa.getPosTags("");
       var answer = [];
       deepEqual(result, answer);
+
+      // Tests for verb conjugation
+
+      deepEqual(RiTa.getPosTags("is"), [ "vbz" ]);
+      deepEqual(RiTa.getPosTags("am"), [ "vbp" ]);
+      deepEqual(RiTa.getPosTags("be"), [ "vb"  ]);
+
+      result = RiTa.getPosTags("There is a cat.");
+      answer = [ "ex", "vbz", "dt", "nn", "." ];
+      deepEqual(result, answer);
+
+      result = RiTa.getPosTags("There was a cat.");
+      answer = [ "ex", "vbd", "dt", "nn", "." ];
+      deepEqual(result, answer);
+
+      result = RiTa.getPosTags("I am a cat.");
+      answer = [ "prp", "vbp", "dt", "nn", "." ];
+      deepEqual(result, answer);
+
+      result = RiTa.getPosTags("I was a cat.");
+      answer = [ "prp", "vbd", "dt", "nn", "." ];
+      deepEqual(result, answer);
+
+      deepEqual(RiTa.getPosTags("he"), [ "prp" ]);
+      deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
+      deepEqual(RiTa.getPosTags("I outnumbered you"), [ "prp", "vbd", "prp" ]);
+      deepEqual(RiTa.getPosTags("She outnumbered us"), [ "prp", "vbd", "prp"]);
 
     });
 

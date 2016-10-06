@@ -2,6 +2,18 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
+    test("RiTa.getPosTags()", function () {
+
+      deepEqual(RiTa.getPosTags("flunk"), [ "vb" ]);
+      deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
+      //console.log(RiTa.getPosTags("He flunks the test"));
+      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbn",  "dt", "nn"]);
+
+      deepEqual(RiTa.getPosTags("outnumber"),  [ "vb" ]);
+      deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
+      deepEqual(RiTa.getPosTags("He outnumbers us"),  [ "prp", "vbn",  "prp"]);
+    });
+
     test("RiString.stripPunctuation(unicode)", function () {
 
         var res = RiTa.stripPunctuation("����������`',;:!?)He,;:!?)([].#l\"\\!@$%&}<>|+$%&}<>|+=-_\\o}<>|+=-_\\/*{^");
