@@ -9,7 +9,8 @@
 
 var del = require('del'),
   gulp = require('gulp'),
-  gulpif = require('gulp-if')
+  chmod = require('gulp-chmod'),
+  gulpif = require('gulp-if'),
   argv = require('yargs').argv,
   concat = require('gulp-concat'),
   size = require('gulp-size'),
@@ -176,6 +177,7 @@ gulp.task('build-minify-nolex', [ 'build-nolex' ], function() {
     .pipe(gulpif(sourceMaps, sourcemaps.write('./')))
     .pipe(rename(rita+'.min.js'))
     .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
 
