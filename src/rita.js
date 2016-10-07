@@ -1760,6 +1760,7 @@ RiString.prototype = {
     if (typeof arg === S) {
 
       return arg.toLowerCase() === this._text.toLowerCase();
+
     } else {
 
       return arg.text().toLowerCase() === this._text.toLowerCase();
@@ -3060,6 +3061,7 @@ var PosTagger = {
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   NOLEX_WARNED: false,
+  DBUG: false,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
@@ -3154,123 +3156,167 @@ var PosTagger = {
     var result = c;
 
     if (c === 'a' || c === 'A')
-      result = "dt";
+      result = 'dt';
     else if (c === 'I')
-      result = "prp";
+      result = 'prp';
     else if (c >= '0' && c <= '9')
-      result = "cd";
-
-    //System.out.println("handleSingleLetter("+word+") :: "+result);
+      result = 'cd';
 
     return result;
+  },
+
+  _customTagged: function(i, frm, to) {
+
+    if (!RiTa.SILENT && this.DBUG) console.log("\n  Custom(" +
+      i + ") tagged '" + frm + "' -> '"+ to + "'\n\n");
   },
 
   // Applies a customized subset of the Brill transformations
   _applyContext: function(words, result, choices) {
 
     //log("_applyContext("+words+","+result+","+choices+")");
-
-    var sW = startsWith, eW = endsWith,
-      PRINT_CUSTOM_TAGS = (0 && !RiTa.SILENT);
+    var sW = startsWith, eW = endsWith;
 
     // Apply transformations
     for (var i = 0, l = words.length; i < l; i++) {
 
-      // transform 1: DT, {VBD | VBP | VB} --> DT, NN
+      var word = words[i], tag = result[i];
+
+      // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
       if (i > 0 && (result[i - 1] == "dt")) {
 
-        if (sW(result[i], "vb")) {
-          if (PRINT_CUSTOM_TAGS) {
-            log("PosTagger: changing verb to noun: " + words[i]);
-          }
-          result[i] = "nn";
+        if (sW(tag, "vb")) {
+          tag = "nn";
+          this._customTagged("1a", word, tag);
         }
 
-        // transform 1: DT, {RB | RBR | RBS} --> DT, {JJ |
+        // transform 1b: DT, {RB | RBR | RBS} --> DT, {JJ |
         // JJR | JJS}
-        else if (sW(result[i], "rb")) {
+        else if (sW(tag, "rb")) {
 
-          if (PRINT_CUSTOM_TAGS)
-            log("PosTagger: custom tagged '" + words[i] + "', " + result[i]);
-          result[i] = (result[i].length > 2) ? "jj" + result[i].charAt(2) : "jj";
-          if (PRINT_CUSTOM_TAGS) {
-            log(" -> " + result[i]);
-          }
+          tag = (tag.length > 2) ? "jj" + tag.charAt(2) : "jj";
+	        this._customTagged("1b", word, tag);
         }
       }
 
       // transform 2: convert a noun to a number (cd) if it is
       // all digits and/or a decimal "."
-      if (sW(result[i], "n") && !choices[i]) {
-        if (isNum(words[i])) {
-          result[i] = "cd";
+      if (sW(tag, "n") && !choices[i]) {
+        if (isNum(word)) {
+          tag = "cd";
         } // mods: dch (add choice check above) <---- ? >
       }
 
       // transform 3: convert a noun to a past participle if
-      // words[i] ends with "ed"
-      if (sW(result[i], "n") && eW(words[i], "ed")) {
-        result[i] = "vbn";
+      // word ends with "ed"
+      if (sW(tag, "n") && eW(word, "ed")) {
+        tag = "vbn";
       }
 
       // transform 4: convert any type to adverb if it ends in "ly";
-      if (eW(words[i], "ly")) {
-        result[i] = "rb";
+      if (eW(word, "ly")) {
+        tag = "rb";
       }
 
       // transform 5: convert a common noun (NN or NNS) to a
       // adjective if it ends with "al", special-case for mammal
-      if (sW(result[i], "nn") && eW(words[i], "al") && words[i] != 'mammal') {
-        result[i] = "jj";
+      if (sW(tag, "nn") && eW(word, "al") && word != 'mammal') {
+        tag = "jj";
       }
 
       // transform 6: convert a noun to a verb if the
       // preceeding word is "would"
-      if (i > 0 && sW(result[i], "nn") && equalsIgnoreCase(words[i - 1], "would")) {
-        result[i] = "vb";
+      if (i > 0 && sW(tag, "nn") && equalsIgnoreCase(words[i - 1], "would")) {
+        tag = "vb";
       }
 
       // transform 7: if a word has been categorized as a
       // common noun and it ends with "s", then set its type to plural common noun (NNS)
-      if ((result[i] == "nn") && words[i].match(/^.*[^s]s$/)) {
-        if (!NULL_PLURALS.applies(words[i]))
-          result[i] = "nns";
+      if ((tag == "nn") && word.match(/^.*[^s]s$/)) {
+        if (!NULL_PLURALS.applies(word))
+          tag = "nns";
       }
 
       // transform 8: convert a common noun to a present
       // participle verb (i.e., a gerund)
-      if (sW(result[i], "nn") && eW(words[i], "ing")) {
+      if (sW(tag, "nn") && eW(word, "ing")) {
+
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
         if (this.hasTag(choices[i], "vb")) {
-          result[i] = "vbg";
-        } else if (PRINT_CUSTOM_TAGS) {
-          log("[RiTa] PosTagger tagged '" + words[i] + "' as " + result[i]);
+          tag = "vbg";
+          this._customTagged(8, word, tag);
         }
       }
 
       // transform 9(dch): convert plural nouns (which are also 3sg-verbs) to
       // 3sg-verbs when following a singular noun (the dog dances, Dave dances, he dances)
-      if (i > 0 && result[i] == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
-        result[i] = "vbz";
+      if (i > 0 && tag == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
+        tag = "vbz";
+        this._customTagged(9, word, tag);
       }
 
       // transform 10(dch): convert common nouns to proper
       // nouns when they start w' a capital and (?are not a
       // sentence start?)
-      if ( /*i > 0 && */ sW(result[i], "nn") && (words[i].charAt(0) == words[i].charAt(0).toUpperCase())) {
-        result[i] = eW(result[i], "s") ? "nnps" : "nnp";
+      if ((i != 0 || words.length == 1) && sW(tag, "nn") && (word.charAt(0) == word.charAt(0).toUpperCase())) {
+        tag = eW(tag, "s") ? "nnps" : "nnp";
+        this._customTagged(10, word, tag);
       }
 
-      // DISABLED: transform 10(dch): convert plural nouns (which are
+      // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
-      /*if (i < result.length - 1 && result[i] == "nns" && sW(result[i + 1], "rb")
+      if (i < result.length - 1 && tag == "nns" && sW(result[i + 1], "rb")
 					&& this.hasTag(choices[i], "vbz")) {
-				result[i] = "vbz";
-			}*/
+				tag = "vbz";
+        this._customTagged(11, word, tag);
+			}
+
+      // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
+      if (i > 0 && tag==="nns" && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1])>-1) {
+
+        // if word is ends with s or es and is 'nns' and has a vb
+        if (eW(word, "s")  && this._lexContains('vb', word.substring(0, word.length-1)) ||
+            eW(word, "es") && this._lexContains('vb', word.substring(0, word.length-2)))
+        {
+          tag = "vbz";
+          this._customTagged(12, word, tag);
+        }
+      }
+
+      result[i] = tag;
     }
 
     return result;
+  },
+
+  _lexContains: function(pos, words) {
+
+    if (!RiLexicon.enabled) return false;
+      lex = RiTa._lexicon();
+
+    for (var i = 0; i < words.length; i++) {
+
+      if (lex.contains(words[i])) {
+
+        if (pos == null) return true;
+
+        var tags = lex.getPosArr(words[i]);
+        for (var j = 0; j < tags.length; j++) {
+
+          if (pos === 'n' && isNoun(tags[j]) ||
+              pos === 'v' && isVerb(tags[j]) ||
+              pos === 'r' && isAdverb(tags[j]) ||
+              pos === 'a' && isAdj(tags[j]) ||
+              pos === tags[j])
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
+
 }; // end PosTagger
 
 // Stemming demo/comparison - http://text-processing.com/demo/stem/

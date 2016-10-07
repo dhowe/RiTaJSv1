@@ -744,10 +744,6 @@ var runtests = function () {
       var answer = ["prp", "vbz"];
       deepEqual(result, answer);
 
-      var result = RiTa.getPosTags("Dave dances");
-      var answer = ["nnp", "vbz"];
-      deepEqual(result, answer);
-
       var result = RiTa.getPosTags("running");
       var answer = ["vbg"];
       deepEqual(result, answer);
@@ -807,7 +803,6 @@ var runtests = function () {
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
       deepEqual(RiTa.getPosTags("I outnumbered you"), [ "prp", "vbd", "prp" ]);
       deepEqual(RiTa.getPosTags("She outnumbered us"), [ "prp", "vbd", "prp"]);
-
     });
 
     test("testGetPosTags(sns)", function () {

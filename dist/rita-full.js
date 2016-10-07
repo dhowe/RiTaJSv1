@@ -685,7 +685,6 @@ var RiTa = {
     var sentenceArr = RiTa.tokenize(sentence);
 
     for (var i = 0; i < QUESTION_STARTS.length; i++) {
-  console.log(sentenceArr[0], QUESTION_STARTS[i]);
       if (equalsIgnoreCase(sentenceArr[0], QUESTION_STARTS[i]))
         return true;
     }
@@ -1890,6 +1889,7 @@ RiString.prototype = {
     if (typeof arg === S) {
 
       return arg.toLowerCase() === this._text.toLowerCase();
+
     } else {
 
       return arg.text().toLowerCase() === this._text.toLowerCase();
@@ -3190,6 +3190,7 @@ var PosTagger = {
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   NOLEX_WARNED: false,
+  DBUG: false,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
@@ -3258,7 +3259,15 @@ var PosTagger = {
       if (!data || !data.length) {
 
         choices2d[i] = [];
-        result.push((endsWith(words[i], 's') ? 'nns' : 'nn'));
+        var tag = 'nn';
+        if (endsWith(words[i],'s')) {
+          tag = 'nns';
+        }
+        // use stemmer categories if no lexicon
+        if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
+          tag = 'nns';
+        }
+        result.push(tag);
 
       } else {
 
@@ -3276,123 +3285,167 @@ var PosTagger = {
     var result = c;
 
     if (c === 'a' || c === 'A')
-      result = "dt";
+      result = 'dt';
     else if (c === 'I')
-      result = "prp";
+      result = 'prp';
     else if (c >= '0' && c <= '9')
-      result = "cd";
-
-    //System.out.println("handleSingleLetter("+word+") :: "+result);
+      result = 'cd';
 
     return result;
+  },
+
+  _customTagged: function(i, frm, to) {
+
+    if (!RiTa.SILENT && this.DBUG) console.log("\n  Custom(" +
+      i + ") tagged '" + frm + "' -> '"+ to + "'\n\n");
   },
 
   // Applies a customized subset of the Brill transformations
   _applyContext: function(words, result, choices) {
 
     //log("_applyContext("+words+","+result+","+choices+")");
-
-    var sW = startsWith, eW = endsWith,
-      PRINT_CUSTOM_TAGS = (0 && !RiTa.SILENT);
+    var sW = startsWith, eW = endsWith;
 
     // Apply transformations
     for (var i = 0, l = words.length; i < l; i++) {
 
-      // transform 1: DT, {VBD | VBP | VB} --> DT, NN
+      var word = words[i], tag = result[i];
+
+      // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
       if (i > 0 && (result[i - 1] == "dt")) {
 
-        if (sW(result[i], "vb")) {
-          if (PRINT_CUSTOM_TAGS) {
-            log("PosTagger: changing verb to noun: " + words[i]);
-          }
-          result[i] = "nn";
+        if (sW(tag, "vb")) {
+          tag = "nn";
+          this._customTagged("1a", word, tag);
         }
 
-        // transform 1: DT, {RB | RBR | RBS} --> DT, {JJ |
+        // transform 1b: DT, {RB | RBR | RBS} --> DT, {JJ |
         // JJR | JJS}
-        else if (sW(result[i], "rb")) {
+        else if (sW(tag, "rb")) {
 
-          if (PRINT_CUSTOM_TAGS)
-            log("PosTagger: custom tagged '" + words[i] + "', " + result[i]);
-          result[i] = (result[i].length > 2) ? "jj" + result[i].charAt(2) : "jj";
-          if (PRINT_CUSTOM_TAGS) {
-            log(" -> " + result[i]);
-          }
+          tag = (tag.length > 2) ? "jj" + tag.charAt(2) : "jj";
+	        this._customTagged("1b", word, tag);
         }
       }
 
       // transform 2: convert a noun to a number (cd) if it is
       // all digits and/or a decimal "."
-      if (sW(result[i], "n") && !choices[i]) {
-        if (isNum(words[i])) {
-          result[i] = "cd";
+      if (sW(tag, "n") && !choices[i]) {
+        if (isNum(word)) {
+          tag = "cd";
         } // mods: dch (add choice check above) <---- ? >
       }
 
       // transform 3: convert a noun to a past participle if
-      // words[i] ends with "ed"
-      if (sW(result[i], "n") && eW(words[i], "ed")) {
-        result[i] = "vbn";
+      // word ends with "ed"
+      if (sW(tag, "n") && eW(word, "ed")) {
+        tag = "vbn";
       }
 
       // transform 4: convert any type to adverb if it ends in "ly";
-      if (eW(words[i], "ly")) {
-        result[i] = "rb";
+      if (eW(word, "ly")) {
+        tag = "rb";
       }
 
       // transform 5: convert a common noun (NN or NNS) to a
       // adjective if it ends with "al", special-case for mammal
-      if (sW(result[i], "nn") && eW(words[i], "al") && words[i] != 'mammal') {
-        result[i] = "jj";
+      if (sW(tag, "nn") && eW(word, "al") && word != 'mammal') {
+        tag = "jj";
       }
 
       // transform 6: convert a noun to a verb if the
       // preceeding word is "would"
-      if (i > 0 && sW(result[i], "nn") && equalsIgnoreCase(words[i - 1], "would")) {
-        result[i] = "vb";
+      if (i > 0 && sW(tag, "nn") && equalsIgnoreCase(words[i - 1], "would")) {
+        tag = "vb";
       }
 
       // transform 7: if a word has been categorized as a
       // common noun and it ends with "s", then set its type to plural common noun (NNS)
-      if ((result[i] == "nn") && words[i].match(/^.*[^s]s$/)) {
-        if (!NULL_PLURALS.applies(words[i]))
-          result[i] = "nns";
+      if ((tag == "nn") && word.match(/^.*[^s]s$/)) {
+        if (!NULL_PLURALS.applies(word))
+          tag = "nns";
       }
 
       // transform 8: convert a common noun to a present
       // participle verb (i.e., a gerund)
-      if (sW(result[i], "nn") && eW(words[i], "ing")) {
+      if (sW(tag, "nn") && eW(word, "ing")) {
+
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
         if (this.hasTag(choices[i], "vb")) {
-          result[i] = "vbg";
-        } else if (PRINT_CUSTOM_TAGS) {
-          log("[RiTa] PosTagger tagged '" + words[i] + "' as " + result[i]);
+          tag = "vbg";
+          this._customTagged(8, word, tag);
         }
       }
 
       // transform 9(dch): convert plural nouns (which are also 3sg-verbs) to
       // 3sg-verbs when following a singular noun (the dog dances, Dave dances, he dances)
-      if (i > 0 && result[i] == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
-        result[i] = "vbz";
+      if (i > 0 && tag == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
+        tag = "vbz";
+        this._customTagged(9, word, tag);
       }
 
       // transform 10(dch): convert common nouns to proper
       // nouns when they start w' a capital and (?are not a
       // sentence start?)
-      if ( /*i > 0 && */ sW(result[i], "nn") && (words[i].charAt(0) == words[i].charAt(0).toUpperCase())) {
-        result[i] = eW(result[i], "s") ? "nnps" : "nnp";
+      if ((i != 0 || words.length == 1) && sW(tag, "nn") && (word.charAt(0) == word.charAt(0).toUpperCase())) {
+        tag = eW(tag, "s") ? "nnps" : "nnp";
+        this._customTagged(10, word, tag);
       }
 
-      // DISABLED: transform 10(dch): convert plural nouns (which are
+      // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
-      /*if (i < result.length - 1 && result[i] == "nns" && sW(result[i + 1], "rb")
+      if (i < result.length - 1 && tag == "nns" && sW(result[i + 1], "rb")
 					&& this.hasTag(choices[i], "vbz")) {
-				result[i] = "vbz";
-			}*/
+				tag = "vbz";
+        this._customTagged(11, word, tag);
+			}
+
+      // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
+      if (i > 0 && tag==="nns" && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1])>-1) {
+
+        // if word is ends with s or es and is 'nns' and has a vb
+        if (eW(word, "s")  && this._lexContains('vb', word.substring(0, word.length-1)) ||
+            eW(word, "es") && this._lexContains('vb', word.substring(0, word.length-2)))
+        {
+          tag = "vbz";
+          this._customTagged(12, word, tag);
+        }
+      }
+
+      result[i] = tag;
     }
 
     return result;
+  },
+
+  _lexContains: function(pos, words) {
+
+    if (!RiLexicon.enabled) return false;
+      lex = RiTa._lexicon();
+
+    for (var i = 0; i < words.length; i++) {
+
+      if (lex.containsWord(words[i])) {
+
+        if (pos == null) return true;
+
+        var tags = RiTa.getPosTags(words[i]);
+        for (var j = 0; j < tags.length; j++) {
+
+          if (pos === 'n' && isNoun(tags[j]) ||
+              pos === 'v' && isVerb(tags[j]) ||
+              pos === 'r' && isAdverb(tags[j]) ||
+              pos === 'a' && isAdj(tags[j]) ||
+              pos === tags[j])
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
+
 }; // end PosTagger
 
 // Stemming demo/comparison - http://text-processing.com/demo/stem/
@@ -3584,59 +3637,77 @@ RiTa.stem_Porter = (function() {
 
 })();
 
+// PlingStemmer categories
+
+/* Words that are both singular and plural */
+var categorySP = ['acoustics', 'aestetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dermatoglyphics', 'dialectics', 'deer', 'dynamics', 'esthetics', 'ethics', 'harmonics', 'heroics', 'isometrics', 'mechanics', 'metrics', 'statistics', 'optic', 'people', 'physics', 'polemics', 'propaedeutics', 'pyrotechnics', 'quadratics', 'quarters', 'statistics', 'tactics', 'tropics'];
+
+/* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
+var categorySE_SES = ['nurses', 'cruises'];
+
+/* Words that do not have a distinct plural form (like 'atlas' etc.) */
+var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'breeches', 'britches', 'canvas', 'chaos', 'clippers', 'contretemps', 'corps', 'cosmos', 'crossroads', 'diabetes', 'ethos', 'gallows', 'gas', 'graffiti', 'headquarters', 'herpes', 'high-jinks', 'innings', 'jackanapes', 'lens', 'means', 'measles', 'mews', 'mumps', 'news', 'pathos', 'pincers', 'pliers', 'proceedings', 'rabies', 'rhinoceros', 'sassafras', 'scissors', 'series', 'shears', 'species', 'tuna'];
+
+/* Words that change from '-um' to '-a' (like 'curriculum' etc.), listed in their plural forms */
+var categoryUM_A = ['addenda', 'agenda', 'aquaria', 'bacteria', 'candelabra', 'compendia', 'consortia', 'crania', 'curricula', 'data', 'desiderata', 'dicta', 'emporia', 'enconia', 'errata', 'extrema', 'gymnasia', 'honoraria', 'interregna', 'lustra', 'maxima', 'media', 'memoranda', 'millenia', 'minima', 'momenta', 'optima', 'ova', 'phyla', 'quanta', 'rostra', 'spectra', 'specula', 'stadia', 'strata', 'symposia', 'trapezia', 'ultimata', 'vacua', 'vela'];
+
+/* Words that change from '-on' to '-a' (like 'phenomenon' etc.), listed in their plural forms */
+var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena'];
+
+/* Words that change from '-o' to '-i' (like 'libretto' etc.), listed in their plural forms */
+var categoryO_I = ['alti', 'bassi', 'canti', 'contralti', 'crescendi', 'libretti', 'soli', 'soprani', 'tempi', 'virtuosi'];
+
+/*  Words that change from '-us' to '-i' (like 'fungus' etc.), listed in their plural forms		 */
+var categoryUS_I = ['alumni', 'bacilli', 'cacti', 'foci', 'fungi', 'genii', 'hippopotami', 'incubi', 'nimbi', 'nuclei', 'nucleoli', 'octopi', 'radii', 'stimuli', 'styli', 'succubi', 'syllabi', 'termini', 'tori', 'umbilici', 'uteri'];
+
+/* Words that change from '-ix' to '-ices' (like 'appendix' etc.), listed in their plural forms */
+var categoryIX_ICES = ['appendices', 'cervices'];
+
+/* Words that change from '-is' to '-es' (like 'axis' etc.), listed in their plural forms, plus everybody ending in theses */
+var categoryIS_ES = ['analyses', 'axes', 'bases', 'crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'synopses'];
+
+/* Words that change from '-oe' to '-oes' (like 'toe' etc.), listed in their plural forms*/
+var categoryOE_OES = ['aloes', 'backhoes', 'beroes', 'canoes', 'chigoes', 'cohoes', 'does', 'felloes', 'floes', 'foes', 'gumshoes', 'hammertoes', 'hoes', 'hoopoes', 'horseshoes', 'leucothoes', 'mahoes', 'mistletoes', 'oboes', 'overshoes', 'pahoehoes', 'pekoes', 'roes', 'shoes', 'sloes', 'snowshoes', 'throes', 'tic-tac-toes', 'tick-tack-toes', 'ticktacktoes', 'tiptoes', 'tit-tat-toes', 'toes', 'toetoes', 'tuckahoes', 'woes'];
+
+/* Words that change from '-ex' to '-ices' (like 'index' etc.), listed in their plural forms*/
+var categoryEX_ICES = ['apices', 'codices', 'cortices', 'indices', 'latices', 'murices', 'pontifices', 'silices', 'simplices', 'vertices', 'vortices'];
+
+/* Words that change from '-u' to '-us' (like 'emu' etc.), listed in their plural forms*/
+var categoryU_US = [ 'menus', 'gurus', 'apercus', 'barbus', 'cornus', 'ecrus', 'emus', 'fondus', 'gnus', 'iglus', 'mus', 'nandus', 'napus', 'poilus', 'quipus', 'snafus', 'tabus', 'tamandus', 'tatus', 'timucus', 'tiramisus', 'tofus', 'tutus'];
+
+/* Words that change from '-sse' to '-sses' (like 'finesse' etc.), listed in their plural forms,plus those ending in mousse*/
+var categorySSE_SSES = ['bouillabaisses', 'coulisses', 'crevasses', 'crosses', 'cuisses', 'demitasses', 'ecrevisses', 'fesses', 'finesses', 'fosses', 'impasses', 'lacrosses', 'largesses', 'masses', 'noblesses', 'palliasses', 'pelisses', 'politesses', 'posses', 'tasses', 'wrasses'];
+
+/* Words that change from '-che' to '-ches' (like 'brioche' etc.), listed in their plural forms*/
+var categoryCHE_CHES = ['adrenarches', 'attaches', 'avalanches', 'barouches', 'brioches', 'caches', 'caleches', 'caroches', 'cartouches', 'cliches', 'cloches', 'creches', 'demarches', 'douches', 'gouaches', 'guilloches', 'headaches', 'heartaches', 'huaraches', 'menarches', 'microfiches', 'moustaches', 'mustaches', 'niches', 'panaches', 'panoches', 'pastiches', 'penuches', 'pinches', 'postiches', 'psyches', 'quiches', 'schottisches', 'seiches', 'soutaches', 'synecdoches', 'thelarches', 'troches'];
+
+/* Words that end with '-ics' and do not exist as nouns without the 's' (like 'aerobics' etc.)*/
+var categoryICS = ['aerobatics', 'aerobics', 'aerodynamics', 'aeromechanics', 'aeronautics', 'alphanumerics', 'animatronics', 'apologetics', 'architectonics', 'astrodynamics', 'astronautics', 'astrophysics', 'athletics', 'atmospherics', 'autogenics', 'avionics', 'ballistics', 'bibliotics', 'bioethics', 'biometrics', 'bionics', 'bionomics', 'biophysics', 'biosystematics', 'cacogenics', 'calisthenics', 'callisthenics', 'catoptrics', 'civics', 'cladistics', 'cryogenics', 'cryonics', 'cryptanalytics', 'cybernetics', 'cytoarchitectonics', 'cytogenetics', 'diagnostics', 'dietetics', 'dramatics', 'dysgenics', 'econometrics', 'economics', 'electromagnetics', 'electronics', 'electrostatics', 'endodontics', 'enterics', 'ergonomics', 'eugenics', 'eurhythmics', 'eurythmics', 'exodontics', 'fibreoptics', 'futuristics', 'genetics', 'genomics', 'geographics', 'geophysics', 'geopolitics', 'geriatrics', 'glyptics', 'graphics', 'gymnastics', 'hermeneutics', 'histrionics', 'homiletics', 'hydraulics', 'hydrodynamics', 'hydrokinetics', 'hydroponics', 'hydrostatics', 'hygienics', 'informatics', 'kinematics', 'kinesthetics', 'kinetics', 'lexicostatistics', 'linguistics', 'lithoglyptics', 'liturgics', 'logistics', 'macrobiotics', 'macroeconomics', 'magnetics', 'magnetohydrodynamics', 'mathematics', 'metamathematics', 'metaphysics', 'microeconomics', 'microelectronics', 'mnemonics', 'morphophonemics', 'neuroethics', 'neurolinguistics', 'nucleonics', 'numismatics', 'obstetrics', 'onomastics', 'orthodontics', 'orthopaedics', 'orthopedics', 'orthoptics', 'paediatrics', 'patristics', 'patristics', 'pedagogics', 'pediatrics', 'periodontics', 'pharmaceutics', 'pharmacogenetics', 'pharmacokinetics', 'phonemics', 'phonetics', 'phonics', 'photomechanics', 'physiatrics', 'pneumatics', 'poetics', 'politics', 'pragmatics', 'prosthetics', 'prosthodontics', 'proteomics', 'proxemics', 'psycholinguistics', 'psychometrics', 'psychonomics', 'psychophysics', 'psychotherapeutics', 'robotics', 'semantics', 'semiotics', 'semitropics', 'sociolinguistics', 'stemmatics', 'strategics', 'subtropics', 'systematics', 'tectonics', 'telerobotics', 'therapeutics', 'thermionics', 'thermodynamics', 'thermostatics'];
+
+/* Words that change from '-ie' to '-ies' (like 'auntie' etc.), listed in their plural forms*/
+var categoryIE_IES = ['aeries', 'anomies', 'aunties', 'baddies', 'beanies', 'birdies', 'boccies', 'bogies', 'bolshies', 'bombies', 'bonhomies', 'bonxies', 'booboisies', 'boogies', 'boogie-woogies', 'bookies', 'booties', 'bosies', 'bourgeoisies', 'brasseries', 'brassies', 'brownies', 'budgies', 'byrnies', 'caddies', 'calories', 'camaraderies', 'capercaillies', 'capercailzies', 'cassies', 'catties', 'causeries', 'charcuteries', 'chinoiseries', 'collies', 'commies', 'cookies', 'coolies', 'coonties', 'cooties', 'corries', 'coteries', 'cowpies', 'cowries', 'cozies', 'crappies', 'crossties', 'curies', 'dachsies', 'darkies', 'dassies', 'dearies', 'dickies', 'dies', 'dixies', 'doggies', 'dogies', 'dominies', 'dovekies', 'eyries', 'faeries', 'falsies', 'floozies', 'folies', 'foodies', 'freebies', 'gaucheries', 'gendarmeries', 'genies', 'ghillies', 'gillies', 'goalies', 'goonies', 'grannies', 'grotesqueries', 'groupies', 'hankies', 'hippies', 'hoagies', 'honkies', 'hymies', 'indies', 'junkies', 'kelpies', 'kilocalories', 'knobkerries', 'koppies', 'kylies', 'laddies', 'lassies', 'lies', 'lingeries', 'magpies', 'magpies', 'marqueteries', 'mashies', 'mealies', 'meanies', 'menageries', 'millicuries', 'mollies', 'facts1', 'moxies', 'neckties', 'newbies', 'nighties', 'nookies', 'oldies', 'organdies', 'panties', 'parqueteries', 'passementeries', 'patisseries', 'pies', 'pinkies', 'pixies', 'porkpies', 'potpies', 'prairies', 'preemies', 'premies', 'punkies', 'pyxies', 'quickies', 'ramies', 'reveries', 'rookies', 'rotisseries', 'scrapies', 'sharpies', 'smoothies', 'softies', 'stoolies', 'stymies', 'swaggies', 'sweeties', 'talkies', 'techies', 'ties', 'tooshies', 'toughies', 'townies', 'veggies', 'walkie-talkies', 'wedgies', 'weenies', 'weirdies', 'yardies', 'yuppies', 'zombies'];
+
+/* Maps irregular Germanic English plural nouns to their singular form */
+var categoryIRR = [ 'blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'brethren', 'brother', 'busses', 'bus', 'cattle', 'cow', 'children', 'child', 'corpora', 'corpus', 'ephemerides', 'ephemeris', 'genera', 'genus', 'genies', 'genie', 'genii', 'genie', 'lice', 'louse', 'mice', 'mouse', 'mongooses', 'mongoose', 'monies', 'money', 'mythoi', 'mythos', 'octopodes', 'octopus',  'oxen', 'ox', 'people', 'person', 'soliloquies', 'soliloquy', 'taxis', 'taxi', 'throes', 'throes', 'trilbys', 'trilby', 'innings', 'inning', 'alibis', 'alibi', 'skis', 'ski' ];
+
+function checkPluralNoLex(s) {
+  var cats = [
+    categoryUM_A,
+    categoryON_A,
+    categoryO_I,
+    categoryUS_I,
+    categoryIX_ICES
+  ];
+  for (var i = 0; i < cats.length; i++) {
+    if (cats[i].indexOf(s) > -1)
+      return true;
+  }
+  var idx = categoryIRR.indexOf(s); // plurals at even indices
+  return (idx%2 === 0) ? true : false;
+}
+
 /* From the PlingStemmer impl in the Java Tools package (see http://mpii.de/yago-naga/javatools). */
 RiTa.stem_Pling = (function() {
-
-  /* Words that are both singular and plural */
-  var categorySP = ['acoustics', 'aestetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dermatoglyphics', 'dialectics', 'deer', 'dynamics', 'esthetics', 'ethics', 'harmonics', 'heroics', 'isometrics', 'mechanics', 'metrics', 'statistics', 'optic', 'people', 'physics', 'polemics', 'propaedeutics', 'pyrotechnics', 'quadratics', 'quarters', 'statistics', 'tactics', 'tropics'];
-
-  /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
-  var categorySE_SES = ['nurses', 'cruises'];
-
-  /* Words that do not have a distinct plural form (like 'atlas' etc.) */
-  var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'breeches', 'britches', 'canvas', 'chaos', 'clippers', 'contretemps', 'corps', 'cosmos', 'crossroads', 'diabetes', 'ethos', 'gallows', 'gas', 'graffiti', 'headquarters', 'herpes', 'high-jinks', 'innings', 'jackanapes', 'lens', 'means', 'measles', 'mews', 'mumps', 'news', 'pathos', 'pincers', 'pliers', 'proceedings', 'rabies', 'rhinoceros', 'sassafras', 'scissors', 'series', 'shears', 'species', 'tuna'];
-
-  /* Words that change from '-um' to '-a' (like 'curriculum' etc.), listed in their plural forms */
-  var categoryUM_A = ['addenda', 'agenda', 'aquaria', 'bacteria', 'candelabra', 'compendia', 'consortia', 'crania', 'curricula', 'data', 'desiderata', 'dicta', 'emporia', 'enconia', 'errata', 'extrema', 'gymnasia', 'honoraria', 'interregna', 'lustra', 'maxima', 'media', 'memoranda', 'millenia', 'minima', 'momenta', 'optima', 'ova', 'phyla', 'quanta', 'rostra', 'spectra', 'specula', 'stadia', 'strata', 'symposia', 'trapezia', 'ultimata', 'vacua', 'vela'];
-
-  /* Words that change from '-on' to '-a' (like 'phenomenon' etc.), listed in their plural forms */
-  var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena'];
-
-  /* Words that change from '-o' to '-i' (like 'libretto' etc.), listed in their plural forms */
-  var categoryO_I = ['alti', 'bassi', 'canti', 'contralti', 'crescendi', 'libretti', 'soli', 'soprani', 'tempi', 'virtuosi'];
-
-  /*  Words that change from '-us' to '-i' (like 'fungus' etc.), listed in their plural forms		 */
-  var categoryUS_I = ['alumni', 'bacilli', 'cacti', 'foci', 'fungi', 'genii', 'hippopotami', 'incubi', 'nimbi', 'nuclei', 'nucleoli', 'octopi', 'radii', 'stimuli', 'styli', 'succubi', 'syllabi', 'termini', 'tori', 'umbilici', 'uteri'];
-
-  /* Words that change from '-ix' to '-ices' (like 'appendix' etc.), listed in their plural forms */
-  var categoryIX_ICES = ['appendices', 'cervices'];
-
-  /* Words that change from '-is' to '-es' (like 'axis' etc.), listed in their plural forms, plus everybody ending in theses */
-  var categoryIS_ES = ['analyses', 'axes', 'bases', 'crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'synopses'];
-
-  /* Words that change from '-oe' to '-oes' (like 'toe' etc.), listed in their plural forms*/
-  var categoryOE_OES = ['aloes', 'backhoes', 'beroes', 'canoes', 'chigoes', 'cohoes', 'does', 'felloes', 'floes', 'foes', 'gumshoes', 'hammertoes', 'hoes', 'hoopoes', 'horseshoes', 'leucothoes', 'mahoes', 'mistletoes', 'oboes', 'overshoes', 'pahoehoes', 'pekoes', 'roes', 'shoes', 'sloes', 'snowshoes', 'throes', 'tic-tac-toes', 'tick-tack-toes', 'ticktacktoes', 'tiptoes', 'tit-tat-toes', 'toes', 'toetoes', 'tuckahoes', 'woes'];
-
-  /* Words that change from '-ex' to '-ices' (like 'index' etc.), listed in their plural forms*/
-  var categoryEX_ICES = ['apices', 'codices', 'cortices', 'indices', 'latices', 'murices', 'pontifices', 'silices', 'simplices', 'vertices', 'vortices'];
-
-  /* Words that change from '-u' to '-us' (like 'emu' etc.), listed in their plural forms*/
-  var categoryU_US = [ 'menus', 'gurus', 'apercus', 'barbus', 'cornus', 'ecrus', 'emus', 'fondus', 'gnus', 'iglus', 'mus', 'nandus', 'napus', 'poilus', 'quipus', 'snafus', 'tabus', 'tamandus', 'tatus', 'timucus', 'tiramisus', 'tofus', 'tutus'];
-
-  /* Words that change from '-sse' to '-sses' (like 'finesse' etc.), listed in their plural forms,plus those ending in mousse*/
-  var categorySSE_SSES = ['bouillabaisses', 'coulisses', 'crevasses', 'crosses', 'cuisses', 'demitasses', 'ecrevisses', 'fesses', 'finesses', 'fosses', 'impasses', 'lacrosses', 'largesses', 'masses', 'noblesses', 'palliasses', 'pelisses', 'politesses', 'posses', 'tasses', 'wrasses'];
-
-  /* Words that change from '-che' to '-ches' (like 'brioche' etc.), listed in their plural forms*/
-  var categoryCHE_CHES = ['adrenarches', 'attaches', 'avalanches', 'barouches', 'brioches', 'caches', 'caleches', 'caroches', 'cartouches', 'cliches', 'cloches', 'creches', 'demarches', 'douches', 'gouaches', 'guilloches', 'headaches', 'heartaches', 'huaraches', 'menarches', 'microfiches', 'moustaches', 'mustaches', 'niches', 'panaches', 'panoches', 'pastiches', 'penuches', 'pinches', 'postiches', 'psyches', 'quiches', 'schottisches', 'seiches', 'soutaches', 'synecdoches', 'thelarches', 'troches'];
-
-  /* Words that end with '-ics' and do not exist as nouns without the 's' (like 'aerobics' etc.)*/
-  var categoryICS = ['aerobatics', 'aerobics', 'aerodynamics', 'aeromechanics', 'aeronautics', 'alphanumerics', 'animatronics', 'apologetics', 'architectonics', 'astrodynamics', 'astronautics', 'astrophysics', 'athletics', 'atmospherics', 'autogenics', 'avionics', 'ballistics', 'bibliotics', 'bioethics', 'biometrics', 'bionics', 'bionomics', 'biophysics', 'biosystematics', 'cacogenics', 'calisthenics', 'callisthenics', 'catoptrics', 'civics', 'cladistics', 'cryogenics', 'cryonics', 'cryptanalytics', 'cybernetics', 'cytoarchitectonics', 'cytogenetics', 'diagnostics', 'dietetics', 'dramatics', 'dysgenics', 'econometrics', 'economics', 'electromagnetics', 'electronics', 'electrostatics', 'endodontics', 'enterics', 'ergonomics', 'eugenics', 'eurhythmics', 'eurythmics', 'exodontics', 'fibreoptics', 'futuristics', 'genetics', 'genomics', 'geographics', 'geophysics', 'geopolitics', 'geriatrics', 'glyptics', 'graphics', 'gymnastics', 'hermeneutics', 'histrionics', 'homiletics', 'hydraulics', 'hydrodynamics', 'hydrokinetics', 'hydroponics', 'hydrostatics', 'hygienics', 'informatics', 'kinematics', 'kinesthetics', 'kinetics', 'lexicostatistics', 'linguistics', 'lithoglyptics', 'liturgics', 'logistics', 'macrobiotics', 'macroeconomics', 'magnetics', 'magnetohydrodynamics', 'mathematics', 'metamathematics', 'metaphysics', 'microeconomics', 'microelectronics', 'mnemonics', 'morphophonemics', 'neuroethics', 'neurolinguistics', 'nucleonics', 'numismatics', 'obstetrics', 'onomastics', 'orthodontics', 'orthopaedics', 'orthopedics', 'orthoptics', 'paediatrics', 'patristics', 'patristics', 'pedagogics', 'pediatrics', 'periodontics', 'pharmaceutics', 'pharmacogenetics', 'pharmacokinetics', 'phonemics', 'phonetics', 'phonics', 'photomechanics', 'physiatrics', 'pneumatics', 'poetics', 'politics', 'pragmatics', 'prosthetics', 'prosthodontics', 'proteomics', 'proxemics', 'psycholinguistics', 'psychometrics', 'psychonomics', 'psychophysics', 'psychotherapeutics', 'robotics', 'semantics', 'semiotics', 'semitropics', 'sociolinguistics', 'stemmatics', 'strategics', 'subtropics', 'systematics', 'tectonics', 'telerobotics', 'therapeutics', 'thermionics', 'thermodynamics', 'thermostatics'];
-
-  /* Words that change from '-ie' to '-ies' (like 'auntie' etc.), listed in their plural forms*/
-  var categoryIE_IES = ['aeries', 'anomies', 'aunties', 'baddies', 'beanies', 'birdies', 'boccies', 'bogies', 'bolshies', 'bombies', 'bonhomies', 'bonxies', 'booboisies', 'boogies', 'boogie-woogies', 'bookies', 'booties', 'bosies', 'bourgeoisies', 'brasseries', 'brassies', 'brownies', 'budgies', 'byrnies', 'caddies', 'calories', 'camaraderies', 'capercaillies', 'capercailzies', 'cassies', 'catties', 'causeries', 'charcuteries', 'chinoiseries', 'collies', 'commies', 'cookies', 'coolies', 'coonties', 'cooties', 'corries', 'coteries', 'cowpies', 'cowries', 'cozies', 'crappies', 'crossties', 'curies', 'dachsies', 'darkies', 'dassies', 'dearies', 'dickies', 'dies', 'dixies', 'doggies', 'dogies', 'dominies', 'dovekies', 'eyries', 'faeries', 'falsies', 'floozies', 'folies', 'foodies', 'freebies', 'gaucheries', 'gendarmeries', 'genies', 'ghillies', 'gillies', 'goalies', 'goonies', 'grannies', 'grotesqueries', 'groupies', 'hankies', 'hippies', 'hoagies', 'honkies', 'hymies', 'indies', 'junkies', 'kelpies', 'kilocalories', 'knobkerries', 'koppies', 'kylies', 'laddies', 'lassies', 'lies', 'lingeries', 'magpies', 'magpies', 'marqueteries', 'mashies', 'mealies', 'meanies', 'menageries', 'millicuries', 'mollies', 'facts1', 'moxies', 'neckties', 'newbies', 'nighties', 'nookies', 'oldies', 'organdies', 'panties', 'parqueteries', 'passementeries', 'patisseries', 'pies', 'pinkies', 'pixies', 'porkpies', 'potpies', 'prairies', 'preemies', 'premies', 'punkies', 'pyxies', 'quickies', 'ramies', 'reveries', 'rookies', 'rotisseries', 'scrapies', 'sharpies', 'smoothies', 'softies', 'stoolies', 'stymies', 'swaggies', 'sweeties', 'talkies', 'techies', 'ties', 'tooshies', 'toughies', 'townies', 'veggies', 'walkie-talkies', 'wedgies', 'weenies', 'weirdies', 'yardies', 'yuppies', 'zombies'];
-
-  /* Maps irregular Germanic English plural nouns to their singular form */
-  var categoryIRR = [ 'blondes', 'blonde', 'beefs', 'beef', 'beeves', 'beef', 'brethren', 'brother', 'busses', 'bus', 'cattle', 'cattlebeast', 'children', 'child', 'corpora', 'corpus', 'ephemerides', 'ephemeris', 'genera', 'genus', 'genies', 'genie', 'genii', 'genie', 'kine', 'cow', 'lice', 'louse', 'mice', 'mouse', 'mongooses', 'mongoose', 'monies', 'money', 'mythoi', 'mythos', 'octopodes', 'octopus',  'oxen', 'ox', 'people', 'person', 'soliloquies', 'soliloquy', 'taxis', 'taxi', 'throes', 'throes', 'trilbys', 'trilby', 'innings', 'inning', 'alibis', 'alibi', 'skis', 'ski' ];
 
   /* Tells whether a noun is plural. */
   function isPlural(s) {
@@ -18671,7 +18742,6 @@ function _dict() { return {
 'agrochemical':['ae g-r-ow k-eh1 m-ah k-ah-l','nn'],
 'agronomist':['ah g-r-aa1 n-ah m-ih-s-t','nn'],
 'aground':['ah g-r-aw1-n-d','rb'],
-'ah':['aa1','uh vbp'],
 'ahead':['ah hh-eh1-d','rb jj'],
 'ahs':['aa1-z','uh'],
 'aid':['ey1-d','nn vb vbp'],
@@ -19005,7 +19075,7 @@ function _dict() { return {
 'anchovy':['ae-n ch-ow1 v-iy','nn'],
 'ancient':['ey1-n ch-ah-n-t','jj nn'],
 'ancillary':['ae1-n s-ah l-eh r-iy','jj'],
-'and':['ae1-n-d','cc vbp jj rb nnp'],
+'and':['ae1-n-d','cc jj rb nnp'],
 'anecdotal':['ae n-ah-k d-ow1 t-ah-l','jj'],
 'anecdote':['ae1 n-ah-k d-ow-t','nn'],
 'anemia':['ah n-iy1 m-iy ah','nn'],
@@ -19030,7 +19100,7 @@ function _dict() { return {
 'angrily':['ae1-ng g-r-ah l-iy','rb'],
 'angry':['ae1-ng g-r-iy','jj'],
 'angst':['aa1-ng-k-s-t','nn'],
-'anguish':['ae1-ng g-w-ih-sh','nn vbp'],
+'anguish':['ae1-ng g-w-ih-sh','nn'],
 'anguished':['ae1-ng g-w-ih-sh-t','jj'],
 'angular':['ae1-ng g-y-ah l-er','jj'],
 'aniline':['ae1 n-ah l-iy-n','nn'],
@@ -19420,7 +19490,7 @@ function _dict() { return {
 'arsenide':['aa1-r s-ah n-ay-d','nn'],
 'arson':['aa1-r s-ah-n','nn'],
 'arsonist':['aa1-r s-ah n-ah-s-t','nn'],
-'art':['aa1-r-t','nn vbp'],
+'art':['aa1-r-t','nn'],
 'arterial':['aa-r t-ih1 r-iy ah-l','jj'],
 'arteriosclerosis':['aa-r t-ih r-iy ow s-k-l-er ow1 s-ah-s','nn'],
 'artery':['aa1-r t-er iy','nn'],
@@ -19474,7 +19544,6 @@ function _dict() { return {
 'askance':['ah s-k-ae1-n-s','rb'],
 'asked':['ae1-s-k-t','vbd vbn jj'],
 'askew':['ah s-k-y-uw1','rb'],
-'askin':['ah s-k-ih1-n','vbg'],
 'asking':['ae1 s-k-ih-ng','vbg jj nn'],
 'asks':['ae1-s-k-s','vbz'],
 'asleep':['ah s-l-iy1-p','rb jj'],
@@ -20213,7 +20282,7 @@ function _dict() { return {
 'beefsteak':['b-iy1-f s-t-ey-k','nn'],
 'beefy':['b-iy1 f-iy','jj'],
 'beehive':['b-iy1 hh-ay-v','nn'],
-'been':['b-ih1-n','vbn vbp'],
+'been':['b-ih1-n','vbn'],
 'beep':['b-iy1-p','nn'],
 'beeper':['b-iy1 p-er','nn jjr'],
 'beer':['b-ih1-r','nn'],
@@ -20356,7 +20425,6 @@ function _dict() { return {
 'besides':['b-ih s-ay1-d-z','in rb'],
 'besiege':['b-ih s-iy1-jh','vb'],
 'besieged':['b-ih s-iy1-jh-d','vbn jj'],
-'bespeak':['b-ih s-p-iy1-k','vbp'],
 'bespeaks':['b-ih s-p-iy1-k-s','vbz'],
 'bespectacled':['b-ih s-p-eh1-k t-ah k-ah-l-d','jj'],
 'best':['b-eh1-s-t','jjs rbs jjss nn rb'],
@@ -21361,7 +21429,6 @@ function _dict() { return {
 'bust':['b-ah1-s-t','nn jj rb vb'],
 'busted':['b-ah1 s-t-ih-d','jj vbd vbn'],
 'buster':['b-ah1 s-t-er','nn'],
-'bustin':['b-ah1 s-t-ih-n','vbg'],
 'busting':['b-ah1 s-t-ih-ng','vbg'],
 'bustle':['b-ah1 s-ah-l','nn'],
 'bustling':['b-ah1 s-ah l-ih-ng','jj vbg'],
@@ -21546,7 +21613,7 @@ function _dict() { return {
 'cannon':['k-ae1 n-ah-n','nn nns'],
 'cannot':['k-ae1 n-aa-t','md'],
 'canny':['k-ae1 n-iy','jj'],
-'canoe':['k-ah n-uw1','nn vbp'],
+'canoe':['k-ah n-uw1','nn'],
 'canon':['k-ae1 n-ah-n','nn'],
 'canopy':['k-ae1 n-ah p-iy','nn'],
 'cans':['k-ae1-n-z','nns vbz'],
@@ -21814,8 +21881,7 @@ function _dict() { return {
 'cavernous':['k-ae1 v-er n-ah-s','jj'],
 'caves':['k-ey1-v-z','nns'],
 'caviar':['k-ae1 v-iy aa-r','nn'],
-'cavin':['k-ae1 v-ih-n','vbg'],
-'caving':['k-ey1 v-ih-ng','nn'],
+'caving':['k-ey1 v-ih-ng','vbg'],
 'cavity':['k-ae1 v-ah t-iy','nn'],
 'cavort':['k-ah v-ao1-r-t','vbp vb'],
 'cavorting':['k-ah v-ao1-r t-ih-ng','vbg nn'],
@@ -22284,7 +22350,7 @@ function _dict() { return {
 'claiming':['k-l-ey1 m-ih-ng','vbg'],
 'claims':['k-l-ey1-m-z','nns vbz'],
 'clairvoyance':['k-l-eh-r v-oy1 ah-n-s','nn'],
-'clam':['k-l-ae1-m','nn vbp'],
+'clam':['k-l-ae1-m','nn'],
 'clambered':['k-l-ae1-m b-er-d','vbd'],
 'clammy':['k-l-ae1 m-iy','jj'],
 'clamor':['k-l-ae1 m-er','vbp nn'],
@@ -22488,7 +22554,7 @@ function _dict() { return {
 'clumsy':['k-l-ah1-m z-iy','jj'],
 'clung':['k-l-ah1-ng','vbd vbn'],
 'clunky':['k-l-ah1-ng k-iy','jj'],
-'cluster':['k-l-ah1 s-t-er','nn vbp'],
+'cluster':['k-l-ah1 s-t-er','nn'],
 'clustered':['k-l-ah1 s-t-er-d','vbn vbd'],
 'clustering':['k-l-ah1 s-t-er ih-ng','vbg nn'],
 'clusters':['k-l-ah1 s-t-er-z','nns vbz'],
@@ -23955,7 +24021,7 @@ function _dict() { return {
 'crowd':['k-r-aw1-d','nn vbp vb'],
 'crowded':['k-r-aw1 d-ah-d','vbn vbd jj'],
 'crowding':['k-r-aw1 d-ih-ng','vbg'],
-'crowds':['k-r-aw1-d-z','nns vbp vbz'],
+'crowds':['k-r-aw1-d-z','nns vbz'],
 'crowed':['k-r-ow1-d','vbd vbn'],
 'crowing':['k-r-ow1 ih-ng','vbg nn'],
 'crown':['k-r-aw1-n','nn vb'],
@@ -24179,7 +24245,7 @@ function _dict() { return {
 'damned':['d-ae1-m-d','jj vbn rb'],
 'damning':['d-ae1 m-ih-ng','vbg'],
 'damp':['d-ae1-m-p','vb vbp jj nn'],
-'damped':['d-ae1-m-p-t','vbn vbd vbp'],
+'damped':['d-ae1-m-p-t','vbn vbd'],
 'dampen':['d-ae1-m p-ah-n','vb'],
 'dampened':['d-ae1-m p-ah-n-d','vbd vbn'],
 'dampening':['d-ae1-m p-ah n-ih-ng','jj'],
@@ -24407,7 +24473,7 @@ function _dict() { return {
 'decoy':['d-ah k-oy1','nn'],
 'decrease':['d-ih k-r-iy1-s','nn vb vbp'],
 'decreased':['d-ih k-r-iy1-s-t','vbd vbn'],
-'decreases':['d-ih k-r-iy1 s-ah-z','nns vbp vbz'],
+'decreases':['d-ih k-r-iy1 s-ah-z','nns vbz'],
 'decreasing':['d-ih k-r-iy1 s-ih-ng','vbg'],
 'decree':['d-ih k-r-iy1','nn'],
 'decreed':['d-ih k-r-iy1-d','vbd vbn'],
@@ -25643,7 +25709,6 @@ function _dict() { return {
 'dizzying':['d-ih1 z-iy ih-ng','jj vbg'],
 'do':['d-uw1','vbp nn vb nns vbz'],
 'doable':['d-uw1 ah b-ah-l','jj'],
-'doan':['d-ow1-n','vbp'],
 'doble':['d-ow1 b-ah-l','nn'],
 'doc':['d-aa1-k','nn'],
 'docile':['d-aa1 s-ah-l','jj'],
@@ -25676,7 +25741,7 @@ function _dict() { return {
 'doer':['d-uw1-r','nn'],
 'does':['d-ah1-z','vbz'],
 'doffing':['d-ao1 f-ih-ng','vbg'],
-'dog':['d-ao1-g','nn vbp'],
+'dog':['d-ao1-g','nn'],
 'dogfight':['d-aa1-g f-ay-t','nn'],
 'dogged':['d-ao1-g-d','vbn jj vbd'],
 'doggedly':['d-ao1 g-ah-d l-iy','rb'],
@@ -25755,7 +25820,6 @@ function _dict() { return {
 'dose':['d-ow1-s','nn'],
 'doses':['d-ow1 s-ah-z','nns'],
 'dossier':['d-ao s-y-ey1','nn'],
-'dost':['d-aa1-s-t','vbp'],
 'dot':['d-aa1-t','nn vbp vb'],
 'doting':['d-ow1 t-ih-ng','vbg jj'],
 'dots':['d-aa1-t-s','nns'],
@@ -26052,7 +26116,6 @@ function _dict() { return {
 'dusk':['d-ah1-s-k','nn'],
 'dust':['d-ah1-s-t','nn vb vbp'],
 'dusted':['d-ah1 s-t-ih-d','vbn vbd'],
-'dustin':['d-ah1 s-t-ih-n','vbg'],
 'dusting':['d-ah1 s-t-ih-ng','vbg nn'],
 'dusts':['d-ah1-s-t-s','nns'],
 'dusty':['d-ah1 s-t-iy','jj'],
@@ -26994,7 +27057,7 @@ function _dict() { return {
 'evict':['ih v-ih1-k-t','vb'],
 'evicted':['ih v-ih1-k t-ih-d','vbn'],
 'evicting':['ih v-ih1-k t-ih-ng','vbg'],
-'evidence':['eh1 v-ah d-ah-n-s','nn vbp'],
+'evidence':['eh1 v-ah d-ah-n-s','nn'],
 'evidenced':['eh1 v-ih d-ah-n-s-t','vbn'],
 'evident':['eh1 v-ah d-ah-n-t','jj'],
 'evidently':['eh1 v-ah d-ah-n-t l-iy','rb'],
@@ -28143,14 +28206,14 @@ function _dict() { return {
 'fluidity':['f-l-uw ih1 d-ah t-iy','nn'],
 'fluke':['f-l-uw1-k','nn'],
 'flung':['f-l-ah1-ng','vbd vbn'],
-'flunk':['f-l-ah1-ng-k','vbp'],
+'flunk':['f-l-ah1-ng-k','vb'],
 'flunked':['f-l-ah1-ng-k-t','vbd vbn'],
 'flunking':['f-l-ah1-ng k-ih-ng','vbg'],
 'fluorescent':['f-l-uh r-eh1 s-ah-n-t','jj'],
 'fluoride':['f-l-uh1 r-ay-d','nn'],
 'fluorine':['f-l-uh1 r-iy-n','nn'],
 'flurried':['f-l-er1 iy-d','vbd'],
-'flurry':['f-l-er1 iy','nn vbp'],
+'flurry':['f-l-er1 iy','nn'],
 'flush':['f-l-ah1-sh','jj nn rb vb vbp'],
 'flushed':['f-l-ah1-sh-t','vbn vbd'],
 'flushes':['f-l-ah1 sh-ih-z','vbz'],
@@ -28768,7 +28831,7 @@ function _dict() { return {
 'gantlet':['g-ao1-n-t l-ah-t','nn'],
 'gap':['g-ae1-p','nn'],
 'gaping':['g-ey1 p-ih-ng','vbg jj'],
-'garage':['g-er aa1-zh','nn vbp'],
+'garage':['g-er aa1-zh','nn'],
 'garb':['g-aa1-r-b','nn'],
 'garbage':['g-aa1-r b-ih-jh','nn'],
 'garbed':['g-aa1-r-b-d','vbn'],
@@ -29421,7 +29484,7 @@ function _dict() { return {
 'grouper':['g-r-uw1 p-er','nn'],
 'grouping':['g-r-uw1 p-ih-ng','nn vbg'],
 'groups':['g-r-uw1-p-s','nns'],
-'grouse':['g-r-aw1-s','vbp nn'],
+'grouse':['g-r-aw1-s','nn'],
 'groused':['g-r-aw1-s-t','vbd'],
 'grouses':['g-r-aw1 s-ih-z','vbz'],
 'grousing':['g-r-aw1 s-ih-ng','vbg'],
@@ -29750,8 +29813,6 @@ function _dict() { return {
 'hardy':['hh-aa1-r d-iy','jj'],
 'hare':['hh-eh1-r','nn'],
 'harem':['hh-eh1 r-ah-m','nn'],
-'hark':['hh-aa1-r-k','vbp'],
-'harking':['hh-aa1-r k-ih-ng','vbg'],
 'harm':['hh-aa1-r-m','nn vb vbp'],
 'harmed':['hh-aa1-r-m-d','vbn vbd'],
 'harmful':['hh-aa1-r-m f-ah-l','jj'],
@@ -29791,7 +29852,6 @@ function _dict() { return {
 'hassle':['hh-ae1 s-ah-l','nn vb'],
 'hassled':['hh-ae1 s-ah-l-d','vbn'],
 'hassles':['hh-ae1 s-ah-l-z','nns'],
-'hast':['hh-ae1-s-t','vbp'],
 'haste':['hh-ey1-s-t','nn'],
 'hasten':['hh-ey1 s-ah-n','vb vbp'],
 'hastened':['hh-ey1 s-ah-n-d','vbd vbn'],
@@ -29978,7 +30038,7 @@ function _dict() { return {
 'helmet':['hh-eh1-l m-ah-t','nn'],
 'helmsman':['hh-eh1-l-m-z m-ae-n','nn'],
 'help':['hh-eh1-l-p','vb nn vbp'],
-'helped':['hh-eh1-l-p-t','vbd vbn vbp'],
+'helped':['hh-eh1-l-p-t','vbd vbn'],
 'helper':['hh-eh1-l p-er','nn'],
 'helpful':['hh-eh1-l-p f-ah-l','jj'],
 'helpfully':['hh-eh1-l-p f-ah l-iy','rb'],
@@ -29986,7 +30046,7 @@ function _dict() { return {
 'helpless':['hh-eh1-l-p l-ah-s','jj'],
 'helplessly':['hh-eh1-l-p l-ah-s l-iy','rb'],
 'helplessness':['hh-eh1-l-p l-ah-s n-ah-s','nn'],
-'helps':['hh-eh1-l-p-s','vbz vbp nns'],
+'helps':['hh-eh1-l-p-s','vbz nns'],
 'hem':['hh-eh1-m','nn'],
 'hemisphere':['hh-eh1 m-ih s-f-ih-r','nn'],
 'hemispheric':['hh-eh m-ah s-f-ih1 r-ih-k','jj'],
@@ -30007,7 +30067,7 @@ function _dict() { return {
 'henchman':['hh-eh1-n-ch m-ah-n','nn'],
 'henpecked':['hh-eh1-n p-eh-k-t','jj'],
 'hepatitis':['hh-eh p-ah t-ay1 t-ah-s','nn nnp'],
-'her':['hh-er','prp$ prp prp$r'],
+'her':['hh-er','prp$'],
 'herald':['hh-eh1 r-ah-l-d','vb vbp'],
 'heralded':['hh-eh1 r-ah-l d-ih-d','vbn vbd'],
 'heraldic':['hh-eh r-ae1-l d-ih-k','jj'],
@@ -30140,7 +30200,7 @@ function _dict() { return {
 'hired':['hh-ay1 er-d','vbn jj vbd'],
 'hires':['hh-ay1 er-z','vbz nns'],
 'hiring':['hh-ay1 r-ih-ng','vbg nn'],
-'his':['hh-ih1-z','prp$ prp'],
+'his':['hh-ih1-z','prp$'],
 'hiss':['hh-ih1-s','nns'],
 'hissed':['hh-ih1-s-t','vbd'],
 'hissing':['hh-ih1 s-ih-ng','nn vbg'],
@@ -31860,7 +31920,7 @@ function _dict() { return {
 'irritates':['ih1 r-ih t-ey-t-s','vbz'],
 'irritating':['ih1 r-ah t-ey t-ih-ng','jj'],
 'irritation':['ih r-ih t-ey1 sh-ah-n','nn'],
-'is':['ih1-z','vbz rb nns vbp'],
+'is':['ih1-z','vbz rb nns'],
 'island':['ay1 l-ah-n-d','nn'],
 'islander':['ay1 l-ah-n d-er','nn'],
 'islands':['ay1 l-ah-n-d-z','nns vbz'],
@@ -32176,7 +32236,6 @@ function _dict() { return {
 'kill':['k-ih1-l','vb vbp nn'],
 'killed':['k-ih1-l-d','vbn vbd'],
 'killer':['k-ih1 l-er','nn'],
-'killin':['k-ih1 l-ih-n','vbg'],
 'killing':['k-ih1 l-ih-ng','vbg jj nn'],
 'kills':['k-ih1-l-z','vbz nns'],
 'kiln':['k-ih1-l-n','nn'],
@@ -32366,7 +32425,7 @@ function _dict() { return {
 'lantern':['l-ae1-n t-er-n','nn'],
 'lanterns':['l-ae1-n t-er-n-z','nns vbz'],
 'lanthanum':['l-ae1-n th-ah n-ah-m','nn'],
-'lap':['l-ae1-p','nn vbp'],
+'lap':['l-ae1-p','nn'],
 'lapel':['l-ah p-eh1-l','nn'],
 'lapidary':['l-ae1 p-ah d-eh r-iy','jj nn'],
 'lapped':['l-ae1-p-t','vbd vbn'],
@@ -32754,7 +32813,6 @@ function _dict() { return {
 'likeliest':['l-ay1-k l-iy ah-s-t','jjs'],
 'likelihood':['l-ay1-k l-iy hh-uh-d','nn'],
 'likely':['l-ay1-k l-iy','jj rb'],
-'liken':['l-ay1 k-ah-n','vbp'],
 'likened':['l-ay1 k-ah-n-d','vbd vbn'],
 'likeness':['l-ay1-k n-ah-s','nn'],
 'likening':['l-ay1 k-ah n-ih-ng','vbg'],
@@ -32777,7 +32835,7 @@ function _dict() { return {
 'limited':['l-ih1 m-ah t-ah-d','jj vbd vbn'],
 'limiting':['l-ih1 m-ah t-ih-ng','vbg'],
 'limitless':['l-ih1 m-ah-t l-ah-s','jj'],
-'limits':['l-ih1 m-ah-t-s','nns vbp vbz'],
+'limits':['l-ih1 m-ah-t-s','nns vbz'],
 'limo':['l-ih1 m-ow','nn'],
 'limousine':['l-ih1 m-ah z-iy-n','nn'],
 'limp':['l-ih1-m-p','jj nn'],
@@ -33216,7 +33274,6 @@ function _dict() { return {
 'magnolia':['m-ae-g n-ow1 l-y-ah','nn nns'],
 'magnum':['m-ae1-g n-ah-m','nn'],
 'magpies':['m-ae1-g p-ay-z','nns'],
-'mah':['m-aa1','prp$'],
 'maharajahs':['m-aa hh-er aa1 jh-ah-z','nns'],
 'mahogany':['m-ah hh-aa1 g-ah n-iy','nn'],
 'mai':['m-ay1','md'],
@@ -33400,7 +33457,7 @@ function _dict() { return {
 'maritime':['m-eh1 r-ah t-ay-m','jj'],
 'mark':['m-aa1-r-k','nn vbp vb'],
 'markdown':['m-aa1-r-k d-aw-n','nn jj'],
-'marked':['m-aa1-r-k-t','vbn jj vbd vbp'],
+'marked':['m-aa1-r-k-t','vbn jj vbd'],
 'markedly':['m-aa1-r k-ah-d l-iy','rb'],
 'marker':['m-aa1-r k-er','nn'],
 'market':['m-aa1-r k-ah-t','nn vbp vb'],
@@ -33636,7 +33693,6 @@ function _dict() { return {
 'meditative':['m-eh1 d-ah t-ey t-ih-v','jj'],
 'medium':['m-iy1 d-iy ah-m','nn jj'],
 'medley':['m-eh1-d l-iy','nn'],
-'mee':['m-iy1','prp'],
 'meek':['m-iy1-k','jj'],
 'meekly':['m-iy1-k l-iy','rb'],
 'meet':['m-iy1-t','vb vbp nn'],
@@ -33922,7 +33978,7 @@ function _dict() { return {
 'mindless':['m-ay1-n-d l-ah-s','jj'],
 'minds':['m-ay1-n-d-z','nns'],
 'mindset':['m-ay1-n-d s-eh-t','nn'],
-'mine':['m-ay1-n','nn prp$ jj vb prp vbp'],
+'mine':['m-ay1-n','nn vb prp vbp'],
 'mined':['m-ay1-n-d','vbn vbd'],
 'minefield':['m-ay1-n f-iy-l-d','nn'],
 'miner':['m-ay1 n-er','nn'],
@@ -34526,7 +34582,7 @@ function _dict() { return {
 'muzzle':['m-ah1 z-ah-l','nn vb'],
 'muzzled':['m-ah1 z-ah-l-d','vbn'],
 'muzzles':['m-ah1 z-ah-l-z','nns vbz'],
-'my':['m-ay1','prp$ uh prp jj'],
+'my':['m-ay1','prp$'],
 'mycology':['m-ay k-aa1 l-ah jh-iy','nn'],
 'myocardial':['m-ay ah k-aa1-r d-iy ah-l','jj'],
 'myocardium':['m-ay ah k-aa1-r d-iy ah-m','nn'],
@@ -34996,7 +35052,6 @@ function _dict() { return {
 'noteholders':['n-ow1-t hh-ow-l d-er-z','nns'],
 'notes':['n-ow1-t-s','nns vbz'],
 'noteworthy':['n-ow1-t w-er dh-iy','jj'],
-'nothin':['n-aa1 th-ih-n','nn vbg'],
 'nothing':['n-ah1 th-ih-ng','nn'],
 'nothingness':['n-ah1 th-ih-ng n-ah-s','nn'],
 'notice':['n-ow1 t-ah-s','nn vb vbp'],
@@ -35173,7 +35228,7 @@ function _dict() { return {
 'obstructive':['ah-b s-t-r-ah1-k t-ih-v','jj'],
 'obtain':['ah-b t-ey1-n','vb vbp'],
 'obtainable':['ah-b t-ey1 n-ah b-ah-l','jj'],
-'obtained':['ah-b t-ey1-n-d','vbn vbd vbp'],
+'obtained':['ah-b t-ey1-n-d','vbn vbd'],
 'obtaining':['ah-b t-ey1 n-ih-ng','vbg'],
 'obtrudes':['ah-b t-r-uw1-d-z','vbz'],
 'obtuse':['aa-b t-uw1-s','jj'],
@@ -35402,7 +35457,7 @@ function _dict() { return {
 'optimize':['aa1-p t-ah m-ay-z','vb'],
 'optimum':['aa1-p t-ah m-ah-m','jj nn'],
 'opting':['aa1-p t-ih-ng','vbg'],
-'option':['aa1-p sh-ah-n','nn vbp'],
+'option':['aa1-p sh-ah-n','nn'],
 'optional':['aa1-p sh-ah n-ah-l','jj'],
 'optioned':['aa1-p sh-ah-n-d','vbn'],
 'opts':['aa1-p-t-s','vbz'],
@@ -35521,7 +35576,7 @@ function _dict() { return {
 'ounce':['aw1-n-s','nn'],
 'ounces':['aw1-n s-ah-z','nns nn'],
 'our':['aw1 er','prp$'],
-'ours':['aw1 er-z','prp jj prp$'],
+'ours':['aw1 er-z','prp'],
 'ourselves':['aw er s-eh1-l-v-z','prp'],
 'oust':['aw1-s-t','vb'],
 'ousted':['aw1 s-t-ih-d','vbn vbd jj'],
@@ -36505,7 +36560,6 @@ function _dict() { return {
 'persuasiveness':['p-er s-w-ey1 s-ih-v n-ah-s','nn'],
 'pert':['p-er1-t','jj'],
 'pertain':['p-er t-ey1-n','vbp vb'],
-'pertained':['p-er t-ey1-n-d','vbp'],
 'pertaining':['p-er t-ey1 n-ih-ng','vbg'],
 'pertains':['p-er t-ey1-n-z','vbz'],
 'pertinent':['p-er1 t-ah n-ah-n-t','jj'],
@@ -36558,7 +36612,7 @@ function _dict() { return {
 'pew':['p-y-uw1','nn'],
 'pewter':['p-y-uw1 t-er','nn'],
 'phalanx':['f-ey1 l-ae-ng-k-s','nn'],
-'phantom':['f-ae1-n t-ah-m','jj vbp nn'],
+'phantom':['f-ae1-n t-ah-m','jj nn'],
 'pharmaceutical':['f-aa-r m-ah s-uw1 t-ih k-ah-l','jj nn'],
 'pharmacist':['f-aa1-r m-ah s-ih-s-t','nn'],
 'pharmacological':['f-aa-r m-ah k-ah l-aa1 jh-ih k-ah-l','jj'],
@@ -36806,7 +36860,7 @@ function _dict() { return {
 'planner':['p-l-ae1 n-er','nn'],
 'planning':['p-l-ae1 n-ih-ng','nn vbg'],
 'plans':['p-l-ae1-n-z','nns vbp vbz'],
-'plant':['p-l-ae1-n-t','nn vbp vb'],
+'plant':['p-l-ae1-n-t','nn vb'],
 'plantain':['p-l-ae1-n t-ah-n','nn'],
 'plantation':['p-l-ae-n t-ey1 sh-ah-n','nn'],
 'planted':['p-l-ae1-n t-ah-d','vbn jj vbd'],
@@ -36848,7 +36902,7 @@ function _dict() { return {
 'playoff':['p-l-ey1 ao-f','nn'],
 'playpen':['p-l-ey1 p-eh-n','nn'],
 'playroom':['p-l-ey1 r-uw-m','nn'],
-'plays':['p-l-ey1-z','vbz nns vbp'],
+'plays':['p-l-ey1-z','vbz nns'],
 'playthings':['p-l-ey1 th-ih-ng-z','nns'],
 'playwright':['p-l-ey1 r-ay-t','nn'],
 'plaza':['p-l-aa1 z-ah','nn'],
@@ -37782,7 +37836,7 @@ function _dict() { return {
 'proportioned':['p-r-ah p-ao1-r sh-ah-n-d','jj'],
 'proposal':['p-r-ah p-ow1 z-ah-l','nn'],
 'propose':['p-r-ah p-ow1-z','vb vbp'],
-'proposed':['p-r-ah p-ow1-z-d','vbn vbd vbp jj'],
+'proposed':['p-r-ah p-ow1-z-d','vbn vbd jj'],
 'proposes':['p-r-ah p-ow1 z-ih-z','vbz'],
 'proposing':['p-r-ah p-ow1 z-ih-ng','vbg'],
 'proposition':['p-r-aa p-ah z-ih1 sh-ah-n','nn'],
@@ -39657,7 +39711,6 @@ function _dict() { return {
 'retreated':['r-iy t-r-iy1 t-ah-d','vbd vbn'],
 'retreating':['r-iy t-r-iy1 t-ih-ng','vbg'],
 'retreats':['r-iy t-r-iy1-t-s','nns'],
-'retrench':['r-iy t-r-eh1-n-ch','vbp'],
 'retrenching':['r-iy t-r-eh1-n ch-ih-ng','nn vbg'],
 'retrenchment':['r-iy t-r-eh1-n-ch m-ah-n-t','nn'],
 'retrial':['r-iy t-r-ay1 ah-l','nn'],
@@ -39871,7 +39924,7 @@ function _dict() { return {
 'riled':['r-ay1-l-d','vbn'],
 'riles':['r-ay1-l-z','vbz'],
 'rill':['r-ih1-l','nn'],
-'rim':['r-ih1-m','nn vbp'],
+'rim':['r-ih1-m','nn'],
 'rimmed':['r-ih1-m-d','jj vbd'],
 'rinds':['r-ay1-n-d-z','nns'],
 'ring':['r-ih1-ng','nn vb vbp'],
@@ -40032,7 +40085,7 @@ function _dict() { return {
 'ropers':['r-ow1 p-er-z','nns'],
 'ropes':['r-ow1-p-s','nns'],
 'rosaries':['r-ow1 z-er iy-z','nns'],
-'rose':['r-ow1-z','vbd vbp jj nn'],
+'rose':['r-ow1-z','vbd jj nn'],
 'rosebush':['r-ow1-z b-uh-sh','nn'],
 'roses':['r-ow1 z-ih-z','nns'],
 'rosettes':['r-ow1 z-eh1-t-s','nns'],
@@ -40850,7 +40903,7 @@ function _dict() { return {
 'sentinel':['s-eh1-n t-ah n-ah-l','nn'],
 'sentry':['s-eh1-n t-r-iy','nn'],
 'separate':['s-eh1 p-er ey-t','jj vbp vb'],
-'separated':['s-eh1 p-er ey t-ah-d','vbn jj vbd vbp'],
+'separated':['s-eh1 p-er ey t-ah-d','vbn jj vbd'],
 'separately':['s-eh1 p-er ah-t l-iy','rb'],
 'separateness':['s-eh1 p-er ah-t n-ah-s','nn'],
 'separates':['s-eh1 p-er ey-t-s','vbz'],
@@ -41245,7 +41298,7 @@ function _dict() { return {
 'shrinks':['sh-r-ih1-ng-k-s','vbz'],
 'shrivel':['sh-r-ih1 v-ah-l','vb'],
 'shriveled':['sh-r-ih1 v-ah-l-d','vbn vbd jj'],
-'shroud':['sh-r-aw1-d','vbp'],
+'shroud':['sh-r-aw1-d','nn vb'],
 'shrouded':['sh-r-aw1 d-ih-d','vbn vbd'],
 'shrouding':['sh-r-aw1 d-ih-ng','vbg'],
 'shrub':['sh-r-ah1-b','nn'],
@@ -41917,7 +41970,7 @@ function _dict() { return {
 'soiled':['s-oy1-l-d','vbn jj vbd'],
 'soils':['s-oy1-l-z','nns'],
 'sojourn':['s-ow1 jh-er-n','nn'],
-'solace':['s-aa1 l-ah-s','nn vbp'],
+'solace':['s-aa1 l-ah-s','nn'],
 'solar':['s-ow1 l-er','jj'],
 'sold':['s-ow1-l-d','vbn vbd'],
 'solder':['s-aa1 d-er','jj vb'],
@@ -42072,7 +42125,7 @@ function _dict() { return {
 'spacesuit':['s-p-ey1-s uw-t','nn'],
 'spacing':['s-p-ey1 s-ih-ng','nn jj'],
 'spacious':['s-p-ey1 sh-ah-s','jj'],
-'spade':['s-p-ey1-d','nn jj vbp'],
+'spade':['s-p-ey1-d','nn'],
 'spaghetti':['s-p-ah g-eh1 t-iy','nns nn'],
 'span':['s-p-ae1-n','nn vb vbp'],
 'spandex':['s-p-ae1-n d-ah-k-s','nn'],
@@ -42290,7 +42343,7 @@ function _dict() { return {
 'sporadic':['s-p-er ae1 d-ih-k','jj'],
 'sporadically':['s-p-er ae1 d-ih-k l-iy','rb'],
 'spores':['s-p-ao1-r-z','nns'],
-'sport':['s-p-ao1-r-t','nn jj vbp'],
+'sport':['s-p-ao1-r-t','nn jj'],
 'sported':['s-p-ao1-r t-ih-d','vbd'],
 'sporting':['s-p-ao1-r t-ih-ng','vbg jj nn'],
 'sports':['s-p-ao1-r-t-s','nns vbz'],
@@ -42541,7 +42594,7 @@ function _dict() { return {
 'startled':['s-t-aa1-r t-ah-l-d','vbn vbd jj'],
 'startling':['s-t-aa1-r-t l-ih-ng','jj vbg'],
 'startlingly':['s-t-aa1-r-t l-ih-ng l-iy','rb'],
-'starts':['s-t-aa1-r-t-s','vbz nns vbp'],
+'starts':['s-t-aa1-r-t-s','vbz nns'],
 'startup':['s-t-aa1-r-t ah-p','nn jj'],
 'starvation':['s-t-aa-r v-ey1 sh-ah-n','nn'],
 'starve':['s-t-aa1-r-v','vb'],
@@ -43362,7 +43415,7 @@ function _dict() { return {
 'surfacing':['s-er1 f-ah s-ih-ng','vbg'],
 'surfactant':['s-er f-ae1-k t-ah-n-t','nn'],
 'surfboard':['s-er1-f b-ao-r-d','nn'],
-'surfeit':['s-er1 f-ah-t','nn vbp'],
+'surfeit':['s-er1 f-ah-t','nn'],
 'surfers':['s-er1 f-er-z','nns'],
 'surfing':['s-er1 f-ih-ng','nn'],
 'surge':['s-er1-jh','nn vb'],
@@ -43693,7 +43746,6 @@ function _dict() { return {
 'talkative':['t-ao1 k-ah t-ih-v','jj'],
 'talked':['t-ao1-k-t','vbd vbn'],
 'talker':['t-ao1 k-er','nn'],
-'talkin':['t-aa1 k-ah-n','vbg nn'],
 'talking':['t-ao1 k-ih-ng','vbg nn'],
 'talks':['t-ao1-k-s','nns vbz'],
 'talky':['t-ao1 k-iy','jj'],
@@ -43847,7 +43899,7 @@ function _dict() { return {
 'tedious':['t-iy1 d-iy ah-s','jj'],
 'tediously':['t-iy1 d-iy ah-s l-iy','rb'],
 'tedium':['t-iy1 d-iy ah-m','nn'],
-'tee':['t-iy1','nn vbp'],
+'tee':['t-iy1','nn'],
 'teed':['t-iy1-d','vbd vbn'],
 'teeming':['t-iy1 m-ih-ng','vbg'],
 'teems':['t-iy1-m-z','vbz'],
@@ -44031,7 +44083,7 @@ function _dict() { return {
 'thanks':['th-ae1-ng-k-s','nns vbz vb uh'],
 'thanksgiving':['th-ae-ng-k-s g-ih1 v-ih-ng','nn'],
 'thar':['th-aa1-r','rb'],
-'that':['dh-ae1-t','in dt nn rb rp uh wp vbp wdt'],
+'that':['dh-ae1-t','in dt nn rb rp uh wp wdt'],
 'thatches':['th-ae1 ch-ih-z','nns'],
 'thaw':['th-ao1','nn vb'],
 'thawed':['th-ao1-d','vbn'],
@@ -44044,7 +44096,7 @@ function _dict() { return {
 'theatricality':['th-iy ae t-r-ah k-ae1 l-ah t-iy','nn'],
 'theatrically':['th-iy ae1 t-r-ih k-ah l-iy','rb'],
 'theft':['th-eh1-f-t','nn'],
-'their':['dh-eh1-r','prp$ prp'],
+'their':['dh-eh1-r','prp$'],
 'theirs':['dh-eh1-r-z','prp jj'],
 'them':['dh-eh1-m','prp dt'],
 'thematic':['th-iy m-ae1 t-ih-k','jj'],
@@ -44109,7 +44161,6 @@ function _dict() { return {
 'thing':['th-ih1-ng','nn'],
 'think':['th-ih1-ng-k','vbp vb nn'],
 'thinker':['th-ih1-ng k-er','nn'],
-'thinkin':['th-ih1-ng k-ih-n','vbg nn'],
 'thinking':['th-ih1-ng k-ih-ng','vbg nn jj'],
 'thinks':['th-ih1-ng-k-s','vbz'],
 'thinly':['th-ih1-n l-iy','rb'],
@@ -44224,7 +44275,6 @@ function _dict() { return {
 'thwart':['th-w-ao1-r-t','vb nn rb'],
 'thwarted':['th-w-ao1-r t-ah-d','vbn vbd'],
 'thwarting':['th-w-ao1-r t-ih-ng','vbg'],
-'thy':['dh-ay1','jj prp$ prp'],
 'thyroid':['th-ay1 r-oy-d','nn'],
 'tick':['t-ih1-k','vb nn'],
 'ticked':['t-ih1-k-t','vbd vbn jj'],
@@ -44458,7 +44508,7 @@ function _dict() { return {
 'tossing':['t-ao1 s-ih-ng','vbg nn'],
 'tot':['t-aa1-t','nn'],
 'total':['t-ow1 t-ah-l','jj nn vb vbp'],
-'totaled':['t-ow1 t-ah-l-d','vbd vbn vbp'],
+'totaled':['t-ow1 t-ah-l-d','vbd vbn'],
 'totaling':['t-ow1 t-ah-l ih-ng','vbg'],
 'totalitarian':['t-ow t-ae l-ih t-eh1 r-iy ah-n','jj'],
 'totalitarianism':['t-ow t-ae l-ah t-eh1 r-iy ah n-ih z-ah-m','nn'],
@@ -44854,7 +44904,7 @@ function _dict() { return {
 'truism':['t-r-uw1 ih z-ah-m','nn'],
 'truly':['t-r-uw1 l-iy','rb'],
 'trump':['t-r-ah1-m-p','nn vb'],
-'trumpet':['t-r-ah1-m p-ah-t','nn vbp'],
+'trumpet':['t-r-ah1-m p-ah-t','nn'],
 'trumpeted':['t-r-ah1-m p-ah t-ih-d','vbd vbn'],
 'trumpeter':['t-r-ah1-m p-ah t-er','nn'],
 'trumpeting':['t-r-ah1-m p-ah t-ih-ng','vbg'],
@@ -45291,7 +45341,7 @@ function _dict() { return {
 'underwrites':['ah1-n d-er r-ay-t-s','vbz'],
 'underwriting':['ah1-n d-er r-ay1 t-ih-ng','nn vbg'],
 'underwritten':['ah1-n d-er r-ih t-ah-n','vbn jj nn'],
-'underwrote':['ah-n d-er r-ow1-t','vbd nn vbp'],
+'underwrote':['ah-n d-er r-ow1-t','vbd nn'],
 'undeserved':['ah-n d-ih z-er1-v-d','jj'],
 'undesirable':['ah-n d-ih z-ay1 r-ah b-ah-l','jj nn'],
 'undetectable':['ah-n d-ih t-eh1-k t-ah b-ah-l','jj'],
@@ -45860,7 +45910,7 @@ function _dict() { return {
 'vacate':['v-ey1 k-ey-t','vb'],
 'vacated':['v-ey k-ey1 t-ah-d','vbn vbd'],
 'vacating':['v-ey1 k-ey t-ih-ng','vbg'],
-'vacation':['v-ey k-ey1 sh-ah-n','nn vbp'],
+'vacation':['v-ey k-ey1 sh-ah-n','nn'],
 'vacationed':['v-ey k-ey1 sh-ah-n-d','vbd'],
 'vacationer':['v-ey k-ey1 sh-ah-n er','nn'],
 'vacationing':['v-ey k-ey1 sh-ah-n ih-ng','vbg nn'],
@@ -46444,7 +46494,7 @@ function _dict() { return {
 'waylaid':['w-ey1 l-ey-d','vbn'],
 'wayside':['w-ey1 s-ay-d','nn'],
 'wayward':['w-ey1 w-er-d','jj'],
-'we':['w-iy1','prp vbp'],
+'we':['w-iy1','prp'],
 'weak':['w-iy1-k','jj'],
 'weaken':['w-iy1 k-ah-n','vb vbp'],
 'weakened':['w-iy1 k-ah-n-d','vbn jj vbd'],
@@ -46730,7 +46780,7 @@ function _dict() { return {
 'wine':['w-ay1-n','nn jj'],
 'wined':['w-ay1-n-d','vbd'],
 'winery':['w-ay1 n-er iy','nn'],
-'wing':['w-ih1-ng','nn vbp'],
+'wing':['w-ih1-ng','nn'],
 'winged':['w-ih1-ng-d','vbd vbn jj'],
 'winger':['w-ih1 ng-er','nn'],
 'winging':['w-ih1 ng-ih-ng','vbg'],
@@ -46912,7 +46962,7 @@ function _dict() { return {
 'worshipping':['w-er1 sh-ah p-ih-ng','vbg'],
 'worst':['w-er1-s-t','jjs rbs jj'],
 'worsted':['w-er1 s-t-ih-d','jj nn'],
-'worth':['w-er1-th','jj in nn rb vbn vbp'],
+'worth':['w-er1-th','jj in nn rb vbn'],
 'worthier':['w-er1 dh-iy er','jjr'],
 'worthiest':['w-er1 dh-iy ah-s-t','jjs'],
 'worthiness':['w-er1 dh-iy n-ih-s','nn'],
@@ -47049,12 +47099,12 @@ function _dict() { return {
 'yoke':['y-ow1-k','nn'],
 'yolk':['y-ow1-k','nn'],
 'yonder':['y-aa1-n d-er','nn'],
-'you':['y-uw1','prp vbp rp'],
+'you':['y-uw1','prp rp'],
 'young':['y-ah1-ng','jj nn nns'],
 'younger':['y-ah1-ng g-er','jjr'],
 'youngest':['y-ah1-ng g-ah-s-t','jjs'],
 'youngster':['y-ah1-ng s-t-er','nn'],
-'your':['y-ao1-r','prp$ prp vbp'],
+'your':['y-ao1-r','prp$'],
 'yours':['y-uh1-r-z','prp jj'],
 'yourself':['y-er s-eh1-l-f','prp'],
 'yourselves':['y-uh-r s-eh1-l-v-z','prp'],
@@ -47103,6 +47153,7 @@ function _dict() { return {
 'zooming':['z-uw1 m-ih-ng','vbg'],
 'zooms':['z-uw1-m-z','vbz']
 }; }
+
 RiLexicon.SILENCE_LTS = false;
 RiLexicon.enabled = true;
 

@@ -7,7 +7,15 @@ var runtests = function () {
       deepEqual(RiTa.getPosTags("flunk"), [ "vb" ]);
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
       //console.log(RiTa.getPosTags("He flunks the test"));
-      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbn",  "dt", "nn"]);
+      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbz",  "dt", "nn"]);
+
+      var resultArr = RiTa.getPosTags("Dave dances");
+      var answerArr = [ "nnp", "vbz" ];
+      deepEqual(answerArr, resultArr);
+
+      resultArr = RiTa.getPosTags("Elephants dance");
+      answerArr =  [ "nns", "vbz" ];
+      deepEqual(answerArr, resultArr);
 
       deepEqual(RiTa.getPosTags("outnumber"),  [ "vb" ]);
       deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
