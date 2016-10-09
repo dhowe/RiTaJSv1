@@ -10,12 +10,12 @@ var runtests = function () {
         "concerti","concerto",
         "septa","septum",
         "termini","terminus",
-        "larvae","larvum",
+        "larvae","larva",
         "vertebrae","vertebra",
         "memorabilia","memorabilium",
       ];
       for (var i = 0; i < tests.length; i+=2) {
-        equal(tests[i], RiTa.singularize(tests[i+1]));
+        equal(RiTa.singularize(tests[i]),tests[i+1]);
       }
     });
 
@@ -27,12 +27,12 @@ var runtests = function () {
         "concerti","concerto",
         "septa","septum",
         "termini","terminus",
-        "larvae","larvum",
+        "larvae","larva",
         "vertebrae","vertebra",
         "memorabilia","memorabilium",
       ];
       for (var i = 0; i < tests.length; i+=2) {
-        equal(tests[i+1], RiTa.pluralize(tests[i]));
+        equal(RiTa.pluralize(tests[i+1]),tests[i]);
       }
     });
 

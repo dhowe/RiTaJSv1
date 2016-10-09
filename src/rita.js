@@ -4130,7 +4130,7 @@ var SINGULAR_RULES = [
   RE("^[lm]ice$", 3, "ouse"),
   RE("^children", 3),
   RE("^(appendices|indices|matrices)", 3, "x"),
-  RE("^(stimuli|alumni)$", 1, "us"),
+  RE("^(stimul|alumn|termin)i$", 1, "us"),
   RE("^(data)$", 1, "um"),
   RE("^(memoranda|bacteria|curricula|minima|" + "maxima|referenda|spectra|phenomena|criteria)$", 1, "um"),
   RE("monies", 3, "ey"),
@@ -4138,13 +4138,15 @@ var SINGULAR_RULES = [
   RE("^meninges|phalanges$", 3, "x"),
   RE("schemata$", 2, "s"),
   RE("^corpora$", 3, "us"),
-  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg)ae$", 1),
+  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)ae$", 1),
   RE("^apices|cortices$", 4, "ex"),
   RE("^teeth$", 4, "ooth"),
   RE("^feet$", 3, "oot"),
   RE("femora", 3, "ur"),
   RE("geese", 4, "oose"),
   RE("crises", 2, "is"),
+  RE("^(medi|millenni|consorti|sept|memorabili)a$", 1, "um"),
+  RE("concerti", 1, "o")
 ];
 
 var C = "[bcdfghjklmnpqrstvwxyz]",
@@ -4154,10 +4156,11 @@ var PLURAL_RULES = [
     NULL_PLURALS,
     RE("^(piano|photo|solo|ego|tobacco|cargo|golf|grief)$", 0, "s"),
     RE("^(wildlife)$", 0, "s"),
+    RE("^concerto$", 1, "i"),
     RE(C + "o$", 0, "es"),
     RE(C + "y$", 1, "ies"),
     RE("^ox$", 0, "en"),
-    RE("^(stimulus|alumnus)$", 2, "i"),
+    RE("^(stimul|alumn|termin)us$", 2, "i"),
     RE("^corpus$", 2, "ora"),
     RE("(xis|sis)$", 2, "es"),
     RE("([zsx]|ch|sh)$", 0, "es"),
@@ -4174,7 +4177,7 @@ var PLURAL_RULES = [
     RE("schema$", 0, "ta"),
     RE("^bus$", 0, "ses"),
     RE("child$", 0, "ren"),
-    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg)a$", 0, "e"),
+    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
     RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
     RE("^aide-de-camp$", 8, "s-de-camp"),
     RE("^apex|cortex$", 2, "ices"),
@@ -4190,7 +4193,8 @@ var PLURAL_RULES = [
     RE("^(taxi|chief|proof|ref|relief|roof|belief)$", 0, "s"),
     RE("^(co|no)$", 0, "'s"),
     RE("^blond$", 0, "es"),
-
+    RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
+    
     // Latin stems
     RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"),
     RE("^(appendix|index|matrix)", 2, "ices")
