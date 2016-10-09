@@ -441,14 +441,14 @@ var runtests = function() {
     // ok(lex.isAlliteration("sea", "seven"));  // not working only in RiTaJS
     // ok(lex.isAlliteration("silly", "seven"));  // not working only in RiTaJS
     ok(lex.isAlliteration("sea", "sally"));
-    
+
     ok(lex.isAlliteration("big", "bad"));
     ok(lex.isAlliteration("bad", "big")); // swap position
-    
+
     ok(lex.isAlliteration("BIG", "bad")); // CAPITAL LETTERS
     ok(lex.isAlliteration("big", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
-    
+
     ok(!lex.isAlliteration("big ", "bad")); // Word with space False
     ok(!lex.isAlliteration("big    ", "bad")); // Word with tab space
 
@@ -493,8 +493,8 @@ var runtests = function() {
 
     lex = RiLexicon();
 
-    var rhymes = [ 
-    "candle", "handle", 
+    var rhymes = [
+    "candle", "handle",
     "fat", "cat",
     "apple", "grapple",
     "apple", "chapel",
@@ -508,8 +508,8 @@ var runtests = function() {
       ok(lex.isRhyme(rhymes[i], rhymes[i+1]), rhymes[i]+"/"+rhymes[i+1]);
       ok(lex.isRhyme(rhymes[i+1], rhymes[i]), rhymes[i+1]+"/"+rhymes[i]);
     }
-    
-    var rhymeSet1 = [ 
+
+    var rhymeSet1 = [
     "insincere", "persevere", "interfere",  // each should rhyme with the others
     "career",  "year", "reappear", "brigadier", "pioneer", "rear", "near",
     "beer", "fear", "sneer", "adhere", "veer", "volunteer", "pamphleteer",
@@ -523,7 +523,7 @@ var runtests = function() {
 
     for (var i = 0; i < rhymeSet1.length-1; i++) {
       for (var j = 0; j < rhymeSet1.length; j++) {
-    
+
     if (i != j){
       //System.out.println(rhymeSet1[i] + " + "+rhymeSet1[j]+" -> "+lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
       ok(lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
@@ -532,7 +532,7 @@ var runtests = function() {
       ok(!lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
       }
     }
-    
+
     var notRhymes = [
     "not", "rhyme",
     "deer", "dear",
@@ -542,7 +542,7 @@ var runtests = function() {
     "peer","pear",
     "sheer","shear"
     ];
-    
+
     for (var i = 0; i < notRhymes.length; i += 2) {
       ok(!lex.isRhyme(notRhymes[i], notRhymes[i+1]));
       ok(!lex.isRhyme(notRhymes[i+1], notRhymes[i]));  // either way should be the same
@@ -688,9 +688,6 @@ var runtests = function() {
 
     var result = lex._getPosData("there");
     deepEqual(result, "ex rb uh");
-
-    var result = lex._getPosData("is");
-    deepEqual(result, "vbz rb nns vbp");
 
     var result = lex._getPosData("a");
     deepEqual(result, "dt");
@@ -860,7 +857,7 @@ var runtests = function() {
 
     var expected3 = "0/0/1/0";
     equal(output3, expected3);
-    
+
   });
 
   // below modify the lexicon.data field ================================

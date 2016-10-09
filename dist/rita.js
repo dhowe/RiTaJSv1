@@ -3133,9 +3133,6 @@ Conjugator.prototype = {
 // ////////////////////////////////////////////////////////////
 var PosTagger = {
 
-  // Penn Pos types ------------------------------ (40+UKNOWN)
-
-  UNKNOWN: ['???', 'unknown'],
   N: ['n', 'NOUN_KEY'],
   V: ['v', 'VERB_KEY'],
   R: ['r', 'ADVERB_KEY'],
@@ -3176,21 +3173,19 @@ var PosTagger = {
   WP: ['wp', 'Wh-pronoun'],
   WP$: ['wp$', 'Possessive wh-pronoun (prolog version WP-S)'],
   WRB: ['wrb', 'Wh-adverb'],
-
   TAGS: ['cc', 'cd', 'dt', 'ex', 'fw', 'in', 'jj',
     'jjr', 'jjs', 'ls', 'md', 'nn', 'nns', 'nnp',
     'nnps', 'pdt', 'pos', 'prp', 'prp$', 'rb',
-    'rbr', 'rbs', 'rp', 'sym', 'to',
-    'uh', 'vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz', 'wdt',
-    'wp', 'wp$', 'wrb', 'unknown'
+    'rbr', 'rbs', 'rp', 'sym', 'to', 'uh', 'vb',
+    'vbd', 'vbg', 'vbn', 'vbp', 'vbz', 'wdt',
+    'wp', 'wp$', 'wrb'
   ],
-
   NOUNS: ['nn', 'nns', 'nnp', 'nnps'],
   VERBS: ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'],
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
-  NOLEX_WARNED: false,
-  DBUG: false,
+  NOLEX_WARNED: 0,
+  DBUG: 0,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
@@ -3227,7 +3222,8 @@ var PosTagger = {
     if (RiLexicon.enabled) {
       lex = RiTa._lexicon();
     }
-    else if (!RiTa.SILENT && !this.NOLEX_WARNED){
+    else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
+
       this.NOLEX_WARNED = true;
       console.warn('No RiLexicon found: ' +
         'part-of-speech tagging will be inaccurate!');
@@ -3236,11 +3232,6 @@ var PosTagger = {
     words = is(words, A) ? words : [words];
 
     for (var i = 0, l = words.length; i < l; i++) {
-
-      /*if (!words[i]) {
-				choices2d[i] = [];
-				continue;
-			}*/
 
       if (words[i].length < 1) {
 
@@ -3294,17 +3285,17 @@ var PosTagger = {
     return result;
   },
 
-  _customTagged: function(i, frm, to) {
+  _ct: function(i, frm, to) { // log custom tag
 
-    if (!RiTa.SILENT && this.DBUG) console.log("\n  Custom(" +
+    if (this.DBUG) console.log("\n  Custom(" +
       i + ") tagged '" + frm + "' -> '"+ to + "'\n\n");
   },
 
   // Applies a customized subset of the Brill transformations
   _applyContext: function(words, result, choices) {
 
-    //log("_applyContext("+words+","+result+","+choices+")");
-    var sW = startsWith, eW = endsWith;
+    (this.DBUG) && console.log("ac("+words+","+result+","+choices+")");
+    var sW = startsWith, eW = endsWith, eic = equalsIgnoreCase;
 
     // Apply transformations
     for (var i = 0, l = words.length; i < l; i++) {
@@ -3316,7 +3307,7 @@ var PosTagger = {
 
         if (sW(tag, "vb")) {
           tag = "nn";
-          this._customTagged("1a", word, tag);
+          this._ct("1a", word, tag);
         }
 
         // transform 1b: DT, {RB | RBR | RBS} --> DT, {JJ |
@@ -3324,7 +3315,7 @@ var PosTagger = {
         else if (sW(tag, "rb")) {
 
           tag = (tag.length > 2) ? "jj" + tag.charAt(2) : "jj";
-	        this._customTagged("1b", word, tag);
+	        this._ct("1b", word, tag);
         }
       }
 
@@ -3355,7 +3346,7 @@ var PosTagger = {
 
       // transform 6: convert a noun to a verb if the
       // preceeding word is "would"
-      if (i > 0 && sW(tag, "nn") && equalsIgnoreCase(words[i - 1], "would")) {
+      if (i > 0 && sW(tag, "nn") && eic(words[i - 1], "would")) {
         tag = "vb";
       }
 
@@ -3373,7 +3364,7 @@ var PosTagger = {
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
         if (this.hasTag(choices[i], "vb")) {
           tag = "vbg";
-          this._customTagged(8, word, tag);
+          this._ct(8, word, tag);
         }
       }
 
@@ -3381,15 +3372,15 @@ var PosTagger = {
       // 3sg-verbs when following a singular noun (the dog dances, Dave dances, he dances)
       if (i > 0 && tag == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
         tag = "vbz";
-        this._customTagged(9, word, tag);
+        this._ct(9, word, tag);
       }
 
       // transform 10(dch): convert common nouns to proper
       // nouns when they start w' a capital and (?are not a
       // sentence start?)
-      if ((i != 0 || words.length == 1) && sW(tag, "nn") && (word.charAt(0) == word.charAt(0).toUpperCase())) {
+      if ((i != 0 || words.length===1) && sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
         tag = eW(tag, "s") ? "nnps" : "nnp";
-        this._customTagged(10, word, tag);
+        this._ct(10, word, tag);
       }
 
       // transform 11(dch): convert plural nouns (which are
@@ -3397,18 +3388,24 @@ var PosTagger = {
       if (i < result.length - 1 && tag == "nns" && sW(result[i + 1], "rb")
 					&& this.hasTag(choices[i], "vbz")) {
 				tag = "vbz";
-        this._customTagged(11, word, tag);
+        this._ct(11, word, tag);
 			}
 
       // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
-      if (i > 0 && tag==="nns" && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1])>-1) {
+      if (tag==="nns") {
+
+        // if only word and not in lexicon OR
+        if ((words.length === 1 && !choices[i].length) ||
+          // is preceded by one of the following
+          (i > 0 && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1]) > -1)) {
 
         // if word is ends with s or es and is 'nns' and has a vb
-        if (eW(word, "s")  && this._lexContains('vb', word.substring(0, word.length-1)) ||
-            eW(word, "es") && this._lexContains('vb', word.substring(0, word.length-2)))
-        {
-          tag = "vbz";
-          this._customTagged(12, word, tag);
+          if (word.match(/es$/) && this._lexHas('vb', word.substring(0, word.length-2)) ||
+              word.match(/[^e]s$/) && this._lexHas('vb', word.substring(0, word.length-1)))
+          {
+            tag = "vbz";
+            this._ct(12, word, tag);
+          }
         }
       }
 
@@ -3418,18 +3415,19 @@ var PosTagger = {
     return result;
   },
 
-  _lexContains: function(pos, words) {
+  _lexHas: function(pos, words) { // takes ([n|v|a|r] or a full tag)
 
     if (!RiLexicon.enabled) return false;
-      lex = RiTa._lexicon();
+
+    var lex = RiTa._lexicon(), words = is(words, A) || [words];
 
     for (var i = 0; i < words.length; i++) {
 
-      if (lex.contains(words[i])) {
+      if (lex.containsWord(words[i])) {
 
         if (pos == null) return true;
 
-        var tags = lex.getPosArr(words[i]);
+        var tags = lex._getPosArr(words[i]);
         for (var j = 0; j < tags.length; j++) {
 
           if (pos === 'n' && isNoun(tags[j]) ||

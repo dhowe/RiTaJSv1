@@ -799,8 +799,11 @@ var runtests = function () {
       answer = [ "prp", "vbd", "dt", "nn", "." ];
       deepEqual(result, answer);
 
+      deepEqual(RiTa.getPosTags("flunk"), [ "vb" ]);
+      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbz",  "dt", "nn"]);
+
       deepEqual(RiTa.getPosTags("he"), [ "prp" ]);
-      deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
+      deepEqual(RiTa.getPosTags("outnumber"),  [ "vb" ]);
       deepEqual(RiTa.getPosTags("I outnumbered you"), [ "prp", "vbd", "prp" ]);
       deepEqual(RiTa.getPosTags("She outnumbered us"), [ "prp", "vbd", "prp"]);
     });
