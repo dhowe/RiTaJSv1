@@ -10075,11 +10075,7 @@ function _dict() { return {
 'fluidity':['f-l-uw ih1 d-ah t-iy','nn'],
 'fluke':['f-l-uw1-k','nn'],
 'flung':['f-l-ah1-ng','vbd vbn'],
-<<<<<<< HEAD
 'flunk':['f-l-ah1-ng-k','vb vbp'],
-=======
-'flunk':['f-l-ah1-ng-k','vb'],
->>>>>>> upstream/master
 'flunked':['f-l-ah1-ng-k-t','vbd vbn'],
 'flunking':['f-l-ah1-ng k-ih-ng','vbg'],
 'fluorescent':['f-l-uh r-eh1 s-ah-n-t','jj'],

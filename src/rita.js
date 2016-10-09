@@ -3171,8 +3171,8 @@ var PosTagger = {
     //log("_applyContext("+words+","+result+","+choices+")");
 
     var sW = startsWith, eW = endsWith,
-      PRINT_CUSTOM_TAGS = (0 && !RiTa.SILENT);
-
+      PRINT_CUSTOM_TAGS = (0 && !RiTa.SILENT),
+      lex = RiTa._lexicon();
     // Apply transformations
     for (var i = 0, l = words.length; i < l; i++) {
 
@@ -3261,13 +3261,22 @@ var PosTagger = {
         result[i] = eW(result[i], "s") ? "nnps" : "nnp";
       }
 
-      // DISABLED: transform 10(dch): convert plural nouns (which are
+       // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
-      /*if (i < result.length - 1 && result[i] == "nns" && sW(result[i + 1], "rb")
-					&& this.hasTag(choices[i], "vbz")) {
-				result[i] = "vbz";
-			}*/
-    }
+      if (i < result.length - 1 && result[i] == "nns" && sW(result[i + 1], "rb")
+       && this.hasTag(choices[i], "vbz")) {
+        result[i] = "vbz";
+       }
+       
+        // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
+      if (i > 0 && result[i] == "nns" && result[i - 1].match(/^(nn|prp|nnp|cc)$/)){
+
+          // if word is ends with s or es and is 'nns' and has a vb
+          if(eW(result[i], "s") && lex.containsWord(words[i].substring(0, words[i].length - 1)) ||
+             eW(result[i], "es") && lex.containsWord(words[i].substring(0, words[i].length - 2))){
+            result[i] = "vbz";
+          }
+      }
 
     return result;
   }
