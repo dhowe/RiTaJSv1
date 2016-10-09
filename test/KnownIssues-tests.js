@@ -7,7 +7,7 @@ var runtests = function () {
       deepEqual(RiTa.getPosTags("flunk"), [ "vb" ]);
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
       //console.log(RiTa.getPosTags("He flunks the test"));
-      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbn",  "dt", "nn"]);
+      deepEqual(RiTa.getPosTags("He flunks the test"), ["prp", "vbz",  "dt", "nn"]);
 
       deepEqual(RiTa.getPosTags("outnumber"),  [ "vb" ]);
       deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
