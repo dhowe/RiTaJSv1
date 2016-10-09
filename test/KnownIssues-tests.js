@@ -2,48 +2,15 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
-    test("testSingularize", function () {
-      var tests = [
-        "media","medium",
-        "millennia", "millennium",
-        "consortia","consortium",
-        "concerti","concerto",
-        "septa","septum",
-        "termini","terminus",
-        "larvae","larva",
-        "vertebrae","vertebra",
-        "memorabilia","memorabilium",
-      ];
-      for (var i = 0; i < tests.length; i+=2) {
-        equal(RiTa.singularize(tests[i]),tests[i+1]);
-      }
-    });
-
-    test("testPluralize", function () {
-      var tests = [
-        "media","medium",
-        "millennia", "millennium",
-        "consortia","consortium",
-        "concerti","concerto",
-        "septa","septum",
-        "termini","terminus",
-        "larvae","larva",
-        "vertebrae","vertebra",
-        "memorabilia","memorabilium",
-      ];
-      for (var i = 0; i < tests.length; i+=2) {
-        equal(RiTa.pluralize(tests[i+1]),tests[i]);
-      }
-    });
-
     test("RiTa.getPosTags()", function () {
+
+      deepEqual(RiTa.getPosTags("means"),  [ "nn vbz"]);
+      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
+      deepEqual(RiTa.getPosTags("mathematics"),  [ "nn"]);
 
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
 
       deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3
-
-      //console.log(RiTa.getPosTags("He flunks the test"));
-
 
       var resultArr = RiTa.getPosTags("Dave dances");
       var answerArr = [ "nnp", "vbz" ];
