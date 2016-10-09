@@ -3,11 +3,8 @@ var runtests = function () {
     RiTa.SILENT = 1;
 
     test("RiTa.getPosTags()", function () {
-
-      deepEqual(RiTa.getPosTags("means"),  [ "nn vbz"]);
+    
       deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
-      deepEqual(RiTa.getPosTags("mathematics"),  [ "nn"]);
-
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
 
       deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3

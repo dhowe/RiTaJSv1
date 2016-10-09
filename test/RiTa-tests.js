@@ -734,6 +734,10 @@ var runtests = function () {
       var answer = ["nns"];
       deepEqual(result, answer);
 
+      var result = RiTa.getPosTags("memories");
+      var answer = ["nns"];
+      deepEqual(result, answer);
+
       if (noLexicon()) return;
 
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);

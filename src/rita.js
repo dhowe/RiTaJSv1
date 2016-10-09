@@ -3056,7 +3056,7 @@ var PosTagger = {
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   NOLEX_WARNED: 0,
-  DBUG: 0,
+  DBUG: 1,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
@@ -3117,7 +3117,6 @@ var PosTagger = {
       }
 
       var data = lex && lex._getPosArr(words[i]);
-
       if (!data || !data.length) {
 
         choices2d[i] = [];
@@ -3125,7 +3124,30 @@ var PosTagger = {
         if (endsWith(words[i],'s')) {
           tag = 'nns';
         }
+
         // use stemmer categories if no lexicon
+        if(!lex.containsWord(words[i])){
+
+          if (endsWith(words[i],'s')) {
+              var sub = words[i].substring(0,words[i].length - 1), sub2;
+              if(endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
+              if(lex.containsWord(sub) || lex.containsWord(sub2)){
+                choices2d.push("nns");
+              } else {
+                var sing = RiTa.singularize(words[i]);
+                if(lex.containsWord(sing)) choices2d.push("nns");
+              }
+
+          } else {
+              var sing = RiTa.singularize(words[i]);
+              if(lex.containsWord(sing)) {
+                choices2d.push("nns");
+                tag = 'nns';
+              }
+          }
+
+        }
+
         if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
           tag = 'nns';
         }
