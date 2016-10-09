@@ -38,11 +38,9 @@ var runtests = function () {
 
     test("RiTa.getPosTags()", function () {
 
-      deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
-      deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
 
-      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]);
+      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3
 
       //console.log(RiTa.getPosTags("He flunks the test"));
 

@@ -736,6 +736,9 @@ var runtests = function () {
 
       if (noLexicon()) return;
 
+      deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
+      deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
+
       var result = RiTa.getPosTags("the boy dances");
       var answer = ["dt", "nn", "vbz"];
       deepEqual(result, answer);
