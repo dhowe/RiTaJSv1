@@ -333,9 +333,9 @@ var runtests = function() {
     ok(lex.isVerb("walk")); // +n
     ok(lex.isVerb("wash")); // +n
     ok(lex.isVerb("drink")); // +n
-    // ok(lex.isVerb("ducks")); // +n
+    // ok(lex.isVerb("ducks")); // +n -> need to fix, Please check in KnownIssues
     ok(lex.isVerb("fish")); // +n
-    // ok(lex.isVerb("dogs")); // +n
+    // ok(lex.isVerb("dogs")); // +n -> need to fix, Please check in KnownIssues
     ok(lex.isVerb("wind")); // +n
     ok(lex.isVerb("wet")); // +adj
     ok(lex.isVerb("dry")); // +adj
@@ -786,6 +786,7 @@ var runtests = function() {
   //For RiTa.getStresses() NOT IN RiTa-Java
 
   test("testGetStresses", function() {
+    //can't get the word 'clothes' any more, see RiLexicon.testGetStresses in KnownIssues-test
 
     // var result = lex._getStresses("The emperor had no clothes on");
     // var answer = "0 1/0/0 1 1 1 1";
@@ -815,6 +816,7 @@ var runtests = function() {
   //For RiTa.getSyllables() NOT IN RiTa-Java
 
   test("testGetSyllables", function() {
+    //can't find the word 'clothes' any more, see RiLexicon.testGetSyllables in KnownIssues-test
 
     // var result = lex._getSyllables("The emperor had no clothes on.");
     // var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";

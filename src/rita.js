@@ -3056,7 +3056,7 @@ var PosTagger = {
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   NOLEX_WARNED: 0,
-  DBUG: 1,
+  DBUG: 0,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
