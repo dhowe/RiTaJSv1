@@ -2,6 +2,40 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
+    test("testSingularize", function () {
+      var tests = [
+        "media","medium",
+        "millennia", "millennium",
+        "consortia","consortium",
+        "concerti","concerto",
+        "septa","septum",
+        "termini","terminus",
+        "larvae","larvum",
+        "vertebrae","vertebra",
+        "memorabilia","memorabilium",
+      ];
+      for (var i = 0; i < tests.length; i+=2) {
+        equal(tests[i], RiTa.singularize(tests[i+1]));
+      }
+    });
+
+    test("testPluralize", function () {
+      var tests = [
+        "media","medium",
+        "millennia", "millennium",
+        "consortia","consortium",
+        "concerti","concerto",
+        "septa","septum",
+        "termini","terminus",
+        "larvae","larvum",
+        "vertebrae","vertebra",
+        "memorabilia","memorabilium",
+      ];
+      for (var i = 0; i < tests.length; i+=2) {
+        equal(tests[i+1], RiTa.pluralize(tests[i]));
+      }
+    });
+
     test("RiTa.getPosTags()", function () {
 
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);

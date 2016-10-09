@@ -1178,8 +1178,11 @@ var runtests = function () {
 
     test("testSingularize", function () {
 
+      equal("minutia", RiTa.singularize("minutia"));
       equal("blonde", RiTa.singularize("blondes"));
       equal("eye", RiTa.singularize("eyes"));
+      equal(RiTa.singularize("swine"), "swine");
+      equal(RiTa.singularize("cognoscenti"), "cognoscenti");
       equal(RiTa.singularize("bonsai"), "bonsai");
       equal(RiTa.singularize("taxis"), "taxi");
       equal(RiTa.singularize("chiefs"), "chief");
