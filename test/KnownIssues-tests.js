@@ -2,48 +2,12 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
-    test("testSingularize", function () {
-      var tests = [
-        "media","medium",
-        "millennia", "millennium",
-        "consortia","consortium",
-        "concerti","concerto",
-        "septa","septum",
-        "termini","terminus",
-        "larvae","larvum",
-        "vertebrae","vertebra",
-        "memorabilia","memorabilium",
-      ];
-      for (var i = 0; i < tests.length; i+=2) {
-        equal(tests[i], RiTa.singularize(tests[i+1]));
-      }
-    });
-
-    test("testPluralize", function () {
-      var tests = [
-        "media","medium",
-        "millennia", "millennium",
-        "consortia","consortium",
-        "concerti","concerto",
-        "septa","septum",
-        "termini","terminus",
-        "larvae","larvum",
-        "vertebrae","vertebra",
-        "memorabilia","memorabilium",
-      ];
-      for (var i = 0; i < tests.length; i+=2) {
-        equal(tests[i+1], RiTa.pluralize(tests[i]));
-      }
-    });
-
     test("RiTa.getPosTags()", function () {
-
+    
+      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
 
       deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3
-
-      //console.log(RiTa.getPosTags("He flunks the test"));
-
 
       var resultArr = RiTa.getPosTags("Dave dances");
       var answerArr = [ "nnp", "vbz" ];
@@ -92,6 +56,26 @@ var runtests = function () {
         var result = lex.rhymes("savage");
         var answer = [ "average", "ravage", "cabbage" ];
         deepEqual(result, answer);
+    });
+
+    test("RiLexicon.testIsVerb", function () {
+
+        ok(lex.isVerb("ducks")); // +n
+        ok(lex.isVerb("dogs")); // +n
+    });
+
+    test("RiLexicon.testGetSyllables", function () {
+
+       var result = lex._getSyllables("clothes");
+       var answer = "k-l-ow-dh-z";
+       equal(result, answer);
+    });
+
+    test("RiLexicon.testGetStresses", function () {
+
+       var result = lex._getStresses("The emperor had no clothes on");
+       var answer = "0 1/0/0 1 1 1 1";
+       equal(result, answer);
     });
 
     test("RiTa.conjugate", function () {

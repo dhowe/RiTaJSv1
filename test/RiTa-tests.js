@@ -734,6 +734,10 @@ var runtests = function () {
       var answer = ["nns"];
       deepEqual(result, answer);
 
+      var result = RiTa.getPosTags("memories");
+      var answer = ["nns"];
+      deepEqual(result, answer);
+
       if (noLexicon()) return;
 
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
@@ -1127,6 +1131,21 @@ var runtests = function () {
 
     test("testPluralize", function () {
 
+       var tests = [
+        "media","medium",
+        "millennia", "millennium",
+        "consortia","consortium",
+        "concerti","concerto",
+        "septa","septum",
+        "termini","terminus",
+        "larvae","larva",
+        "vertebrae","vertebra",
+        "memorabilia","memorabilium",
+      ];
+      for (var i = 0; i < tests.length; i+=2) {
+        equal(RiTa.pluralize(tests[i+1]),tests[i]);
+      }
+
       equal("blondes", RiTa.pluralize("blonde"));
       equal("eyes", RiTa.pluralize("eye"));
       equal("blondes", RiTa.pluralize("blond"));
@@ -1180,6 +1199,21 @@ var runtests = function () {
     });
 
     test("testSingularize", function () {
+
+      var tests = [
+        "media","medium",
+        "millennia", "millennium",
+        "consortia","consortium",
+        "concerti","concerto",
+        "septa","septum",
+        "termini","terminus",
+        "larvae","larva",
+        "vertebrae","vertebra",
+        "memorabilia","memorabilium",
+      ];
+      for (var i = 0; i < tests.length; i+=2) {
+        equal(RiTa.singularize(tests[i]),tests[i+1]);
+      }
 
       equal("minutia", RiTa.singularize("minutia"));
       equal("blonde", RiTa.singularize("blondes"));
