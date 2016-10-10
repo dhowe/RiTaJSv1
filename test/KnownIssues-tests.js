@@ -48,20 +48,12 @@ var runtests = function () {
         equal("fix impl.");
     });
     
-
-    var lex = RiLexicon();
     test("RiLexicon.rhymes", function () {
-
+        var lex = RiLexicon();
          // Problem: no result
         var result = lex.rhymes("savage");
         var answer = [ "average", "ravage", "cabbage" ];
         deepEqual(result, answer);
-    });
-
-    test("RiLexicon.testIsVerb", function () {
-
-        ok(lex.isVerb("ducks")); // +n
-        ok(lex.isVerb("dogs")); // +n
     });
 
     test("RiTa.conjugate", function () {

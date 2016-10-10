@@ -333,9 +333,9 @@ var runtests = function() {
     ok(lex.isVerb("walk")); // +n
     ok(lex.isVerb("wash")); // +n
     ok(lex.isVerb("drink")); // +n
-    // ok(lex.isVerb("ducks")); // +n -> need to fix, Please check in KnownIssues
+    ok(lex.isVerb("ducks")); // +n 
     ok(lex.isVerb("fish")); // +n
-    // ok(lex.isVerb("dogs")); // +n -> need to fix, Please check in KnownIssues
+    ok(lex.isVerb("dogs")); // +n 
     ok(lex.isVerb("wind")); // +n
     ok(lex.isVerb("wet")); // +adj
     ok(lex.isVerb("dry")); // +adj
