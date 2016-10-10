@@ -3302,6 +3302,14 @@ var PosTagger = {
         }
       }
 
+      //transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
+      if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))){
+          if(i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)){
+          tag = "vbp";
+          this._ct(13, word, tag);
+          }
+        }
+
       result[i] = tag;
     }
 
