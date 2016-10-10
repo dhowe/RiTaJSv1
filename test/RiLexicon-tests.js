@@ -551,7 +551,7 @@ var runtests = function() {
   });
 
   test("testSimilarByLetter", function() {
-
+    //delete the word 'lice', not exists anymore in dict.
     var result = lex.similarByLetter("banana");
     deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
 
@@ -786,19 +786,18 @@ var runtests = function() {
   //For RiTa.getStresses() NOT IN RiTa-Java
 
   test("testGetStresses", function() {
-    //can't get the word 'clothes' any more, see RiLexicon.testGetStresses in KnownIssues-test
 
-    // var result = lex._getStresses("The emperor had no clothes on");
-    // var answer = "0 1/0/0 1 1 1 1";
-    // equal(result, answer);
+    var result = lex._getStresses("The emperor had no clothes on");
+    var answer = "0 1/0/0 1 1 1 1";
+    equal(result, answer);
 
-    // var result = lex._getStresses("The emperor had no clothes on.");
-    // var answer = "0 1/0/0 1 1 1 1";
-    // equal(result, answer);
+    var result = lex._getStresses("The emperor had no clothes on.");
+    var answer = "0 1/0/0 1 1 1 1";
+    equal(result, answer);
 
-    // var result = lex._getStresses("The emperor had no clothes on. The King is fat.");
-    // var answer = "0 1/0/0 1 1 1 1 0 1 1 1";
-    // equal(result, answer);
+    var result = lex._getStresses("The emperor had no clothes on. The King is fat.");
+    var answer = "0 1/0/0 1 1 1 1 0 1 1 1";
+    equal(result, answer);
 
     var result = lex._getStresses("to preSENT, to exPORT, to deCIDE, to beGIN");
     var answer = "1 1/0 1 1/0 1 0/1 1 0/1";
@@ -816,11 +815,10 @@ var runtests = function() {
   //For RiTa.getSyllables() NOT IN RiTa-Java
 
   test("testGetSyllables", function() {
-    //can't find the word 'clothes' any more, see RiLexicon.testGetSyllables in KnownIssues-test
-
-    // var result = lex._getSyllables("The emperor had no clothes on.");
-    // var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
-    // equal(result, answer);
+    
+    var result = lex._getSyllables("The emperor had no clothes on.");
+    var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
+    equal(result, answer);
 
     var result = lex._getSyllables("@#$%*()");
     var answer = "";
