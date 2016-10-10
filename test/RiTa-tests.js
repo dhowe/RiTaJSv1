@@ -741,7 +741,14 @@ var runtests = function () {
       if (noLexicon()) return;
 
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
+      
       deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
+      deepEqual(RiTa.getPosTags("He outnumbers us"),  [ "prp", "vbz",  "prp"]);
+      deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
+
+      var resultArr = RiTa.getPosTags("Elephants dance");
+      var answerArr =  [ "nns", "vbp" ];
+      deepEqual(answerArr, resultArr);
 
       var result = RiTa.getPosTags("the boy dances");
       var answer = ["dt", "nn", "vbz"];

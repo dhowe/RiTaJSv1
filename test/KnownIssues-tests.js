@@ -4,21 +4,14 @@ var runtests = function () {
 
     test("RiTa.getPosTags()", function () {
     
-      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
-      deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
+      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);//transform 7 -> 11
 
       deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3
 
-      var resultArr = RiTa.getPosTags("Dave dances");
+      var resultArr = RiTa.getPosTags("Dave dances");// transform 10
       var answerArr = [ "nnp", "vbz" ];
       deepEqual(answerArr, resultArr);
 
-      resultArr = RiTa.getPosTags("Elephants dance");
-      answerArr =  [ "nns", "vbz" ];
-      deepEqual(answerArr, resultArr);
-
-
-      deepEqual(RiTa.getPosTags("He outnumbers us"),  [ "prp", "vbn",  "prp"]);
     });
 
     test("RiString.stripPunctuation(unicode)", function () {
