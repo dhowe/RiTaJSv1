@@ -400,10 +400,9 @@ RiLexicon.prototype = {
     if (!strOk(word)) return E;
 
     var wordArr = RiTa.tokenize(word), raw = [];
-
     for (var i = 0; i < wordArr.length; i++)
       raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
-
+    // console.log("[RiTa] syllables" + " " + word + " " + raw);
     return RiTa.untokenize(raw).replace(/1/g, E).trim();
   },
 
@@ -486,14 +485,12 @@ RiLexicon.prototype = {
     var phones, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
 
-    if (rdata && useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS) {
-      log("[RiTa] Using letter-to-sound rules for: " + word);
-
+    if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
+     
       phones = this._letterToSound().getPhones(word);
 
-      // console.log("phones="+RiTa.asList(phones));
       if (phones && phones.length)
-        return RiString.syllabify(phones);
+        return RiString._syllabify(phones);
 
     }
     return (rdata && rdata.length === 2) ? rdata[0] : E;
@@ -637,7 +634,6 @@ RiLexicon.prototype = {
   },
 
   _letterToSound: function() { // lazy load
-
     if (!this.lts)
       this.lts = new LetterToSound();
     return this.lts;
@@ -762,7 +758,7 @@ LetterToSound.prototype = {
   },
 
   getPhones: function(input, delim) {
-
+    
     var i, ph, result = [];
 
     delim = delim || '-';

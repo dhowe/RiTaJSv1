@@ -47,35 +47,13 @@ var runtests = function () {
 
         equal("fix impl.");
     });
-
+    
     test("RiLexicon.rhymes", function () {
-
         var lex = RiLexicon();
-
          // Problem: no result
         var result = lex.rhymes("savage");
         var answer = [ "average", "ravage", "cabbage" ];
         deepEqual(result, answer);
-    });
-
-    test("RiLexicon.testIsVerb", function () {
-
-        ok(lex.isVerb("ducks")); // +n
-        ok(lex.isVerb("dogs")); // +n
-    });
-
-    test("RiLexicon.testGetSyllables", function () {
-
-       var result = lex._getSyllables("clothes");
-       var answer = "k-l-ow-dh-z";
-       equal(result, answer);
-    });
-
-    test("RiLexicon.testGetStresses", function () {
-
-       var result = lex._getStresses("The emperor had no clothes on");
-       var answer = "0 1/0/0 1 1 1 1";
-       equal(result, answer);
     });
 
     test("RiTa.conjugate", function () {
