@@ -714,6 +714,14 @@ var runtests = function () {
 
     test("testGetPosTags", function () {
 
+      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); 
+      deepEqual(RiTa.getPosTags("greed"), [ "nn" ]); 
+      deepEqual(RiTa.getPosTags("creed"), [ "nn" ]); 
+      deepEqual(RiTa.getPosTags("weed"), [ "nn" ]); 
+      deepEqual(RiTa.getPosTags("the top seed"), [ "dt", "jj", "nn" ]); 
+      deepEqual(RiTa.getPosTags("freed"), [ "jj" ]); 
+      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
+      
       var result = RiTa.getPosTags("mammal");
       var answer = ["nn"];
       deepEqual(result, answer);
@@ -741,7 +749,7 @@ var runtests = function () {
       if (noLexicon()) return;
 
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
-      
+
       deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
       deepEqual(RiTa.getPosTags("He outnumbers us"),  [ "prp", "vbz",  "prp"]);
       deepEqual(RiTa.getPosTags("I outnumber you"), [ "prp", "vbp", "prp" ]);
@@ -757,6 +765,10 @@ var runtests = function () {
       var result = RiTa.getPosTags("he dances");
       var answer = ["prp", "vbz"];
       deepEqual(result, answer);
+
+      var resultArr = RiTa.getPosTags("Dave dances");
+      var answerArr = [ "nnp", "vbz" ];
+      deepEqual(answerArr, resultArr);
 
       var result = RiTa.getPosTags("running");
       var answer = ["vbg"];
