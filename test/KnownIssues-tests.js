@@ -3,14 +3,8 @@ var runtests = function () {
     RiTa.SILENT = 1;
 
     test("RiTa.getPosTags()", function () {
-    
-      deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);//transform 7 -> 11
-
-      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); // transform 3
-
-      var resultArr = RiTa.getPosTags("Dave dances");// transform 10
-      var answerArr = [ "nnp", "vbz" ];
-      deepEqual(answerArr, resultArr);
+     
+      deepEqual(RiTa.getPosTags("They feed the cat"), [ "prp", "vbp", "dt", "nn"]); 
 
     });
 

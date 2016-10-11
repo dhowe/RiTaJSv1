@@ -3200,6 +3200,14 @@ var PosTagger = {
 
         if (sW(tag, "vb")) {
           tag = "nn";
+
+        // transform 7: if a word has been categorized as a
+        // common noun and it ends with "s", then set its type to plural common noun (NNS)
+        if (word.match(/^.*[^s]s$/)) {
+            if (!NULL_PLURALS.applies(word))
+            tag = "nns";
+        }
+
           this._ct("1a", word, tag);
         }
 
@@ -3221,8 +3229,8 @@ var PosTagger = {
       }
 
       // transform 3: convert a noun to a past participle if
-      // word ends with "ed"
-      if (sW(tag, "n") && eW(word, "ed")) {
+      // word ends with "ed" and (following any nn or prp?)
+      if (i > 0 && sW(tag, "n") && eW(word, "ed") && result[i - 1].match(/^(nn|prp)$/)) {
         tag = "vbn";
       }
 
@@ -3238,16 +3246,9 @@ var PosTagger = {
       }
 
       // transform 6: convert a noun to a verb if the
-      // preceeding word is "would"
-      if (i > 0 && sW(tag, "nn") && eic(words[i - 1], "would")) {
+      // preceeding word is modal
+      if (i > 0 && sW(tag, "nn") && sW(result[i - 1], "md")) {
         tag = "vb";
-      }
-
-      // transform 7: if a word has been categorized as a
-      // common noun and it ends with "s", then set its type to plural common noun (NNS)
-      if ((tag == "nn") && word.match(/^.*[^s]s$/)) {
-        if (!NULL_PLURALS.applies(word))
-          tag = "nns";
       }
 
       // transform 8: convert a common noun to a present
@@ -3269,12 +3270,16 @@ var PosTagger = {
       }
 
       // transform 10(dch): convert common nouns to proper
-      // nouns when they start w' a capital and (?are not a
-      // sentence start?)
-      if ((i != 0 || words.length===1) && sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
-        tag = eW(tag, "s") ? "nnps" : "nnp";
-        this._ct(10, word, tag);
+      // nouns when they start w' a capital 
+      if (sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
+        //if it is not at the start of a sentence or it is the only word
+        // or when it is at the start of a sentence but can't be found in the dictionary
+        if(i != 0 || words.length===1 || (i == 0 && !this._lexHas('nn', word))){
+           tag = eW(tag, "s") ? "nnps" : "nnp";
+           this._ct(10, word, tag);
+        }
       }
+      
 
       // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
@@ -3294,7 +3299,7 @@ var PosTagger = {
 
         // if word is ends with s or es and is 'nns' and has a vb
           if (word.match(/es$/) && this._lexHas('vb', word.substring(0, word.length-2)) ||
-              word.match(/[^e]s$/) && this._lexHas('vb', word.substring(0, word.length-1)))
+              word.match(/s$/) && this._lexHas('vb', word.substring(0, word.length-1)))
           {
             tag = "vbz";
             this._ct(12, word, tag);
