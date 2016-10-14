@@ -2,18 +2,6 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
 
-    test("RiTa.singularize()", function () {
-     
-      equal(RiTa.singularize("whizzes"), "whiz");
-      equal(RiTa.singularize("selves"), "self");
-      equal(RiTa.singularize("bookshelves"), "bookshelf");
-      equal(RiTa.singularize("wheezes"), "wheeze"); 
-      equal(RiTa.singularize("prognoses"), "prognosis"); 
-
-
-    });
-
-
     test("RiTa.getPosTags()", function () {
      
       deepEqual(RiTa.getPosTags("They feed the cat"), [ "prp", "vbp", "dt", "nn"]); 

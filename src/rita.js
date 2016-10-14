@@ -3556,7 +3556,7 @@ var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'b
 var categoryUM_A = ['addenda', 'agenda', 'aquaria', 'bacteria', 'candelabra', 'compendia', 'consortia', 'crania', 'curricula', 'data', 'desiderata', 'dicta', 'emporia', 'enconia', 'errata', 'extrema', 'gymnasia', 'honoraria', 'interregna', 'lustra', 'maxima', 'media', 'memoranda', 'millenia', 'minima', 'momenta', 'optima', 'ova', 'phyla', 'quanta', 'rostra', 'spectra', 'specula', 'stadia', 'strata', 'symposia', 'trapezia', 'ultimata', 'vacua', 'vela'];
 
 /* Words that change from '-on' to '-a' (like 'phenomenon' etc.), listed in their plural forms */
-var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena'];
+var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena','referenda'];
 
 /* Words that change from '-o' to '-i' (like 'libretto' etc.), listed in their plural forms */
 var categoryO_I = ['alti', 'bassi', 'canti', 'contralti', 'crescendi', 'libretti', 'soli', 'soprani', 'tempi', 'virtuosi'];
@@ -3568,7 +3568,7 @@ var categoryUS_I = ['alumni', 'bacilli', 'cacti', 'foci', 'fungi', 'genii', 'hip
 var categoryIX_ICES = ['appendices', 'cervices'];
 
 /* Words that change from '-is' to '-es' (like 'axis' etc.), listed in their plural forms, plus everybody ending in theses */
-var categoryIS_ES = ['analyses', 'axes', 'bases', 'crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'synopses'];
+var categoryIS_ES = ['analyses', 'axes', 'bases','crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'prognoses', 'synopses'];
 
 /* Words that change from '-oe' to '-oes' (like 'toe' etc.), listed in their plural forms*/
 var categoryOE_OES = ['aloes', 'backhoes', 'beroes', 'canoes', 'chigoes', 'cohoes', 'does', 'felloes', 'floes', 'foes', 'gumshoes', 'hammertoes', 'hoes', 'hoopoes', 'horseshoes', 'leucothoes', 'mahoes', 'mistletoes', 'oboes', 'overshoes', 'pahoehoes', 'pekoes', 'roes', 'shoes', 'sloes', 'snowshoes', 'throes', 'tic-tac-toes', 'tick-tack-toes', 'ticktacktoes', 'tiptoes', 'tit-tat-toes', 'toes', 'toetoes', 'tuckahoes', 'woes'];
@@ -3792,7 +3792,7 @@ RiTa.stem_Pling = (function() {
     // -[aeo]lf to -ves  exceptions: valve, solve
     // -[^d]eaf to -ves  exceptions: heave, weave
     // -arf to -ves      no exception
-    if (s._endsWith("alves") && !s._endsWith("valves") || s._endsWith("olves") && !s._endsWith("solves") || s._endsWith("eaves") && !s._endsWith("heaves") && !s._endsWith("weaves") || s._endsWith("arves"))
+    if (s._endsWith("alves") && !s._endsWith("valves") || s._endsWith("olves") && !s._endsWith("solves") || s._endsWith("eaves") && !s._endsWith("heaves") && !s._endsWith("weaves") || s._endsWith("arves") || s._endsWith("shelves")|| s._endsWith("selves"))
       return (cut(s, "ves") + "f");
 
     // -y to -ies
@@ -3827,7 +3827,7 @@ RiTa.stem_Pling = (function() {
 })();
 
 Array.prototype._arrayContains = function(ele) {
-  return (Array.prototype.indexOf(ele) > -1);
+  return (this.indexOf(ele) > -1);
 };
 
 String.prototype._endsWith = function(suffix) {
@@ -4159,27 +4159,21 @@ var NULL_PLURALS = RE( // these don't change for plural/singular
 
 var SINGULAR_RULES = [
   NULL_PLURALS,
-  RE("^(oxen|buses|octopuses)$", 2),
-  RE("^(toes|taxis|menus|gurus)$", 1),
+  RE("whizzes", 3),
+  RE("^(buses|octopuses)$", 2),
+  RE("^(toes|wheezes)$", 1),
   RE("(men|women)$", 2, "an"),
   RE("^[lm]ice$", 3, "ouse"),
   RE("^children", 3),
   RE("^(appendices|indices|matrices)", 3, "x"),
-  RE("^(stimul|alumn|termin)i$", 1, "us"),
   RE("^(data)$", 1, "um"),
-  RE("^(memoranda|bacteria|curricula|minima|" + "maxima|referenda|spectra|phenomena|criteria)$", 1, "um"),
-  RE("monies", 3, "ey"),
   RE("people", 4, "rson"),
   RE("^meninges|phalanges$", 3, "x"),
   RE("schemata$", 2, "s"),
   RE("^corpora$", 3, "us"),
   RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)ae$", 1),
   RE("^apices|cortices$", 4, "ex"),
-  RE("^teeth$", 4, "ooth"),
-  RE("^feet$", 3, "oot"),
   RE("femora", 3, "ur"),
-  RE("geese", 4, "oose"),
-  RE("crises", 2, "is"),
   RE("^(medi|millenni|consorti|sept|memorabili)a$", 1, "um"),
   RE("concerti", 1, "o")
 ];
@@ -4188,6 +4182,7 @@ var C = "[bcdfghjklmnpqrstvwxyz]",
   VL = "[lraeiou]";
 
 var PLURAL_RULES = [
+    RE("prognosis", 2, "es"),
     NULL_PLURALS,
     RE("^(piano|photo|solo|ego|tobacco|cargo|golf|grief)$", 0, "s"),
     RE("^(wildlife)$", 0, "s"),
@@ -4198,17 +4193,16 @@ var PLURAL_RULES = [
     RE("^(stimul|alumn|termin)us$", 2, "i"),
     RE("^corpus$", 2, "ora"),
     RE("(xis|sis)$", 2, "es"),
+    RE("whiz$", 0, "zes"),
     RE("([zsx]|ch|sh)$", 0, "es"),
     RE(VL + "fe$", 2, "ves"),
     RE(VL + "f$", 1, "ves"),
     RE("(eu|eau)$", 0, "x"),
-
     RE("(man|woman)$", 2, "en"),
     RE("money$", 2, "ies"),
     RE("person$", 4, "ople"),
     RE("motif$", 0, "s"),
     RE("^meninx|phalanx$", 1, "ges"),
-
     RE("schema$", 0, "ta"),
     RE("^bus$", 0, "ses"),
     RE("child$", 0, "ren"),

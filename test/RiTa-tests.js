@@ -1204,6 +1204,8 @@ var runtests = function () {
       equal(RiTa.pluralize("Chinese"), "Chinese");
       equal(RiTa.pluralize("bonsai"), "bonsai");
 
+      equal(RiTa.pluralize("whiz"), "whizzes");
+      equal(RiTa.pluralize("prognosis"), "prognoses"); 
       equal(RiTa.pluralize("gas"), "gases");
       equal(RiTa.pluralize("bus"), "buses");
 
@@ -1233,6 +1235,12 @@ var runtests = function () {
       for (var i = 0; i < tests.length; i+=2) {
         equal(RiTa.singularize(tests[i]),tests[i+1]);
       }
+
+      equal(RiTa.singularize("whizzes"), "whiz");
+      equal(RiTa.singularize("selves"), "self");
+      equal(RiTa.singularize("bookshelves"), "bookshelf");
+      equal(RiTa.singularize("wheezes"), "wheeze"); 
+      equal(RiTa.singularize("diagnoses"), "diagnosis"); 
 
       equal("minutia", RiTa.singularize("minutia"));
       equal("blonde", RiTa.singularize("blondes"));
