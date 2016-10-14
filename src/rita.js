@@ -282,7 +282,6 @@ var RiTa = {
     for (i = 0; i < rules.length; i++) {
       rule = rules[i];
       if (rule.applies(word.toLowerCase())) {
-        console.log(rule);
         return rule.fire(word);
       }
     }
