@@ -13391,6 +13391,7 @@ function _dict() { return {
 'irritates':['ih1 r-ih t-ey-t-s','vbz'],
 'irritating':['ih1 r-ah t-ey t-ih-ng','jj'],
 'irritation':['ih r-ih t-ey1 sh-ah-n','nn'],
+'is':['ih1-s','vbz'],
 'island':['ay1 l-ah-n-d','nn'],
 'islander':['ay1 l-ah-n d-er','nn'],
 'isle':['ay1-l','nn'],
