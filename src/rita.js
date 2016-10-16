@@ -3130,17 +3130,17 @@ var PosTagger = {
 
           if (endsWith(words[i],'s')) {
               var sub = words[i].substring(0,words[i].length - 1), sub2;
-              if(endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
-              if(lex.containsWord(sub) || lex.containsWord(sub2)){
+              if (endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
+              if (this._lexHas("n", sub) || this._lexHas("n", sub2)){
                 choices2d.push("nns");
               } else {
                 var sing = RiTa.singularize(words[i]);
-                if(lex.containsWord(sing)) choices2d.push("nns");
+                if (this._lexHas("n", sing)) choices2d.push("nns");
               }
 
           } else {
               var sing = RiTa.singularize(words[i]);
-              if(lex.containsWord(sing)) {
+              if (this._lexHas("n", sing)) {
                 choices2d.push("nns");
                 tag = 'nns';
               }
@@ -3274,7 +3274,7 @@ var PosTagger = {
       if (sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
         //if it is not at the start of a sentence or it is the only word
         // or when it is at the start of a sentence but can't be found in the dictionary
-        if(i != 0 || words.length===1 || (i == 0 && !this._lexHas('nn', word))){
+        if(i != 0 || words.length===1 || (i == 0 && !this._lexHas('nn', RiTa.singularize(word).toLowerCase()))){
            tag = eW(tag, "s") ? "nnps" : "nnp";
            this._ct(10, word, tag);
         }
@@ -3308,8 +3308,8 @@ var PosTagger = {
       }
 
       //transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
-      if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))){
-          if(i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)){
+      if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))) {
+          if (i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)) {
           tag = "vbp";
           this._ct(13, word, tag);
           }
