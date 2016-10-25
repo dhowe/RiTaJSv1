@@ -35,8 +35,34 @@ body {
 .bubbles {
 	position:absolute;
 	top:150px;
-	left:115px;
+	left:100px;
 }
+.bubble.stressed{
+  animation: stress .5s;
+  width:50px;
+  height:50px;
+  border-radius: 25px;
+  line-height: 50px;
+  margin-top: 0px;
+}
+
+@keyframes stress {
+    from {
+        width:40px;
+        height:40px;
+        border-radius: 20px;
+        line-height: 40px;
+        margin-top: 5px;
+    }
+    to {
+        width:50px;
+        height:50px;
+        border-radius: 25px;
+        line-height: 50px;
+        margin-top: 0px;
+    }
+}
+
 .bubble {
   position:relative;
 	width:40px;

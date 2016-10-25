@@ -1,8 +1,16 @@
+// each bubble
+// 1.clear
+// 2.refresh the text & color
+//   ->addStress (larger bubble size);
+//   ->addSyllables (add margin)
+var dbug = false;
+
 $(document).ready(function () {
 
   var word, lexicon = new RiLexicon();
   var sy, ph, ss, hues = colorGradient();
 
+  clearBubble();
   selectWord();
   setInterval(selectWord, 4000); // every 4 sec
 
@@ -17,8 +25,9 @@ $(document).ready(function () {
     sy = RiTa.getSyllables(word);
     ph = RiTa.getPhonemes(word);
     ss = RiTa.getStresses(word);
+    
+    dbug && console.log(sy);
 
-    // get WordNet-style pos-tags
     var tags = RiTa.getPosTags(word, true);
     var pos = tagName(tags[0]);
 
@@ -26,40 +35,52 @@ $(document).ready(function () {
     $('#pos').text(pos);
 
     refreshBubble(ph.split('-'));
-    addSyllables(sy);
+
     setTimeout(drop, 2000);
+    setTimeout(clearBubble, 3500);
+  }
+  
+  function clearBubble() {
+    dbug && console.log("clear");
+
+    $('.bubbles').children().each(function (i, val) {
+       // reset stress
+      if( $(this).hasClass("stressed"))
+        $(this).removeClass("stressed");
+      
+      //reset position
+      $(this).css({
+        'margin-top': ' 5px'
+      });
+      
+      // clear the content
+      $(this).text("");
+      $(this).css("background-color", "transparent");
+
+    });
   }
 
   function refreshBubble(phs) {
 
+    dbug && console.log("refresh");
+
     $('.bubbles').children().each(function (i, val) {
 
-      // reset the bubbles
-      $(this).css({
-        'border-radius': '20px',
-        'width': '40px',
-        'height': '40px',
-        'line-height': '40px',
-        'margin-left': ' 5px',
-        'margin-top': ' 5px'
-      });
-
-      if (i < phs.length) { // change the phones and color
+      // change the phones and color
+      if (i < phs.length) { 
 
         $(this).text(phs[i]);
         $(this).css("background-color", "hsla(" + phonemeColor(phs[i]) + ", 90%, 45%, 0.6)");
         addStress(ss, sy);
+        addSyllables(sy);
 
-      } else { // clear the old bubbles
-
-        $(this).text("");
-        $(this).css("background-color", "transparent");
       }
 
     });
   }
 
   function drop() {
+
     $('.bubbles').children().each(function (index) {
       (function (that, i) {
         var t = setTimeout(function () {
@@ -68,16 +89,26 @@ $(document).ready(function () {
           }, "slow");
         }, 40 * i);
       })(this, index);
-    });
+    });   
   }
 
   function addSyllables(syllables) {
+
+    dbug && console.log("addSyllables");
+
     var syllable = syllables.split("/");
     for (var i = 0, past = 0; i < syllable.length; i++) {
       var phs = syllable[i].split("-");
+      //add extra space between each syllables
+      $('.bubbles').children().eq(past).css("margin-left", "10px");
+
       for (var j = 1; j < phs.length; j++) {
         (function (j) {
-          $('.bubbles').children().eq(j + past).css("margin-left", "-15px");
+          var bubble = $('.bubbles').children().eq(j + past);
+          if(bubble.hasClass('stressed'))
+             bubble.css("margin-left", "-20px");
+           else
+            bubble.css("margin-left", "-15px");
         })(j);
       }
       past += phs.length;
@@ -85,7 +116,7 @@ $(document).ready(function () {
   }
 
   function addStress(stresses, syllables, bubbles) {
-
+    dbug && console.log("addStress");
     // Split stresses and syllables
     var stress = stresses.split('/'), syllable = syllables.split('/');
 
@@ -97,13 +128,7 @@ $(document).ready(function () {
       if (parseInt(stress[i]) == 1) {
         for (var j = 0; j < phs.length; j++) {
           (function (j) {
-            $('.bubbles').children().eq(j + past).css({
-              'border-radius': '25px',
-              'width': '50px',
-              'height': '50px',
-              'line-height': '50px',
-              'margin-top': '0px'
-            });
+            $('.bubbles').children().eq(j + past).addClass("stressed");
           })(j);
         }
       }
