@@ -1,6 +1,33 @@
 var runtests = function () {
 
     RiTa.SILENT = 1;
+    lex = RiLexicon();
+
+    test("testAlliterations", function() {
+
+        var result = lex.alliterations("URL");
+        // console.log(result);
+        ok(result.length < 1);
+
+       ok(!lex.isAlliteration("big ", "bad")); // Word with space False
+       ok(!lex.isAlliteration("big    ", "bad")); // Word with tab space
+
+    });
+    
+    test("testIsRhymeStringString", function() {
+
+        ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
+        ok(!lex.isRhyme("solo", "yoyo"));
+        ok(!lex.isRhyme("yoyo", "jojo")); 
+    });
+
+
+    test("testIsVerb", function() {
+
+      ok(lex.isVerb("ducks")); // +n
+      ok(lex.isVerb("dogs")); // +n
+    });
+
 
     test("RiTa.getPosTags()", function () {
      
