@@ -283,8 +283,8 @@ RiLexicon.prototype = {
 
   alliterations: function(word, matchMinLength, useLTS) {
 
-    if(word.indexOf(" ") > -1) return [];
-    if(!this._isVowel(word.charAt(0))) return [];
+    if (word.indexOf(" ") > -1) return [];
+    if (!this._isVowel(word.charAt(0))) return [];
 
     matchMinLength = matchMinLength || 4;
 
@@ -307,7 +307,7 @@ RiLexicon.prototype = {
 
   isAlliteration: function(word1, word2, useLTS) {
 
-    if(word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) return false;
+    if (word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) return false;
 
     if (!strOk(word1) || !strOk(word2)) return false;
 
