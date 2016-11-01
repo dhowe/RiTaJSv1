@@ -70,9 +70,9 @@ var runtests = function() {
     var result = lex.alliterations("dog");
     ok(result.length > 1000);
 
-    // var result = lex.alliterations("URL");
-    // console.log(result);
-    // ok(result.length < 1); -> Known Issue
+    var result = lex.alliterations("URL");
+    console.log(result);
+    ok(result.length < 1); -> Known Issue
 
     var result = lex.alliterations("no stress");
     ok(result.length < 1);
@@ -434,8 +434,8 @@ var runtests = function() {
     lex = RiLexicon();
 
     ok(lex.isAlliteration("sally", "silly"));
-    // ok(lex.isAlliteration("sea", "seven"));  // not working only in RiTaJS
-    // ok(lex.isAlliteration("silly", "seven"));  // not working only in RiTaJS
+    ok(lex.isAlliteration("sea", "seven"));  
+    ok(lex.isAlliteration("silly", "seven"));
     ok(lex.isAlliteration("sea", "sally"));
 
     ok(lex.isAlliteration("big", "bad"));
@@ -444,9 +444,10 @@ var runtests = function() {
     ok(lex.isAlliteration("BIG", "bad")); // CAPITAL LETTERS
     ok(lex.isAlliteration("big", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
-
-    // ok(!lex.isAlliteration("big ", "bad")); // Word with space False
-    // ok(!lex.isAlliteration("big    ", "bad")); // Word with tab space -> Known Issues
+    
+    ok(lex.isAlliteration("wind", "withdraw"));
+    ok(!lex.isAlliteration("big ", "bad")); // Word with space False
+    ok(!lex.isAlliteration("big    ", "bad")); // Word with tab space
 
     // False
     ok(lex.isAlliteration("this", "these"));
