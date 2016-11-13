@@ -3270,7 +3270,7 @@ var PosTagger = {
       }
 
       // transform 10(dch): convert common nouns to proper
-      // nouns when they start w' a capital 
+      // nouns when they start w' a capital
       if (sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
         //if it is not at the start of a sentence or it is the only word
         // or when it is at the start of a sentence but can't be found in the dictionary
@@ -3279,7 +3279,7 @@ var PosTagger = {
            this._ct(10, word, tag);
         }
       }
-      
+
 
       // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
@@ -4223,7 +4223,7 @@ var PLURAL_RULES = [
     RE("^(co|no)$", 0, "'s"),
     RE("^blond$", 0, "es"),
     RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
-    
+
     // Latin stems
     RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"),
     RE("^(appendix|index|matrix)", 2, "ices")

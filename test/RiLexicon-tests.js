@@ -333,9 +333,9 @@ var runtests = function() {
     ok(lex.isVerb("walk")); // +n
     ok(lex.isVerb("wash")); // +n
     ok(lex.isVerb("drink")); // +n
-    ok(lex.isVerb("ducks")); // +n 
+    ok(lex.isVerb("ducks")); // +n
     ok(lex.isVerb("fish")); // +n
-    ok(lex.isVerb("dogs")); // +n 
+    ok(lex.isVerb("dogs")); // +n
     ok(lex.isVerb("wind")); // +n
     ok(lex.isVerb("wet")); // +adj
     ok(lex.isVerb("dry")); // +adj
@@ -449,15 +449,30 @@ var runtests = function() {
     ok(lex.isAlliteration("big", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
 
-    ok(!lex.isAlliteration("big ", "bad")); // Word with space False
-    ok(!lex.isAlliteration("big    ", "bad")); // Word with tab space
-
     // False
     ok(lex.isAlliteration("this", "these"));
     ok(!lex.isAlliteration("solo", "tomorrow"));
     ok(!lex.isAlliteration("solo", "yoyo"));
     ok(!lex.isAlliteration("yoyo", "jojo"));
     ok(!lex.isAlliteration("", ""));
+
+    ok(lex.isAlliteration("unsung", "sine"));
+    ok(lex.isAlliteration("job", "gene"));
+    ok(lex.isAlliteration("jeans", "gentle"));
+    ok(lex.isAlliteration("abet", "better"));
+    ok(lex.isAlliteration("knife", "gnat"));
+    ok(lex.isAlliteration("knife", "naughty"));
+    ok(lex.isAlliteration("psychology", "cholera"));
+    ok(lex.isAlliteration("consult", "sultan"));
+    ok(lex.isAlliteration("never", "knight"));
+    ok(lex.isAlliteration("knight", "navel"));
+    ok(lex.isAlliteration("monsoon", "super"));
+    ok(lex.isAlliteration("cat", "kitchen"));
+
+    // not counting assonance, yes?
+    ok(!lex.isAlliteration("octopus", "oblong"));
+    ok(!lex.isAlliteration("omen", "open"));
+    ok(!lex.isAlliteration("amicable", "atmosphere"));
   });
 
 
@@ -486,7 +501,6 @@ var runtests = function() {
     ok(!lex.isRhyme("yo", "bro"));
     ok(!lex.isRhyme("swag", "grab"));
     ok(!lex.isRhyme("", ""));
-
   });
 
   test("testIsRhyme", function() {
@@ -815,7 +829,7 @@ var runtests = function() {
   //For RiTa.getSyllables() NOT IN RiTa-Java
 
   test("testGetSyllables", function() {
-    
+
     var result = lex._getSyllables("The emperor had no clothes on.");
     var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
     equal(result, answer);
