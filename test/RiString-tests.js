@@ -79,9 +79,11 @@ var runtests = function () {
 
     features = RiString("Tomatoes and apricots").analyze().features();
     ok(features);
-    equal(features.phonemes, "t-ah-m-ey-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
-    equal(features.syllables, "t-ah/m-ey/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
-    equal(features.stresses, "0/1/0 1 1/0/0");
+    //lts - British pronunciation
+    equal(features.phonemes, "t-aa-m-ah-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
+    equal(features.syllables, "t-aa/m-ah/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
+    equal(features.stresses, "1/0/0 1 1/0/0");
+
 
     features = RiString(".").analyze().features();
     ok(features);
@@ -1321,10 +1323,10 @@ var runtests = function () {
     var st = rs.get(RiTa.STRESSES);
     ok(ph && sy && st);
 
-
-    equal(ph, "t-ah-m-ey-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
-    equal(sy, "t-ah/m-ey/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
-    equal(st, "0/1/0 1 1/0/0");
+    //lts phones use British pronounciation
+    equal(ph, "t-aa-m-ah-t-ow-z ae-n-d ae-p-r-ah-k-aa-t-s");
+    equal(sy, "t-aa/m-ah/t-ow-z ae-n-d ae/p-r-ah/k-aa-t-s");
+    equal(st, "1/0/0 1 1/0/0");
   });
 
   test("testSet", function () {
