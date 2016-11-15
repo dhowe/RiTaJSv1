@@ -284,20 +284,21 @@ RiLexicon.prototype = {
   alliterations: function(word, matchMinLength, useLTS) {
 
     if (word.indexOf(" ") > -1) return [];
+
     if (!this._isVowel(word.charAt(0))) return [];
 
     matchMinLength = matchMinLength || 4;
 
     var c2, results = [],
       c1 = this._firstConsonant(this._firstSyllable(word, useLTS));
-     
+
      console.log(this._firstSyllable(word, useLTS), c1);
 
     for (var i = 0; i < this.keys.length; i++) {
 
       c2 = this._firstConsonant(
           this._firstSyllable(this.keys[i], useLTS));
-      
+
       if (c2 && c1 === c2 && this.keys[i].length > matchMinLength) {
         results.push(this.keys[i]);
       }
@@ -318,11 +319,11 @@ RiLexicon.prototype = {
 
     return (strOk(c1) && strOk(c2) && c1 === c2);
   },
-  
+
   _firstSyllable: function(word, useLTS) {
      var raw = this._getRawPhones(word, useLTS);
-     if (!strOk(raw)) return E; 
-     console.log(raw);
+     if (!strOk(raw)) return E;
+     // console.log(raw);
      var syllables = raw.split(" ");
      return syllables[0];
   },
@@ -501,7 +502,7 @@ RiLexicon.prototype = {
     useLTS = useLTS || false;
 
     if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
-     
+
       phones = this._letterToSound().getPhones(word);
 
       if (phones && phones.length)
@@ -773,7 +774,7 @@ LetterToSound.prototype = {
   },
 
   getPhones: function(input, delim) {
-    
+
     var i, ph, result = [];
 
     delim = delim || '-';

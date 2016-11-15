@@ -3336,10 +3336,10 @@ var PosTagger = {
         var tags = lex._getPosArr(words[i]);
         for (var j = 0; j < tags.length; j++) {
 
-          if (pos === 'n' && isNoun(tags[j]) ||
-              pos === 'v' && isVerb(tags[j]) ||
-              pos === 'r' && isAdverb(tags[j]) ||
-              pos === 'a' && isAdj(tags[j]) ||
+          if (pos === 'n' && lex.isNoun(tags[j]) ||
+              pos === 'v' && lex.isVerb(tags[j]) ||
+              pos === 'r' && lex.isAdverb(tags[j]) ||
+              pos === 'a' && lex.isAdj(tags[j]) ||
               pos === tags[j])
           {
             return true;
