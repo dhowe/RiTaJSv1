@@ -1,6 +1,22 @@
 var runtests = function () {
 
     RiTa.SILENT = 1;
+    lex = RiLexicon();
+
+    test("testIsRhymeStringString", function() {
+
+        ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
+        ok(!lex.isRhyme("solo", "yoyo"));
+        ok(!lex.isRhyme("yoyo", "jojo")); 
+    });
+
+
+    test("testIsVerb", function() {
+
+      ok(lex.isVerb("ducks")); // +n
+      ok(lex.isVerb("dogs")); // +n
+    });
+
 
     test("RiTa.getPosTags()", function () {
      
