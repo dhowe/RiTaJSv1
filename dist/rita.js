@@ -140,7 +140,7 @@ RiLexicon.prototype.init = function() {
 
 var RiTa = {
 
-  VERSION: '1.1.40',
+  VERSION: '1.1.50',
 
   LEXICON: null, // static RiLexicon instance
 
@@ -3246,7 +3246,6 @@ var PosTagger = {
       }
 
       var data = lex && lex._getPosArr(words[i]);
-
       if (!data || !data.length) {
 
         choices2d[i] = [];
@@ -3254,7 +3253,30 @@ var PosTagger = {
         if (endsWith(words[i],'s')) {
           tag = 'nns';
         }
+
         // use stemmer categories if no lexicon
+        if(!lex.containsWord(words[i])){
+
+          if (endsWith(words[i],'s')) {
+              var sub = words[i].substring(0,words[i].length - 1), sub2;
+              if (endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
+              if (this._lexHas("n", sub) || this._lexHas("n", sub2)){
+                choices2d.push("nns");
+              } else {
+                var sing = RiTa.singularize(words[i]);
+                if (this._lexHas("n", sing)) choices2d.push("nns");
+              }
+
+          } else {
+              var sing = RiTa.singularize(words[i]);
+              if (this._lexHas("n", sing)) {
+                choices2d.push("nns");
+                tag = 'nns';
+              }
+          }
+
+        }
+
         if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
           tag = 'nns';
         }
@@ -3307,6 +3329,14 @@ var PosTagger = {
 
         if (sW(tag, "vb")) {
           tag = "nn";
+
+        // transform 7: if a word has been categorized as a
+        // common noun and it ends with "s", then set its type to plural common noun (NNS)
+        if (word.match(/^.*[^s]s$/)) {
+            if (!NULL_PLURALS.applies(word))
+            tag = "nns";
+        }
+
           this._ct("1a", word, tag);
         }
 
@@ -3328,8 +3358,8 @@ var PosTagger = {
       }
 
       // transform 3: convert a noun to a past participle if
-      // word ends with "ed"
-      if (sW(tag, "n") && eW(word, "ed")) {
+      // word ends with "ed" and (following any nn or prp?)
+      if (i > 0 && sW(tag, "n") && eW(word, "ed") && result[i - 1].match(/^(nn|prp)$/)) {
         tag = "vbn";
       }
 
@@ -3345,16 +3375,9 @@ var PosTagger = {
       }
 
       // transform 6: convert a noun to a verb if the
-      // preceeding word is "would"
-      if (i > 0 && sW(tag, "nn") && eic(words[i - 1], "would")) {
+      // preceeding word is modal
+      if (i > 0 && sW(tag, "nn") && sW(result[i - 1], "md")) {
         tag = "vb";
-      }
-
-      // transform 7: if a word has been categorized as a
-      // common noun and it ends with "s", then set its type to plural common noun (NNS)
-      if ((tag == "nn") && word.match(/^.*[^s]s$/)) {
-        if (!NULL_PLURALS.applies(word))
-          tag = "nns";
       }
 
       // transform 8: convert a common noun to a present
@@ -3376,12 +3399,16 @@ var PosTagger = {
       }
 
       // transform 10(dch): convert common nouns to proper
-      // nouns when they start w' a capital and (?are not a
-      // sentence start?)
-      if ((i != 0 || words.length===1) && sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
-        tag = eW(tag, "s") ? "nnps" : "nnp";
-        this._ct(10, word, tag);
+      // nouns when they start w' a capital
+      if (sW(tag, "nn") && (word.charAt(0)===word.charAt(0).toUpperCase())) {
+        //if it is not at the start of a sentence or it is the only word
+        // or when it is at the start of a sentence but can't be found in the dictionary
+        if(i != 0 || words.length===1 || (i == 0 && !this._lexHas('nn', RiTa.singularize(word).toLowerCase()))){
+           tag = eW(tag, "s") ? "nnps" : "nnp";
+           this._ct(10, word, tag);
+        }
       }
+
 
       // transform 11(dch): convert plural nouns (which are
       // also 3sg-verbs) to 3sg-verbs when followed by adverb
@@ -3401,13 +3428,21 @@ var PosTagger = {
 
         // if word is ends with s or es and is 'nns' and has a vb
           if (word.match(/es$/) && this._lexHas('vb', word.substring(0, word.length-2)) ||
-              word.match(/[^e]s$/) && this._lexHas('vb', word.substring(0, word.length-1)))
+              word.match(/s$/) && this._lexHas('vb', word.substring(0, word.length-1)))
           {
             tag = "vbz";
             this._ct(12, word, tag);
           }
         }
       }
+
+      //transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
+      if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))) {
+          if (i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)) {
+          tag = "vbp";
+          this._ct(13, word, tag);
+          }
+        }
 
       result[i] = tag;
     }
@@ -3650,7 +3685,7 @@ var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'b
 var categoryUM_A = ['addenda', 'agenda', 'aquaria', 'bacteria', 'candelabra', 'compendia', 'consortia', 'crania', 'curricula', 'data', 'desiderata', 'dicta', 'emporia', 'enconia', 'errata', 'extrema', 'gymnasia', 'honoraria', 'interregna', 'lustra', 'maxima', 'media', 'memoranda', 'millenia', 'minima', 'momenta', 'optima', 'ova', 'phyla', 'quanta', 'rostra', 'spectra', 'specula', 'stadia', 'strata', 'symposia', 'trapezia', 'ultimata', 'vacua', 'vela'];
 
 /* Words that change from '-on' to '-a' (like 'phenomenon' etc.), listed in their plural forms */
-var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena'];
+var categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena','referenda'];
 
 /* Words that change from '-o' to '-i' (like 'libretto' etc.), listed in their plural forms */
 var categoryO_I = ['alti', 'bassi', 'canti', 'contralti', 'crescendi', 'libretti', 'soli', 'soprani', 'tempi', 'virtuosi'];
@@ -3662,7 +3697,7 @@ var categoryUS_I = ['alumni', 'bacilli', 'cacti', 'foci', 'fungi', 'genii', 'hip
 var categoryIX_ICES = ['appendices', 'cervices'];
 
 /* Words that change from '-is' to '-es' (like 'axis' etc.), listed in their plural forms, plus everybody ending in theses */
-var categoryIS_ES = ['analyses', 'axes', 'bases', 'crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'synopses'];
+var categoryIS_ES = ['analyses', 'axes', 'bases','crises', 'diagnoses', 'ellipses', 'em_PHASEs', 'neuroses', 'oases', 'paralyses', 'prognoses', 'synopses'];
 
 /* Words that change from '-oe' to '-oes' (like 'toe' etc.), listed in their plural forms*/
 var categoryOE_OES = ['aloes', 'backhoes', 'beroes', 'canoes', 'chigoes', 'cohoes', 'does', 'felloes', 'floes', 'foes', 'gumshoes', 'hammertoes', 'hoes', 'hoopoes', 'horseshoes', 'leucothoes', 'mahoes', 'mistletoes', 'oboes', 'overshoes', 'pahoehoes', 'pekoes', 'roes', 'shoes', 'sloes', 'snowshoes', 'throes', 'tic-tac-toes', 'tick-tack-toes', 'ticktacktoes', 'tiptoes', 'tit-tat-toes', 'toes', 'toetoes', 'tuckahoes', 'woes'];
@@ -3886,7 +3921,7 @@ RiTa.stem_Pling = (function() {
     // -[aeo]lf to -ves  exceptions: valve, solve
     // -[^d]eaf to -ves  exceptions: heave, weave
     // -arf to -ves      no exception
-    if (s._endsWith("alves") && !s._endsWith("valves") || s._endsWith("olves") && !s._endsWith("solves") || s._endsWith("eaves") && !s._endsWith("heaves") && !s._endsWith("weaves") || s._endsWith("arves"))
+    if (s._endsWith("alves") && !s._endsWith("valves") || s._endsWith("olves") && !s._endsWith("solves") || s._endsWith("eaves") && !s._endsWith("heaves") && !s._endsWith("weaves") || s._endsWith("arves") || s._endsWith("shelves")|| s._endsWith("selves"))
       return (cut(s, "ves") + "f");
 
     // -y to -ies
@@ -3921,7 +3956,7 @@ RiTa.stem_Pling = (function() {
 })();
 
 Array.prototype._arrayContains = function(ele) {
-  return (Array.prototype.indexOf(ele) > -1);
+  return (this.indexOf(ele) > -1);
 };
 
 String.prototype._endsWith = function(suffix) {
@@ -4253,57 +4288,54 @@ var NULL_PLURALS = RE( // these don't change for plural/singular
 
 var SINGULAR_RULES = [
   NULL_PLURALS,
-  RE("^(oxen|buses|octopuses)$", 2),
-  RE("^(toes|taxis|menus|gurus)$", 1),
+  RE("whizzes", 3),
+  RE("^(buses|octopuses)$", 2),
+  RE("^(toes|wheezes)$", 1),
   RE("(men|women)$", 2, "an"),
   RE("^[lm]ice$", 3, "ouse"),
   RE("^children", 3),
   RE("^(appendices|indices|matrices)", 3, "x"),
-  RE("^(stimuli|alumni)$", 1, "us"),
   RE("^(data)$", 1, "um"),
-  RE("^(memoranda|bacteria|curricula|minima|" + "maxima|referenda|spectra|phenomena|criteria)$", 1, "um"),
-  RE("monies", 3, "ey"),
   RE("people", 4, "rson"),
   RE("^meninges|phalanges$", 3, "x"),
   RE("schemata$", 2, "s"),
   RE("^corpora$", 3, "us"),
-  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg)ae$", 1),
+  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)ae$", 1),
   RE("^apices|cortices$", 4, "ex"),
-  RE("^teeth$", 4, "ooth"),
-  RE("^feet$", 3, "oot"),
   RE("femora", 3, "ur"),
-  RE("geese", 4, "oose"),
-  RE("crises", 2, "is"),
+  RE("^(medi|millenni|consorti|sept|memorabili)a$", 1, "um"),
+  RE("concerti", 1, "o")
 ];
 
 var C = "[bcdfghjklmnpqrstvwxyz]",
   VL = "[lraeiou]";
 
 var PLURAL_RULES = [
+    RE("prognosis", 2, "es"),
     NULL_PLURALS,
     RE("^(piano|photo|solo|ego|tobacco|cargo|golf|grief)$", 0, "s"),
     RE("^(wildlife)$", 0, "s"),
+    RE("^concerto$", 1, "i"),
     RE(C + "o$", 0, "es"),
     RE(C + "y$", 1, "ies"),
     RE("^ox$", 0, "en"),
-    RE("^(stimulus|alumnus)$", 2, "i"),
+    RE("^(stimul|alumn|termin)us$", 2, "i"),
     RE("^corpus$", 2, "ora"),
     RE("(xis|sis)$", 2, "es"),
+    RE("whiz$", 0, "zes"),
     RE("([zsx]|ch|sh)$", 0, "es"),
     RE(VL + "fe$", 2, "ves"),
     RE(VL + "f$", 1, "ves"),
     RE("(eu|eau)$", 0, "x"),
-
     RE("(man|woman)$", 2, "en"),
     RE("money$", 2, "ies"),
     RE("person$", 4, "ople"),
     RE("motif$", 0, "s"),
     RE("^meninx|phalanx$", 1, "ges"),
-
     RE("schema$", 0, "ta"),
     RE("^bus$", 0, "ses"),
     RE("child$", 0, "ren"),
-    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg)a$", 0, "e"),
+    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
     RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
     RE("^aide-de-camp$", 8, "s-de-camp"),
     RE("^apex|cortex$", 2, "ices"),
@@ -4319,6 +4351,7 @@ var PLURAL_RULES = [
     RE("^(taxi|chief|proof|ref|relief|roof|belief)$", 0, "s"),
     RE("^(co|no)$", 0, "'s"),
     RE("^blond$", 0, "es"),
+    RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
 
     // Latin stems
     RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"),
