@@ -3292,27 +3292,25 @@ var PosTagger = {
 			}
 
       // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
-      if (tag==="nns") {
+      if (tag === "nns") {
 
-        // is preceded by one of the following
-        if (i > 0 && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1]) > -1) {
-        // if word is ends with s or es and is 'nns' and has a vb
-          if (this._lexHas('vb', RiTa.singularize(word)))
-          {
-            tag = "vbz";
-            this._ct(12, word, tag);
-          }
-        } // if only word and not in lexicon
-        else if(words.length === 1 && !choices[i].length){
-           // if the stem of a single word could be both nn and vb, return nns 
-           // only return vbz when the stem is vb but not nn
-          if ( !this._lexHas('nn', RiTa.singularize(word)) && this._lexHas('vb', RiTa.singularize(word))){
-            tag = "vbz";
-            this._ct(12, word, tag);
+          // is preceded by one of the following
+          if (i > 0 && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1]) > -1) {
+              // if word is ends with s or es and is 'nns' and has a vb
+              if (this._lexHas('vb', RiTa.singularize(word))) {
+                  tag = "vbz";
+                  this._ct(12, word, tag);
+              }
+          } // if only word and not in lexicon
+          else if (words.length === 1 && !choices[i].length) {
+              // if the stem of a single word could be both nn and vb, return nns 
+              // only return vbz when the stem is vb but not nn
+              if (!this._lexHas('nn', RiTa.singularize(word)) && this._lexHas('vb', RiTa.singularize(word))) {
+                  tag = "vbz";
+                  this._ct(12, word, tag);
+              }
 
           }
-          
-        }
       }
 
       //transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
