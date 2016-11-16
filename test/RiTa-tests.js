@@ -1287,7 +1287,7 @@ var runtests = function () {
       equal("foot", RiTa.singularize("feet"));
       equal("tooth", RiTa.singularize("teeth"));
       equal("kiss", RiTa.singularize("kisses"));
-      equal("child", RiTa.singularize("child"));
+      equal("child", RiTa.singularize("children"));
       equal("randomword", RiTa.singularize("randomwords"));
       equal("deer", RiTa.singularize("deer"));
       equal("sheep", RiTa.singularize("sheep"));
