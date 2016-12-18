@@ -48,6 +48,38 @@ var runtests = function () {
     }
   });
 
+  RiString.prototype.splitWords = function() {
+
+      var words = [], wordIdx = 0,
+        txt = this.text().replace(/([\\?!\"\\.,;:@#$%&])/g, " $1 ").trim();
+
+      for (var i = 0; i <= txt.length; i++) {
+          if (txt.charAt(i) == ' ' || i == txt.length) {
+              words.push( RiString(txt.substring(wordIdx, i)).set('charIndex', wordIdx) );
+              wordIdx = i;
+          }
+      }
+
+      var words = RiString("It was a dark and stormy and rainy night.").splitWords();
+      for (var i = 0; i < words.length; i++) {
+        console.log(words[i].text(), words[i].get('charIndex'));
+      }
+
+      return words;
+  };
+
+  test("testGet", function () {
+
+    // TODO
+    equal(1,1);
+
+  });
+
+  test("testSet", function () {
+    // TODO
+    equal(1,1);
+  });
+
   test("testAnalyze", function () { // same tests as testFeatures() below
 
     if (noLexicon()) return;
@@ -597,7 +629,7 @@ var runtests = function () {
     rs = new RiString("There is a cat.");
     result = rs.posAt(2);
     equal("dt", result);
-    
+
     rs = new RiString("She bought a few knives.");
     result = rs.posAt(4);
     equal("nns", result);

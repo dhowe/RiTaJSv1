@@ -3127,7 +3127,7 @@ var PosTagger = {
 
         // use stemmer categories if no lexicon
         if(!lex.containsWord(words[i])){
-    
+
           if (endsWith(words[i],'s')) {
               var sub = words[i].substring(0,words[i].length - 1), sub2;
               if (endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
@@ -3140,7 +3140,7 @@ var PosTagger = {
 
           } else {
               var sing = RiTa.singularize(words[i]);
-             
+
               if (this._lexHas("n", sing)) {
 
                 choices2d.push("nns");
@@ -3303,7 +3303,7 @@ var PosTagger = {
               }
           } // if only word and not in lexicon
           else if (words.length === 1 && !choices[i].length) {
-              // if the stem of a single word could be both nn and vb, return nns 
+              // if the stem of a single word could be both nn and vb, return nns
               // only return vbz when the stem is vb but not nn
               if (!this._lexHas('nn', RiTa.singularize(word)) && this._lexHas('vb', RiTa.singularize(word))) {
                   tag = "vbz";
@@ -3328,9 +3328,9 @@ var PosTagger = {
   },
 
   _lexHas: function(pos, words) { // takes ([n|v|a|r] or a full tag)
-    
+
     if (!RiLexicon.enabled) return false;
-  
+
     var lex = RiTa._lexicon(), words = is(words, A) || [words];
 
     for (var i = 0; i < words.length; i++) {
@@ -3340,7 +3340,7 @@ var PosTagger = {
         if (pos == null) return true;
 
         var tags = lex._getPosArr(words[i]);
- 
+
         for (var j = 0; j < tags.length; j++) {
 
           if (pos === 'n' && PosTagger.isNoun(tags[j]) ||
