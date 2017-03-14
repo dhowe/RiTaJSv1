@@ -27,7 +27,7 @@ var del = require('del'),
 
 var testDir = 'test',
   destDir = 'dist',
-  npm = '/usr/local/bin/npm',
+  npm = 'npm',
   nodeDir = destDir+'/node/rita',
   tmpDir = '/tmp',
   srcDir = 'src',
