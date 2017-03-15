@@ -27,7 +27,7 @@ var del = require('del'),
 
 var testDir = 'test',
   destDir = 'dist',
-  npm = 'npm',
+  npm = '/usr/local/bin/npm',
   nodeDir = destDir+'/node/rita',
   tmpDir = '/tmp',
   srcDir = 'src',
@@ -137,7 +137,7 @@ gulp.task('watch', function() {
 // concatenate sources to 'dist' folder
 gulp.task('build-lex', ['clean'], function() {
 
-  return gulp.src(sourceFiles(true))
+  return gulp.src(sourceFiles("full"))
     .pipe(replace('##version##', version))
     .pipe(concat(rita+'-full.js'))
     .pipe(size({showFiles:true}))
@@ -145,15 +145,25 @@ gulp.task('build-lex', ['clean'], function() {
     .pipe(gulp.dest(destDir));
 });
 
-gulp.task('build-nolex', [ 'clean' ], function() {
+gulp.task('build-1000-lex', ['clean'], function() {
 
-  return gulp.src(sourceFiles(false))
+  return gulp.src(sourceFiles("min"))
     .pipe(replace('##version##', version))
     .pipe(concat(rita+'.js'))
     .pipe(size({showFiles:true}))
     .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
+
+// gulp.task('build-nolex', [ 'clean' ], function() {
+
+//   return gulp.src(sourceFiles(false))
+//     .pipe(replace('##version##', version))
+//     .pipe(concat(rita+'.js'))
+//     .pipe(size({showFiles:true}))
+//     .pipe(chmod(644))
+//     .pipe(gulp.dest(destDir));
+// });
 
 // concatenate/minify sources to 'dist' folder
 gulp.task('build-minify-lex', [ 'build-lex' ], function() {
@@ -169,7 +179,7 @@ gulp.task('build-minify-lex', [ 'build-lex' ], function() {
 });
 
 // concatenate/minify sources to 'dist' folder
-gulp.task('build-minify-nolex', [ 'build-nolex' ], function() {
+gulp.task('build-minify-1000-lex', [ 'build-1000-lex' ], function() {
 
   return gulp.src(destDir+'/'+rita+'.js')
     .pipe(gulpif(sourceMaps, sourcemaps.init()))
@@ -284,14 +294,19 @@ function testFiles(skipRiLexicon) {
   return tests;
 }
 
-function sourceFiles(includeLex) {
+function sourceFiles(lexStatus) {
 
   var src = [ srcDir + '/header.js', srcDir + '/rita.js' ];
 
-  if (includeLex) {
+  if (lexStatus === "full") {
     src.push(srcDir + '/rita_lts.js');
     src.push(srcDir + '/rita_dict.js');
     src.push(srcDir + '/rilexicon.js');
+  }
+  else if ( lexStatus === "min") {
+     src.push(srcDir + '/rita_dict_1000.js');
+     src.push(srcDir + '/rita_lts.js');
+     src.push(srcDir + '/rilexicon.js');
   }
 
   src.push(srcDir + '/footer.js');
@@ -305,9 +320,9 @@ function log(msg) { console.log('[INFO] '+ msg); }
 // ----------------------------------------------------
 
 // task composition
-gulp.task('build', [ 'build-nolex', 'build-lex' ]);
+gulp.task('build', [ 'build-lex', 'build-1000-lex']);
 gulp.task('build.full', [ 'build', 'build-minify' ]);
-gulp.task('build-minify', [ 'build-minify-nolex', 'build-minify-lex' ]);
+gulp.task('build-minify', [ 'build-minify-1000-lex', 'build-minify-lex' ]);
 
 // help is the default task
 gulp.task('default', [ 'help' ]);
