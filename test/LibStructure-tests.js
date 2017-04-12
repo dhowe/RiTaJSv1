@@ -8,25 +8,6 @@ var runtests = function() {
     teardown: function() {}
   });
 
-  /*test("Public Api Functions", function() {
-
-    if (QUnit.checkAPI) {
-
-      var pathToDocs = '../../RiTa/docs/json/';
-      QUnit.checkAPI('RiTaEvent', RiTaEvent, new RiTaEvent(this), pathToDocs);
-      QUnit.checkAPI('RiTa', RiTa, RiTa, pathToDocs);
-      QUnit.checkAPI('RiString', RiString, new RiString(''), pathToDocs);
-      QUnit.checkAPI('RiGrammar', RiGrammar, new RiGrammar(), pathToDocs);
-      QUnit.checkAPI('RiMarkov', RiMarkov, new RiMarkov(2), pathToDocs);
-      QUnit.checkAPI('RiLexicon', RiLexicon, RiLexicon(), pathToDocs);
-
-    } else {
-
-      console.log("[TEST] Skipping checkAPI() for LibraryStructure (node-only)");
-      ok("Only check in Node");
-    }
-  });*/
-
   test("Public Objects", function() {
 
     ok(typeof RiTa != 'undefined');
@@ -44,17 +25,12 @@ var runtests = function() {
   test("Private Statics (funs)", function() {
 
     if (typeof window != 'undefined' && window) {
-
-      //equal(typeof RiText._handleLeading, 'function');
-      //equal(typeof RiText._disposeOne, 'function');
-
-      // these fail in phantom outside the conditional ??
+      // fails in phantom outside the conditional ??
       equal(typeof is, 'undefined');
     }
     equal(typeof _wordOffsetFor, 'undefined');
     equal(typeof _handleLeading, 'undefined');
     equal(typeof _disposeOne, 'undefined');
-
   });
 
   test("Private Statics (vars)", function() {
@@ -112,16 +88,14 @@ var runtests = function() {
     equal(typeof Easing, 'undefined', 'Easing');
     equal(typeof Interpolation, 'undefined', 'Interpolation');
     equal(typeof TextBehavior, 'undefined', 'TextBehavior');
-    equal(typeof RiText_Canvas, 'undefined', 'RiText_Canvas');
-    equal(typeof RiText_P5, 'undefined', 'RiText_P5');
   });
 
   test("Private Constants", function() {
 
     equal(typeof SP, 'undefined');
     equal(typeof A, 'undefined');
-    equal(typeof SECOND_PERSON, 'undefined');
     equal(typeof PLURAL_RULES, 'undefined');
+    equal(typeof QUESTION_STARTS, 'undefined');
     equal(typeof PAST_PARTICIPLE_RULESET, 'undefined');
   });
 

@@ -2,8 +2,8 @@
 
 (function(window, undefined) {
 
-var E= '', SP= ' ', EA= [], N= 'number', S= 'string', O= 'object',
-  A= 'array', B= 'boolean', R= 'regexp', F= 'function', BN = '\n';
+var E = '', SP = ' ', EA = [], N = 'number', S = 'string', O = 'object',
+  A = 'array', B = 'boolean', R = 'regexp', F = 'function', BN = '\n';
 
 function makeClass() { // from: Resig, TODO: make work with strict
   return function(args) {
@@ -125,4 +125,31 @@ function escapeRegExp(string) {
 function get(obj) {
   if (typeof obj != 'undefined') // else return undef
     return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+}
+
+function tagForPENN(words) {
+  if (!words || !words.length) return EA;
+  var arr = is(words, S) ? RiTa.tokenize(words) : words;
+  return PosTagger.tag(arr);
+}
+
+function tagForWordNet(words) {
+  var pos, posArr = tagForPENN(words);
+  if (words && posArr.length) {
+    for (var i = 0; i < posArr.length; i++) {
+      pos = posArr[i];
+      posArr[i] = '-'; // default=other
+      if (PosTagger.isNoun(pos)) posArr[i] = 'n';
+      else if (PosTagger.isVerb(pos)) posArr[i] = 'v';
+      else if (PosTagger.isAdverb(pos)) posArr[i] = 'r';
+      else if (PosTagger.isAdj(pos)) posArr[i] = 'a';
+    }
+    return posArr;
+  }
+  return EA;
+}
+
+function getLexicon() {
+  RiTa.LEXICON = RiTa.LEXICON || new RiLexicon();
+  return RiTa.LEXICON;
 }

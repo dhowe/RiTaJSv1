@@ -1,4 +1,4 @@
-RiTa.stem_Lancaster = (function() {
+RiTa.stemmers.Lancaster = (function() {
 
   function accept(token) {
 

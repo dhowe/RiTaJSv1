@@ -20,12 +20,13 @@ if (window) { // for browser
   module.exports['RiWordNet'] = RiWordNet;
   module.exports['RiLexicon'] = RiLexicon;
   module.exports['RiTaEvent'] = RiTaEvent;
-}
 
-// if (typeof p5 !== 'undefined') {
-//   p5.prototype.registerPreloadMethod('loadFrom', RiGrammar.prototype);
-//   p5.prototype.registerPreloadMethod('loadFrom', RiMarkov.prototype);
-// }
+  // add RiTa.* functions to returned object // ADDED: 4/11/17
+  var funs = Object.keys(RiTa);
+  for (var i = 0; i < funs.length; i++) {
+    module.exports[funs[i]] = RiTa[funs[i]];
+  }
+}
 
 /*jshint +W069 */
 

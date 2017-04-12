@@ -68,33 +68,7 @@ var runtests = function() {
       }, BAD[i]);
     }
   });
-  //
-  // test("testSource", function() {
-  //
-  //   equal(RiTaEvent(this).source(), this);
-  //   equal(new RiTaEvent(this, RiTa.TEXT_TO).source(), this);
-  //   equal(RiTaEvent(this, RiTa.COLOR_TO).source(), this);
-  //   equal(new RiTaEvent(this, RiTa.FADE_OUT).source(), this);
-  // });
-  //
-  // test("testData", function() {
-  //
-  //   equal(RiTaEvent(this).data(), null);
-  //   equal(RiTaEvent(this, RiTa.TEXT_TO).data(), null);
-  //   equal(RiTaEvent(this, null, this).data(), this);
-  //   equal(new RiTaEvent(this, RiTa.TEXT_TO, this).data(), this);
-  //   equal(RiTaEvent(this, RiTa.COLOR_TO, this).data(), this);
-  //   equal(new RiTaEvent(this, RiTa.FADE_OUT, this).data(), this);
-  // });
-  //
-  // test("testType", function() {
-  //
-  //   equal(RiTaEvent(this).type(), RiTa.UNKNOWN);
-  //   equal(new RiTaEvent(this, RiTa.TEXT_TO).type(), RiTa.TEXT_TO);
-  //   equal(RiTaEvent(this, RiTa.COLOR_TO).type(), RiTa.COLOR_TO);
-  //   equal(new RiTaEvent(this, RiTa.FADE_OUT).type(), RiTa.FADE_OUT);
-  // });
-  //
+
   test("testIsType", function() {
 
     equal(RiTaEvent(this).isType(RiTa.UNKNOWN), true);
