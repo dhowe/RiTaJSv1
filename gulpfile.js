@@ -147,7 +147,7 @@ gulp.task('build-lex', ['clean'], function() {
 
 gulp.task('build-1000-lex', ['clean'], function() {
 
-  return gulp.src(sourceFiles("min"))
+  return gulp.src(sourceFiles("medium"))
     .pipe(replace('##version##', version))
     .pipe(concat(rita+'.js'))
     .pipe(size({showFiles:true}))
@@ -166,6 +166,47 @@ gulp.task('build-1000-lex', ['clean'], function() {
 // });
 
 // concatenate/minify sources to 'dist' folder
+gulp.task('build-large', ['clean'], function() {
+
+  return gulp.src(sourceFiles("full"))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'-large.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
+gulp.task('build-medium', ['clean'], function() {
+
+  return gulp.src(sourceFiles("medium"))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'-medium.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
+gulp.task('build-small', ['clean'], function() {
+
+  return gulp.src(sourceFiles("small"))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'-small.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
+gulp.task('build-tiny', ['clean'], function() {
+
+  return gulp.src(sourceFiles("tiny"))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'-tiny.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
+
 gulp.task('build-minify-lex', [ 'build-lex' ], function() {
 
   return gulp.src(destDir+'/'+rita+'-full.js')
@@ -303,11 +344,16 @@ function sourceFiles(lexStatus) {
     src.push(srcDir + '/rita_dict.js');
     src.push(srcDir + '/rilexicon.js');
   }
-  else if ( lexStatus === "min") {
+  else if ( lexStatus === "medium") {
      src.push(srcDir + '/rita_dict_1000.js');
      src.push(srcDir + '/rita_lts.js');
      src.push(srcDir + '/rilexicon.js');
+  } 
+  else if ( lexStatus === "small") {
+     src.push(srcDir + '/rita_dict_1000.js');
+     src.push(srcDir + '/rilexicon.js');
   }
+  //tiny only rita.js
 
   src.push(srcDir + '/footer.js');
 
@@ -321,6 +367,7 @@ function log(msg) { console.log('[INFO] '+ msg); }
 
 // task composition
 gulp.task('build', [ 'build-lex', 'build-1000-lex']);
+gulp.task('make-sizes', [ 'build-large', 'build-medium','build-small','build-tiny']);
 gulp.task('build.full', [ 'build', 'build-minify' ]);
 gulp.task('build-minify', [ 'build-minify-1000-lex', 'build-minify-lex' ]);
 
