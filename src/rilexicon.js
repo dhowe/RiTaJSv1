@@ -692,7 +692,7 @@ function intersect() {
 
 var LetterToSound = makeClass();
 
-LetterToSound.RULES = _RiTa_LTS;
+LetterToSound.RULES = typeof _RiTa_LTS !== 'undefined' ? _RiTa_LTS : false;
 LetterToSound.TOTAL = "TOTAL";
 LetterToSound.INDEX = "INDEX";
 LetterToSound.STATE = "STATE";
@@ -717,6 +717,7 @@ LetterToSound.prototype = {
 
   init: function() {
 
+    this.warnedForNoLTS = false;
     this.letterIndex = {};
     this.fval_buff = [];
     this.stateMachine = null;
@@ -800,8 +801,18 @@ LetterToSound.prototype = {
     var dig, phoneList = [],
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
+
     if (!word || !word.length || RiTa.isPunctuation(word))
       return null;
+
+    if (!LetterToSound.RULES) {
+      if (!this.warnedForNoLTS) {
+
+        this.warnedForNoLTS = true;
+        console.log("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+      }
+      return null;
+    }
 
     word = word.toLowerCase();
 

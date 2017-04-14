@@ -5,7 +5,7 @@ var RiLexicon = makeClass(); // stub
 RiLexicon.enabled = false;
 
 RiLexicon.prototype.init = function() {
-    throw Error('RiLexicon is not available -- ' +
+    warn('RiLexicon is not available -- ' +
       'if needed, make sure to include rilexicon.js');
 };
 
@@ -1626,7 +1626,7 @@ RiString.prototype = {
 
         if (!phones) {
 
-          if (words[i].match(/[a-zA-Z]+/))
+          if (LetterToSound.RULES && words[i].match(/[a-zA-Z]+/))
             log("[RiTa] Used LTS-rules for '" + words[i] + "'");
 
           lts = lex._letterToSound();
@@ -3041,18 +3041,22 @@ var PosTagger = {
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
-  tag: function(words) {
+  tag: function (words) {
 
-    var result = [], choices2d = [], lex;
+    var result = [],
+      choices2d = [],
+      lex;
 
     if (RiLexicon.enabled) {
       lex = getLexicon();
-    }
-    else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
+    } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
-      console.warn('No RiLexicon found: ' +
-        'part-of-speech tagging will be inaccurate!');
+      if (typeof _RiTa_LTS === 'undefined') {
+        console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
+      } else {
+        console.warn('No RiLexicon found: part-of-speech tagging will be inaccurate!');
+      }
     }
 
     words = is(words, A) ? words : [words];
@@ -3076,33 +3080,35 @@ var PosTagger = {
 
         choices2d[i] = [];
         var tag = 'nn';
-        if (endsWith(words[i],'s')) {
+        if (endsWith(words[i], 's')) {
           tag = 'nns';
         }
 
         // use stemmer categories if no lexicon
-        if(!lex.containsWord(words[i])){
+        if (!lex || !lex.containsWord(words[i])) {
 
-          if (endsWith(words[i],'s')) {
-              var sub = words[i].substring(0,words[i].length - 1), sub2;
-              if (endsWith(words[i],'es')) sub2 = words[i].substring(0,words[i].length - 2)
-              if (this._lexHas("n", sub) || this._lexHas("n", sub2)){
-                choices2d.push("nns");
-              } else {
-                var sing = RiTa.singularize(words[i]);
-                if (this._lexHas("n", sing)) choices2d.push("nns");
-              }
+          if (endsWith(words[i], 's')) {
+            var sub2, sub = words[i].substring(0, words[i].length - 1);
+
+            if (endsWith(words[i], 'es'))
+              sub2 = words[i].substring(0, words[i].length - 2)
+
+            if (this._lexHas("n", sub) || this._lexHas("n", sub2)) {
+              choices2d.push("nns");
+            } else {
+              var sing = RiTa.singularize(words[i]);
+              if (this._lexHas("n", sing)) choices2d.push("nns");
+            }
 
           } else {
-              var sing = RiTa.singularize(words[i]);
+            var sing = RiTa.singularize(words[i]);
 
-              if (this._lexHas("n", sing)) {
+            if (this._lexHas("n", sing)) {
 
-                choices2d.push("nns");
-                tag = 'nns';
-              }
+              choices2d.push("nns");
+              tag = 'nns';
+            }
           }
-
         }
 
         if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
@@ -3120,7 +3126,6 @@ var PosTagger = {
     // Adjust pos according to transformation rules
     return this._applyContext(words, result, choices2d);
   },
-
   _handleSingleLetter: function(c) {
 
     var result = c;
