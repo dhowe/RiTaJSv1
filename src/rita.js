@@ -9,8 +9,7 @@ RiLexicon.prototype.init = function() {
       'if needed, make sure to include rilexicon.js');
 };
 
-var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ],
-  DATA_LOADED = 'DataLoaded', INTERNAL = 'Internal', UNKNOWN = 'Unknown';
+var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
 
@@ -22,6 +21,8 @@ var RiTa = {
   SPLIT_CONTRACTIONS: false,
 
   JAVA: 1, JS: 2, NODE: 3,
+
+  DATA_LOADED: 'DataLoaded', INTERNAL: 'Internal', UNKNOWN: 'Unknown',
 
   // For Conjugator =================================
 

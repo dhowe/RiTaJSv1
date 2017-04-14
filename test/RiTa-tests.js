@@ -714,14 +714,14 @@ var runtests = function () {
 
     test("testGetPosTags", function () {
 
-      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]); 
-      deepEqual(RiTa.getPosTags("greed"), [ "nn" ]); 
-      deepEqual(RiTa.getPosTags("creed"), [ "nn" ]); 
-      deepEqual(RiTa.getPosTags("weed"), [ "nn" ]); 
-      deepEqual(RiTa.getPosTags("the top seed"), [ "dt", "jj", "nn" ]); 
-      deepEqual(RiTa.getPosTags("freed"), [ "jj" ]); 
+      deepEqual(RiTa.getPosTags("biped"), [ "nn" ]);
+      deepEqual(RiTa.getPosTags("greed"), [ "nn" ]);
+      deepEqual(RiTa.getPosTags("creed"), [ "nn" ]);
+      deepEqual(RiTa.getPosTags("weed"), [ "nn" ]);
+      deepEqual(RiTa.getPosTags("the top seed"), [ "dt", "jj", "nn" ]);
+      deepEqual(RiTa.getPosTags("freed"), [ "jj" ]);
       deepEqual(RiTa.getPosTags("by illegal means"),  ["in", "jj", "nn"]);
-      
+
       var result = RiTa.getPosTags("mammal");
       var answer = ["nn"];
       deepEqual(result, answer);
@@ -988,7 +988,8 @@ var runtests = function () {
 
     test("testStem(lancaster)", function () {
 
-      if (!RiTa.stem_Lancaster) {
+      console.log(RiTa.stemmers);
+      if (!RiTa.stemmers.Lancaster) {
         console.warn("[INFO] RiTa-tests: skipping Lancaster tests");
         return ok(1);
       }
@@ -1205,7 +1206,7 @@ var runtests = function () {
       equal(RiTa.pluralize("bonsai"), "bonsai");
 
       equal(RiTa.pluralize("whiz"), "whizzes");
-      equal(RiTa.pluralize("prognosis"), "prognoses"); 
+      equal(RiTa.pluralize("prognosis"), "prognoses");
       equal(RiTa.pluralize("gas"), "gases");
       equal(RiTa.pluralize("bus"), "buses");
 
@@ -1239,8 +1240,8 @@ var runtests = function () {
       equal(RiTa.singularize("whizzes"), "whiz");
       equal(RiTa.singularize("selves"), "self");
       equal(RiTa.singularize("bookshelves"), "bookshelf");
-      equal(RiTa.singularize("wheezes"), "wheeze"); 
-      equal(RiTa.singularize("diagnoses"), "diagnosis"); 
+      equal(RiTa.singularize("wheezes"), "wheeze");
+      equal(RiTa.singularize("diagnoses"), "diagnosis");
 
       equal("minutia", RiTa.singularize("minutia"));
       equal("blonde", RiTa.singularize("blondes"));
