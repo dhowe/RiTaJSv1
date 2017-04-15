@@ -33,6 +33,7 @@ if (!arrayEquals(result, expected))
 console.log('Tests passed for rita-tiny.js');
 
 /*********** rita-small ************/
+//no LTS, lex 1000
 var ritaSmall = require('../dist/rita-small.js');
 
 //word doesn't exist in lex 1000, the word itself is returned?
@@ -94,22 +95,21 @@ expected = true;
 if (!arrayEquals(result, expected)) 
   throw Error("Fail " + result + ", " + expected);
 
-// -> Rhyme no result: use LTS?
-result = lexicon.rhymes("umbrella");
-expected = [ ];
+result = lexicon.rhymes("mat");
+expected = [ 'at', 'bat', 'cat', 'fat', 'flat', 'hat', 'that' ];
 if (!arrayEquals(result, expected)) 
   throw Error("Fail " + result + ", " + expected);
 
-//no POS Tag returned
-// result = lexicon.isNoun("umbrella");
-// expected = true;
-// if (!arrayEquals(result, expected)) 
-//   throw Error("Fail " + result + ", " + expected);
+// //no POS Tag returned
+result = lexicon.isNoun("umbrella");
+expected = false;
+if (result != expected ) 
+  throw Error("Fail " + result + ", " + expected);
 
-// result = lexicon.isAdjective("beautiful");
-// expected = true;
-// if (!arrayEquals(result, expected)) 
-//   throw Error("Fail " + result + ", " + expected);
+result = lexicon.isAdjective("beautiful");
+expected = false;
+if (result != expected ) 
+  throw Error("Fail " + result + ", " + expected);
 
 console.log('Tests passed for rita-medium.js');
 
