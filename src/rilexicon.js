@@ -260,7 +260,6 @@ RiLexicon.prototype = {
 
   rhymes: function(word) {
 
-    if (this.containsWord(word)) {
 
       var p = this._lastStressedPhoneToEnd(word),
         phones, results = [];
@@ -276,7 +275,7 @@ RiLexicon.prototype = {
           results.push(this.keys[i]);
       }
       return (results.length > 0) ? results : EA;
-    }
+    
 
     return EA;
   },
@@ -395,11 +394,14 @@ RiLexicon.prototype = {
       throw Error("[RiTa] _checkType() expects a single word, found: " + word);
 
     var psa = this._getPosArr(word);
+    if(!PosTagger.NOLEX_WARNED && psa.length < 1 && this.size() < 1000)
+      warn("A minimal Lexicon is currently in use. For word features outside the lexicon, use a larger version of RiTa.")
+
     for (var i = 0; i < psa.length; i++) {
       if (tagArray.indexOf(psa[i]) > -1)
         return true;
     }
-
+    
     return false;
   },
 

@@ -3049,19 +3049,26 @@ var PosTagger = {
 
     if (RiLexicon.enabled) {
       lex = getLexicon();
+      
     } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
       if (typeof _RiTa_LTS === 'undefined') {
         console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
-      } else {
+      } 
+      else {
         console.warn('No RiLexicon found: part-of-speech tagging will be inaccurate!');
-      }
+      } 
     }
 
     words = is(words, A) ? words : [words];
 
     for (var i = 0, l = words.length; i < l; i++) {
+
+      if (!this.NOLEX_WARNED && !lex.containsWord(words[i]) && lex.size() < 1000) {
+          this.NOLEX_WARNED = true;
+          warn("A minimal Lexicon is currently in use: for word features outside the lexicon, use a larger version of RiTa.")
+      }
 
       if (words[i].length < 1) {
 
@@ -3078,15 +3085,16 @@ var PosTagger = {
       var data = lex && lex._getPosArr(words[i]);
       if (!data || !data.length) {
 
+        // use stemmer categories if no lexicon
+
         choices2d[i] = [];
         var tag = 'nn';
         if (endsWith(words[i], 's')) {
           tag = 'nns';
         }
 
-        // use stemmer categories if no lexicon
         if (!lex || !lex.containsWord(words[i])) {
-
+           
           if (endsWith(words[i], 's')) {
             var sub2, sub = words[i].substring(0, words[i].length - 1);
 
@@ -3313,6 +3321,7 @@ var PosTagger = {
           }
         }
       }
+
     }
     return false;
   }

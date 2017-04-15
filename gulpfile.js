@@ -166,15 +166,6 @@ gulp.task('build-1000-lex', ['clean'], function() {
 // });
 
 // concatenate/minify sources to 'dist' folder
-gulp.task('build-large', ['clean'], function() {
-
-  return gulp.src(sourceFiles("full"))
-    .pipe(replace('##version##', version))
-    .pipe(concat(rita+'-large.js'))
-    .pipe(size({showFiles:true}))
-    .pipe(chmod(644))
-    .pipe(gulp.dest(destDir));
-});
 
 gulp.task('build-medium', ['clean'], function() {
 
@@ -367,7 +358,7 @@ function log(msg) { console.log('[INFO] '+ msg); }
 
 // task composition
 gulp.task('build', [ 'build-lex', 'build-1000-lex']);
-gulp.task('make-sizes', [ 'build-large', 'build-medium','build-small','build-tiny']);
+gulp.task('make-sizes', [ 'build-lex', 'build-medium','build-small','build-tiny']);
 gulp.task('build.full', [ 'build', 'build-minify' ]);
 gulp.task('build-minify', [ 'build-minify-1000-lex', 'build-minify-lex' ]);
 
