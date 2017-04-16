@@ -172,7 +172,8 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
 
   ```bash
     $ npm install -g gulp
-    ```
+  ```
+  
 2. [Fork and clone](https://help.github.com/articles/fork-a-repo) this library.
 
   a. First, login to github and fork the project  
