@@ -170,23 +170,23 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
     b. The easiest way to install __npm__ is to install [node.js](http://nodejs.org/)  
     c. You can install __gulp__ via npm as follows:
 
-  ```bash
+    ```bash
     $ npm install -g gulp
-  ```
+    ```
   
 2. [Fork and clone](https://help.github.com/articles/fork-a-repo) this library.
 
-  a. First, login to github and fork the project  
-  b. Then, from a terminal/shell:
+    a. First, login to github and fork the project  
+    b. Then, from a terminal/shell:
 
     ```bash
     $ git clone https://github.com/dhowe/RiTaJS.git
     ```
 3. Now navigate into the project folder and install dependencies via npm.
 
-  ```bash
-  $  cd RiTaJS && npm install
-  ```
+    ```bash
+    $  cd RiTaJS && npm install
+    ```
 4. To create the library from src, use gulp.
 
   ```bash
