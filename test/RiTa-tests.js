@@ -786,6 +786,10 @@ var runtests = function () {
       var answer = ["nnp"];
       deepEqual(result, answer);
 
+      var result = RiTa.getPosTags("They feed the cat");
+      var answer = ["prp", "vbp", "dt", "nn"];
+      deepEqual(result, answer);
+
       var result = RiTa.getPosTags("There is a cat.");
       var answer = ["ex", "vbz", "dt", "nn", "."];
       deepEqual(result, answer);

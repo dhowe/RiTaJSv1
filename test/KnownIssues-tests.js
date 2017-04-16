@@ -17,13 +17,6 @@ var runtests = function () {
       ok(lex.isVerb("dogs")); // +n
     });
 
-
-    test("RiTa.getPosTags()", function () {
-     
-      deepEqual(RiTa.getPosTags("They feed the cat"), [ "prp", "vbp", "dt", "nn"]); 
-
-    });
-
     test("RiString.stripPunctuation(unicode)", function () {
 
         var res = RiTa.stripPunctuation("����������`',;:!?)He,;:!?)([].#l\"\\!@$%&}<>|+$%&}<>|+=-_\\o}<>|+=-_\\/*{^");
