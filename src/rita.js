@@ -3011,7 +3011,7 @@ var PosTagger = {
   ADJ: ['jj', 'jjr', 'jjs'],
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   NOLEX_WARNED: 0,
-  DBUG: 0,
+  DBUG: 1,
 
   isVerb: function(tag) {
     return inArray(this.VERBS, tag);
@@ -3164,6 +3164,7 @@ var PosTagger = {
     for (var i = 0, l = words.length; i < l; i++) {
 
       var word = words[i], tag = result[i];
+      console.log("transform", word, tag);
 
       // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
       if (i > 0 && (result[i - 1] == "dt")) {
@@ -3200,7 +3201,7 @@ var PosTagger = {
 
       // transform 3: convert a noun to a past participle if
       // word ends with "ed" and (following any nn or prp?)
-      if (i > 0 && sW(tag, "n") && eW(word, "ed") && result[i - 1].match(/^(nn|prp)$/)) {
+      if (i > 0 && sW(tag, "n") && eW(word, "ed") && !eW(word,"eed") && result[i - 1].match(/^(nn|prp)$/)) {
         tag = "vbn";
       }
 
