@@ -127,12 +127,10 @@ var runtests = function() {
     //wordNet Tag
     result = lex.randomWord("n");
     ok(result.length > 0, "randomWord n: " + result);
-    console.log(result);
 
     result = lex.randomWord("v");
     ok(result.length > 0, "randomWord v: " + result);
-    console.log(result);
-
+    
     // no result
     result = lex.randomWord("fw");
     ok(result.length < 1);
