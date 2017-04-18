@@ -300,7 +300,8 @@ RiLexicon.prototype = {
       if(c2._isVowel) return [];
 
       if (c2 && c1 === c2 && this.keys[i].length >= matchMinLength) {
-        results.push(this.keys[i]);
+        if (word.charAt(0) === this.keys[i].charAt(0)) results.unshift(this.keys[i]);
+        else results.push(this.keys[i]);
       }
     }
     return results;
@@ -621,7 +622,7 @@ RiLexicon.prototype = {
 
     if (typeof a[0] === "string") {
         a[0] = trim(a[0]).toLowerCase();
-       
+
         if (a[0] === "v")
             a[0] = "vb";
         if (a[0] === "r")
