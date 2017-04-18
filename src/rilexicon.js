@@ -615,44 +615,56 @@ RiLexicon.prototype = {
 
   randomWord: function() { // takes nothing, pos, syllableCount, or both
 
-    var i, j, rdata, numSyls,
+    var i, j, rdata, numSyls,pluralize = false,
       ran = Math.floor(Math.random() * this.keys.length),
       found = false, a = arguments, ranWordArr = this.keys;
 
+    if (typeof a[0] === "string") {
+        a[0] = trim(a[0]).toLowerCase();
+       
+        if (a[0] === "v")
+            a[0] = "vb";
+        if (a[0] === "r")
+            a[0] = "rb";
+        if (a[0] === "a")
+            a[0] = "jj";
+        if (a[0] === "n" || a[0] === "nns")
+            a[0] = "nn";
+    }
+  
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
 
-        a[0] = trim(a[0]).toLowerCase();
+        
         for (i = 0; i < ranWordArr.length; i++) {
           j = (ran + i) % ranWordArr.length;
           rdata = this.data[ranWordArr[j]];
           numSyls = rdata[0].split(SP).length;
           if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-            return ranWordArr[j];
+            return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
           }
         }
-        return E;
+
+        warn("No words with pos=" + a[0] + " found");
 
       case 1:
 
         if (is(a[0], S)) { // a[0] = pos
 
-          a[0] = trim(a[0]).toLowerCase();
           for (i = 0; i < ranWordArr.length; i++) {
             j = (ran + i) % ranWordArr.length;
             rdata = this.data[ranWordArr[j]];
-            if( a[0] === "nns" && rdata[1].split(SP)[0] === "nn") return RiTa.pluralize(ranWordArr[j]);
             if (a[0] === rdata[1].split(SP)[0]) {
-              return ranWordArr[j];
+              return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
             }
           }
 
-          //pos tag doesn't exist in the current dictionary
           warn("No words with pos=" + a[0] + " found");
 
-        } else { // a[0] = syllableCount
+        } else { 
 
+          // a[0] = syllableCount
           for (i = 0; i < ranWordArr.length; i++) {
             j = (ran + i) % ranWordArr.length;
             rdata = this.data[ranWordArr[j]];

@@ -123,6 +123,14 @@ var runtests = function() {
 
     result = lex.randomWord("nns");
     ok(result.length > 0, "randomWord nns: " + result);
+    
+    //wordNet Tag
+    result = lex.randomWord("n");
+    ok(result.length > 0, "randomWord n: " + result);
+    console.log(result);
+
+    result = lex.randomWord("v");
+    ok(result.length > 0, "randomWord v: " + result);
     console.log(result);
 
     // no result
@@ -141,6 +149,10 @@ var runtests = function() {
 
     result = lex.randomWord(5);
     ok(result.length > 0, "5 syllableCount: " + result);
+
+    //tag, int
+    result = lex.randomWord("nns", 5);
+    ok(result.length > 0, "randomWord nns: " + result);
 
   });
 
