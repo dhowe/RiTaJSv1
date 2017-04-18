@@ -121,6 +121,21 @@ var runtests = function() {
     result = lex.randomWord("nn");
     ok(result.length > 0, "randomWord nn: " + result);
 
+    result = lex.randomWord("nns");
+    ok(result.length > 0, "randomWord nns: " + result);
+    console.log(result);
+
+    // no result
+    result = lex.randomWord("fw");
+    ok(result.length < 1);
+
+    result = lex.randomWord("rp");
+    ok(result.length < 1, "randomWord rp: " + result);
+
+    result = lex.randomWord("pdt");
+    ok(result.length < 1, "randomWord pdt: " + result);
+
+    //int
     result = lex.randomWord(3);
     ok(result.length > 0, "3 syllableCount: " + result);
 

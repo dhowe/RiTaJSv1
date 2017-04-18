@@ -642,10 +642,14 @@ RiLexicon.prototype = {
           for (i = 0; i < ranWordArr.length; i++) {
             j = (ran + i) % ranWordArr.length;
             rdata = this.data[ranWordArr[j]];
+            if( a[0] === "nns" && rdata[1].split(SP)[0] === "nn") return RiTa.pluralize(ranWordArr[j]);
             if (a[0] === rdata[1].split(SP)[0]) {
               return ranWordArr[j];
             }
           }
+
+          //pos tag doesn't exist in the current dictionary
+          warn("No words with pos=" + a[0] + " found");
 
         } else { // a[0] = syllableCount
 
