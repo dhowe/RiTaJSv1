@@ -284,21 +284,22 @@ RiLexicon.prototype = {
 
     if (word.indexOf(" ") > -1) return [];
 
-    if (!this._isVowel(word.charAt(0))) return [];
+    if (this._isVowel(word.charAt(0))) return [];
+    
 
     matchMinLength = matchMinLength || 4;
 
     var c2, results = [],
-      c1 = this._firstConsonant(this._firstSyllable(word, useLTS));
-
-     console.log(this._firstSyllable(word, useLTS), c1);
+      c1 = this._firstPhoneme(this._firstStressedSyllable(word, useLTS));
 
     for (var i = 0; i < this.keys.length; i++) {
 
-      c2 = this._firstConsonant(
-          this._firstSyllable(this.keys[i], useLTS));
+      c2 = this._firstPhoneme(
+          this._firstStressedSyllable(this.keys[i], useLTS));
 
-      if (c2 && c1 === c2 && this.keys[i].length > matchMinLength) {
+      if(c2._isVowel) return [];
+
+      if (c2 && c1 === c2 && this.keys[i].length >= matchMinLength) {
         results.push(this.keys[i]);
       }
     }
@@ -313,8 +314,10 @@ RiLexicon.prototype = {
 
     if (equalsIgnoreCase(word1, word2)) return true;
 
-    var c1 = this._firstConsonant(this._firstSyllable(word1, useLTS)),
-      c2 = this._firstConsonant(this._firstSyllable(word2, useLTS));
+    var c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
+      c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
+    
+    if(this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) return false;
 
     return (strOk(c1) && strOk(c2) && c1 === c2);
   },
@@ -322,7 +325,7 @@ RiLexicon.prototype = {
   _firstSyllable: function(word, useLTS) {
      var raw = this._getRawPhones(word, useLTS);
      if (!strOk(raw)) return E;
-     // console.log(raw);
+     if(word === "URL") console.log(raw);
      var syllables = raw.split(" ");
      return syllables[0];
   },
@@ -532,6 +535,17 @@ RiLexicon.prototype = {
 
     var pl = this._getPosArr(word);
     return (pl.length > 0) ? pl[0] : [];
+  },
+
+  _firstPhoneme: function(rawPhones) {
+
+    if (!strOk(rawPhones)) return E;
+
+    var phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+
+    if (phones) return phones[0];
+
+    return E; // return null?
   },
 
   _firstConsonant: function(rawPhones) {

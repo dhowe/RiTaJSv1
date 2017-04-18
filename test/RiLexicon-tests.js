@@ -64,15 +64,24 @@ var runtests = function() {
 
   test("testAlliterations", function() {
 
-    // var result = lex.alliterations("cat");
-    // ok(result.length > 2000);
-    //
-    // var result = lex.alliterations("dog");
-    // ok(result.length > 1000);
+    var result = lex.alliterations("cat");
+    ok(result.length > 2000);
+    for(var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i],"cat"));
+    }
+  
+    var result = lex.alliterations("dog");
+    ok(result.length > 1000);
+    for(var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i],"dog"));
+    }
 
-    var result = lex.alliterations("URL");
-    //console.log(result);
-    ok(result.length < 1);// -> Known Issue
+    var result = lex.alliterations("umbrella");
+    ok(result.length < 1);
+
+    // var result = lex.alliterations("URL");
+    // ok(result.length < 1);
+    //The phonemes from LTS is er1-l, not very accurate 
 
     var result = lex.alliterations("no stress");
     ok(result.length < 1);
@@ -83,22 +92,22 @@ var runtests = function() {
     var result = lex.alliterations("");
     ok(result.length < 1);
 
-    // TODO: better tests
   });
 
   test("testAlliterations(int)", function() {
 
     var result = lex.alliterations("dog", 15);
+    ok(result.length < 5);
+    for(var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i],"dog"));
+    }
 
-    ok(result.length == 0);
+    var result = lex.alliterations("cat", 16);
+    ok(result.length < 15);
+    for(var i = 0; i < result.length; i++) {
+       ok(lex.isAlliteration(result[i],"cat"));
+    }
 
-    var result = lex.alliterations("cat", 15);
-
-    //console.log(result.length);
-
-    ok(result.length == 0); // TODO: check this
-
-    // TODO: better tests
   });
 
   // TESTS: randomWord(), randomWord(targetLength),
@@ -132,6 +141,7 @@ var runtests = function() {
       }
     }
   });
+
 
   test("testRandomWord(3)", function() {
 
@@ -437,7 +447,7 @@ var runtests = function() {
     lex = RiLexicon();
 
     ok(lex.isAlliteration("sally", "silly"));
-    //ok(lex.isAlliteration("sea", "seven"));
+    ok(lex.isAlliteration("sea", "seven"));
     ok(lex.isAlliteration("silly", "seven"));
     ok(lex.isAlliteration("sea", "sally"));
 
@@ -447,31 +457,32 @@ var runtests = function() {
     ok(lex.isAlliteration("BIG", "bad")); // CAPITAL LETTERS
     ok(lex.isAlliteration("big", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
-
-    ok(lex.isAlliteration("wind", "withdraw"));
-
-    // False
     ok(lex.isAlliteration("this", "these"));
+    
+    // False
+    ok(!lex.isAlliteration("wind", "withdraw"));
     ok(!lex.isAlliteration("solo", "tomorrow"));
     ok(!lex.isAlliteration("solo", "yoyo"));
     ok(!lex.isAlliteration("yoyo", "jojo"));
+    ok(!lex.isAlliteration("cat", "access"));
     ok(!lex.isAlliteration("", ""));
 
-    //ok(lex.isAlliteration("unsung", "sine")); -> TODO: add to KnownIssues
-
+    ok(lex.isAlliteration("unsung", "sine"));
     ok(lex.isAlliteration("job", "gene"));
     ok(lex.isAlliteration("jeans", "gentle"));
-    ok(lex.isAlliteration("abet", "better"));
+    
     ok(lex.isAlliteration("knife", "gnat"));
     ok(lex.isAlliteration("knife", "naughty"));
-  //  ok(lex.isAlliteration("psychology", "cholera")); // -> TODO: add to KnownIssues
-  // ok(lex.isAlliteration("consult", "sultan"));   //-> TODO: add to KnownIssues
+
+    ok(lex.isAlliteration("abet", "better"));
+    ok(lex.isAlliteration("psychology", "cholera")); 
+    ok(lex.isAlliteration("consult", "sultan"));  
     ok(lex.isAlliteration("never", "knight"));
     ok(lex.isAlliteration("knight", "navel"));
-  //  ok(lex.isAlliteration("monsoon", "super")); // TODO: add to KnownIssues
+    ok(lex.isAlliteration("monsoon", "super")); 
     ok(lex.isAlliteration("cat", "kitchen"));
 
-    // not counting assonance, yes?
+    // not counting assonance
     ok(!lex.isAlliteration("octopus", "oblong"));
     ok(!lex.isAlliteration("omen", "open"));
     ok(!lex.isAlliteration("amicable", "atmosphere"));

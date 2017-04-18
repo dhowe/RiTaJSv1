@@ -2959,10 +2959,6 @@ Conjugator.prototype = {
 // ////////////////////////////////////////////////////////////
 var PosTagger = {
 
-  N: ['n', 'NOUN_KEY'],
-  V: ['v', 'VERB_KEY'],
-  R: ['r', 'ADVERB_KEY'],
-  A: ['a', 'ADJECTIVE_KEY'],
   CC: ['cc', 'Coordinating conjunction'],
   CD: ['cd', 'Cardinal number'],
   DT: ['dt', 'Determiner'],
