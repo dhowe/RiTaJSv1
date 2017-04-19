@@ -69,7 +69,7 @@ var runtests = function() {
     for(var i = 0; i < result.length; i++) {
       ok(lex.isAlliteration(result[i],"cat"));
     }
-  
+
     var result = lex.alliterations("dog");
     ok(result.length > 1000);
     for(var i = 0; i < result.length; i++) {
@@ -81,7 +81,7 @@ var runtests = function() {
 
     // var result = lex.alliterations("URL");
     // ok(result.length < 1);
-    //The phonemes from LTS is er1-l, not very accurate 
+    //The phonemes from LTS is er1-l, not very accurate
 
     var result = lex.alliterations("no stress");
     ok(result.length < 1);
@@ -123,14 +123,14 @@ var runtests = function() {
 
     result = lex.randomWord("nns");
     ok(result.length > 0, "randomWord nns: " + result);
-    
+
     //wordNet Tag
     result = lex.randomWord("n");
     ok(result.length > 0, "randomWord n: " + result);
 
     result = lex.randomWord("v");
     ok(result.length > 0, "randomWord v: " + result);
-    
+
     // no result
     result = lex.randomWord("fw");
     ok(result.length < 1);
@@ -483,7 +483,7 @@ var runtests = function() {
     ok(lex.isAlliteration("big", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
     ok(lex.isAlliteration("this", "these"));
-    
+
     // False
     ok(!lex.isAlliteration("wind", "withdraw"));
     ok(!lex.isAlliteration("solo", "tomorrow"));
@@ -495,16 +495,16 @@ var runtests = function() {
     ok(lex.isAlliteration("unsung", "sine"));
     ok(lex.isAlliteration("job", "gene"));
     ok(lex.isAlliteration("jeans", "gentle"));
-    
+
     ok(lex.isAlliteration("knife", "gnat"));
     ok(lex.isAlliteration("knife", "naughty"));
 
     ok(lex.isAlliteration("abet", "better"));
-    ok(lex.isAlliteration("psychology", "cholera")); 
-    ok(lex.isAlliteration("consult", "sultan"));  
+    ok(lex.isAlliteration("psychology", "cholera"));
+    ok(lex.isAlliteration("consult", "sultan"));
     ok(lex.isAlliteration("never", "knight"));
     ok(lex.isAlliteration("knight", "navel"));
-    ok(lex.isAlliteration("monsoon", "super")); 
+    ok(lex.isAlliteration("monsoon", "super"));
     ok(lex.isAlliteration("cat", "kitchen"));
 
     // not counting assonance
@@ -996,7 +996,7 @@ var runtests = function() {
 
     ok(lex.containsWord("are"));
     lex.removeWord("are");
-    ok(lex.containsWord("are"));
+    ok(!lex.containsWord("are"));
     ok(lex.size()===originalSize-2);
 
     lex.reload();

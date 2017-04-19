@@ -1269,7 +1269,7 @@ var runtests = function () {
 
     rs = new RiString("");
     result = rs.wordCount();
-    equal(result, 1);
+    equal(result, 0);
 
   });
 
