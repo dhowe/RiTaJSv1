@@ -300,11 +300,11 @@ RiLexicon.prototype = {
       if(c2._isVowel) return [];
 
       if (c2 && c1 === c2 && this.keys[i].length >= matchMinLength) {
-        if (word.charAt(0) === this.keys[i].charAt(0)) results.unshift(this.keys[i]);
-        else results.push(this.keys[i]);
+        results.push(this.keys[i]);
       }
     }
-    return results;
+   
+    return shuffle(results);
   },
 
   isAlliteration: function(word1, word2, useLTS) {
