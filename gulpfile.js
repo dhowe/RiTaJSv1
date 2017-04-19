@@ -299,9 +299,9 @@ gulp.task('test-only', function (done) {
       if (err) {
         console.error(err);
         console.error(report);
+        process.exit(1);
       }
       testFile = 'rita' // restore
-      process.exit(1);
       done();
     });
 });
