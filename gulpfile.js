@@ -301,6 +301,7 @@ gulp.task('test-only', function (done) {
         console.error(report);
       }
       testFile = 'rita' // restore
+      process.exit(1);
       done();
     });
 });
@@ -349,7 +350,7 @@ function sourceFiles(lexStatus) {
      src.push(srcDir + '/rita_dict_1000.js');
      src.push(srcDir + '/rita_lts.js');
      src.push(srcDir + '/rilexicon.js');
-  } 
+  }
   else if ( lexStatus === "small") {
      src.push(srcDir + '/rita_dict_1000.js');
      src.push(srcDir + '/rilexicon.js');
