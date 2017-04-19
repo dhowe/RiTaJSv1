@@ -145,6 +145,16 @@ gulp.task('build-lex', ['clean'], function() {
     .pipe(gulp.dest(destDir));
 });
 
+gulp.task('build-tmp', ['clean'], function() {
+
+  return gulp.src(sourceFiles("tmp"))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'-full.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
 gulp.task('build-1000-lex', ['clean'], function() {
 
   return gulp.src(sourceFiles("medium"))
@@ -343,6 +353,11 @@ function sourceFiles(lexStatus) {
   else if ( lexStatus === "small") {
      src.push(srcDir + '/rita_dict_1000.js');
      src.push(srcDir + '/rilexicon.js');
+  }
+  else if (lexStatus === "tmp") {
+    src.push(srcDir + '/rita_lts.js');
+    src.push(srcDir + '/rita_dict_tmp.js');
+    src.push(srcDir + '/rilexicon.js');
   }
   //tiny only rita.js
 
