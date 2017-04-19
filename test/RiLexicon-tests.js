@@ -996,7 +996,7 @@ var runtests = function() {
 
     ok(lex.containsWord("are"));
     lex.removeWord("are");
-    ok(!lex.containsWord("are"));
+    ok(lex.containsWord("are"));
     ok(lex.size()===originalSize-2);
 
     lex.reload();
