@@ -1,9 +1,10 @@
 language: node_js
 node_js:
+  - "6"
   - "5"
   - "4"
-  - "0.12"
+  - "node"
   - "iojs"
 before_script:
   - npm install -g gulp
-script: npm test
+script: gulp test

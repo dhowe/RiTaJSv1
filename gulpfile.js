@@ -258,7 +258,7 @@ gulp.task('test-npm', [ 'build' ], function() {
 // runs tests with lexicon loaded
 // usage: gulp test
 //        gulp test --name RiString
-gulp.task('test', function (done) {
+gulp.task('test', [ 'build' ], function (done) {
 
   destDir = 'dist';
   testFile = 'rita-full';
