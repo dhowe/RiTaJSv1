@@ -17,6 +17,7 @@ About the project
 * Github Repo:       [https://github.com/dhowe/RiTaJS](https://github.com/dhowe/RiTa)
 * Issues:       [https://github.com/dhowe/RiTa/issues](https://github.com/dhowe/RiTa/issues)
 * Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
+* FAQ: https://github.com/dhowe/RiTa/wiki
 * Related:          [RiTa](https://github.com/dhowe/RiTa) (Java)
 
 In [node.js](http://nodejs.org/)
