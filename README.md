@@ -17,6 +17,7 @@ RiTa.js is designed to an easy-to-use toolkit for experiments in natural languag
 * License:          GPL (see included [LICENSE](https://github.com/dhowe/RiTaJS/blob/master/LICENSE) file)
 * Github Repo:      https://github.com/dhowe/RiTaJS/
 * Issues:      https://github.com/dhowe/RiTa/issues
+* FAQ: https://github.com/dhowe/RiTa/wiki
 * Related:          [RiTa](https://github.com/dhowe/RiTa) (Java)
 
 
