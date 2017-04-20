@@ -400,6 +400,7 @@ function _dict() { return {
 'interest':['ih1-n t-r-ah-s-t','nn vbp vb'],
 'invent':['ih-n v-eh1-n-t','vb vbp'],
 'iron':['ay1 er-n','nn vb'],
+'is':['ih1-s','vbz'],
 'island':['ay1 l-ah-n-d','nn'],
 'it':['ih1-t','prp'],
 'job':['jh-aa1-b','nn'],
