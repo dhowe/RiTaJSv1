@@ -3054,7 +3054,7 @@ var PosTagger = {
         }
 
         if (!lex || !lex.containsWord(words[i])) {
-           
+          
           if (endsWith(words[i], 's')) {
             var sub2, sub = words[i].substring(0, words[i].length - 1);
 
@@ -3070,17 +3070,15 @@ var PosTagger = {
 
           } else {
             var sing = RiTa.singularize(words[i]);
-
+            
             if (this._lexHas("n", sing)) {
-
               choices2d.push("nns");
               tag = 'nns';
+            } else if (checkPluralNoLex(words[i])){
+               tag = 'nns';
+              //common plurals
             }
           }
-        }
-
-        if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
-          tag = 'nns';
         }
         result.push(tag);
 
