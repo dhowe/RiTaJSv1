@@ -21,10 +21,11 @@ if (window) { // for browser
   module.exports['RiLexicon'] = RiLexicon;
   module.exports['RiTaEvent'] = RiTaEvent;
 
-  // add RiTa.* functions to returned object // ADDED: 4/11/17
   var funs = Object.keys(RiTa);
   for (var i = 0; i < funs.length; i++) {
-    module.exports[funs[i]] = RiTa[funs[i]];
+    if (!startsWith(funs[i], '_')) {
+      module.exports[funs[i]] = RiTa[funs[i]];
+    }
   }
 }
 

@@ -313,7 +313,7 @@ var runtests = function() {
 
 			ok(arr.length >= 4 && arr.length <= 20, res + '  (length=' + arr.length + ")");
 
-			var n = rm.getN();
+			var n = rm.N;
 			for (var j = 0; j < arr.length - n; j++) {
 				var partial = arr.slice(j, j + n);
 				//console.log(partial);
@@ -329,15 +329,6 @@ var runtests = function() {
 				throw e;
 			}
 		});
-
-	});
-
-	test("testGetN()", function() {//TODO
-
-		for (var i = 1; i < 5; i++) {
-			var rm = RiMarkov(i);
-			equal(rm.getN(), i);
-		}
 	});
 
 	// WORKING HERE

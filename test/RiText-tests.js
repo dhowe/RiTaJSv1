@@ -1347,7 +1347,7 @@ var runtests = function() {
   });
 
   function noLexicon() {
-    if (!RiLexicon.enabled) {
+    if (!RiLexicon._enabled) {
       if (!lexWarningRiText) {
         lexWarningRiText = true;
         console.warn('[INFO] RiText-tests: skipping lexicon-required tests');

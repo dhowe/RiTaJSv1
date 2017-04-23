@@ -27,7 +27,7 @@ var testResults = [{
 
 var runtests = function() {
 
-  if (!RiLexicon.enabled) {
+  if (!RiLexicon._enabled) {
     console.warn("[INFO] RiLexicon-tests: skipping ALL tests...");
     return;
   }

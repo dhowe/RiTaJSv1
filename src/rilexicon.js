@@ -1,5 +1,5 @@
 RiLexicon.SILENCE_LTS = false;
-RiLexicon.enabled = true;
+RiLexicon._enabled = true;
 
 RiLexicon.prototype = {
 
@@ -859,7 +859,7 @@ LetterToSound.prototype = {
         if (dig < 0 || dig > 9)
           throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
 
-        phoneList.push(RiString.phones.digits[dig]);
+        phoneList.push(RiString._phones.digits[dig]);
       }
 
       return phoneList;

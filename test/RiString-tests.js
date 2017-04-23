@@ -1410,8 +1410,7 @@ var runtests = function () {
     }
   });
 
-  test("test_stringify", function () {
-
+  /*test("test_stringify", function () { // now private
     var data = [
       [
         [2],
@@ -1445,8 +1444,8 @@ var runtests = function () {
       ]
     ];
     var out = "ao2-r g-ah0 n-ah0 z-ey1 sh-ah0-n-z";
-    equal(RiString._stringify(data), out);
-  });
+    equal(stringify(data), out);
+  });*/
 
   test("test_syllabifyArray", function () {
 
@@ -1457,7 +1456,7 @@ var runtests = function () {
   });
 
   function noLexicon() {
-    if (!RiLexicon.enabled) {
+    if (!RiLexicon._enabled) {
       if (!lexWarningRiString) {
         lexWarningRiString = true;
         console.warn('[INFO] RiString-tests: skipping lexicon-required tests');

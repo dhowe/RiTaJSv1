@@ -1668,7 +1668,7 @@ var runtests = function () {
     });
 
     function noLexicon() {
-      if (!RiLexicon.enabled) {
+      if (!RiLexicon._enabled) {
         if (!lexWarningRiTa) {
           lexWarningRiTa = true;
           console.warn('[INFO] RiTa-tests: skipping lexicon-required tests');
