@@ -538,7 +538,7 @@ var runtests = function() {
     // ok(!lex.isRhyme("solo", "yoyo"));
     // ok(!lex.isRhyme("yoyo", "jojo")); -> Known Issues
 
-    ok(!lex.isRhyme("yo", "bro"));
+    ok(lex.isRhyme("yo", "bro"));
     ok(!lex.isRhyme("swag", "grab"));
     ok(!lex.isRhyme("", ""));
   });
