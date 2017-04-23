@@ -3024,7 +3024,7 @@ var PosTagger = {
     } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
-      if (typeof _RiTa_LTS === 'undefined') {
+      if (typeof RiTa._LTS === 'undefined') {
         console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
       }
       else {

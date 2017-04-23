@@ -3180,7 +3180,7 @@ var PosTagger = {
     } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
-      if (typeof _RiTa_LTS === 'undefined') {
+      if (typeof RiTa._LTS === 'undefined') {
         console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
       }
       else {
@@ -5007,7 +5007,7 @@ var PLURAL_RULES = [
 if (!RiTa.SILENT && !isNode() && console)
   console.log('[INFO] RiTaJS.version [' + RiTa.VERSION + ']');
 
-_RiTa_LTS=[
+RiTa._LTS=[
 'TOTAL 13100',
 'INDEX 0 a',
 'STATE 4 r 2 1',
@@ -46961,7 +46961,7 @@ function intersect() {
 
 var LetterToSound = makeClass();
 
-LetterToSound.RULES = typeof _RiTa_LTS !== 'undefined' ? _RiTa_LTS : false;
+LetterToSound.RULES = typeof RiTa._LTS !== 'undefined' ? RiTa._LTS : false;
 LetterToSound.TOTAL = "TOTAL";
 LetterToSound.INDEX = "INDEX";
 LetterToSound.STATE = "STATE";
