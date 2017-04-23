@@ -73,7 +73,7 @@ var runtests = function () {
     ok(features);
     equal(features.phonemes, "w-ah-n-t-uw-th-r-iy");
     equal(features.syllables, "w-ah-n/t-uw/th-r-iy");
-    equal(features.stresses, "0/0/0");
+    equal(features.stresses, "1/1/1");
 
     features = RiString("The dog ran faster than the other dog.  But the other dog was prettier.").analyze().features();
     ok(features);
@@ -105,7 +105,7 @@ var runtests = function () {
     ok(features);
     equal(features.phonemes, "w-ah-n t-uw s-eh-v-ah-n");
     equal(features.syllables, "w-ah-n t-uw s-eh/v-ah-n");
-    equal(features.stresses, "0 0 1/0");
+    equal(features.stresses, "1 1 1/0");
 
     features = RiString("*").analyze().features();
     ok(features);
