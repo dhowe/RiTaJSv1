@@ -2348,17 +2348,14 @@ RiGrammar.prototype = {
 
 }; // end RiGrammar
 
+var callbacksDisabled = false;
 var RiTaEvent = makeClass();
-
-RiTaEvent._callbacksDisabled = false;
 RiTaEvent.ID = 0;
-
 RiTaEvent.prototype = {
 
   init: function(source, eventType, data) {
 
     is(source, O) || ok(source, S);
-
     this._id = ++RiTaEvent.ID;
     this._data = data;
     this._source = source;
@@ -2366,34 +2363,27 @@ RiTaEvent.prototype = {
   },
 
   toString: function() {
-
     var s = 'RiTaEvent[#' + this._id + ' type=' +
       '(' + this._type + ') source=' + this._source.toString();
-
     s += !this._data ? s += ' data=null' :
       (' data-length=' + this._data.toString().length);
-
     return s + ']';
   },
 
   isType: function(t) {
-
     return this._type === t;
   },
 
   _fire: function(callback) {
 
     callback = callback || window.onRiTaEvent;
-
     if (callback && is(callback, F)) {
       try {
-
         callback(this); // first arg ??
         return this;
 
       } catch (err) {
-
-        RiTaEvent._callbacksDisabled = true;
+        callbacksDisabled = true;
         var msg = "RiTaEvent: error calling '" + callback + "': " + err;
         is(callback, S) && (msg += " Callback must be a function in JS!");
         warn(msg);

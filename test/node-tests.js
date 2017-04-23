@@ -8,12 +8,7 @@ console.warn = function(){}  // removes warnings from console output
 var lex, result, word, words, expected;
 
 /*********** rita-tiny ************/
-RiTa = require('../dist/rita-full.js');
-var obj = RiTa;
-console.log(Object.keys(obj));
-obj.prototype&&console.log(Object.keys(obj.prototype));
-return;
-
+RiTa = require('../dist/rita-tiny.js');
 word = new RiTa.RiString("autumn");
 if (!word) throw Error("Fail: word undefined");
 
@@ -146,7 +141,7 @@ words = RiTa.RiString("The dog ate the cat.");
 if (!arrayEquals(words.get('tokens').split(' '), expected))
   throw Error("Fail4");
 
-console.log('Tests passed for syntax');
+console.log('Tests passed for ');
 
 
 /*********** helpers ************/

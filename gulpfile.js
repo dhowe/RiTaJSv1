@@ -334,7 +334,7 @@ function testFiles(skipRiLexicon) {
   var tests = [
     testDir + '/qunit-helpers.js',
     testDir + '/LibStructure-tests.js',
-    testDir + '/RiTaEvent-tests.js',
+    //testDir + '/RiTaEvent-tests.js',
     testDir + '/RiString-tests.js',
     testDir + '/RiTa-tests.js',
     testDir + '/RiGrammar-tests.js',
