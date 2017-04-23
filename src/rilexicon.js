@@ -510,7 +510,6 @@ RiLexicon.prototype = {
     if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
 
       phones = this._letterToSound().getPhones(word);
-
       if (phones && phones.length)
         return RiString._syllabify(phones);
 
@@ -821,12 +820,25 @@ LetterToSound.prototype = {
     }
 
     for (i = 0; i < input.length; i++) {
-
       ph = this._computePhones(input[i]);
       result[i] = ph ? ph.join(delim) : E;
     }
 
-    return result.join(delim).replace(/ax/g, 'ah');
+    result = result.join(delim).replace(/ax/g, 'ah');
+
+    result.replace("/0/g","");
+
+    if (result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
+          ph = result.split("-");
+          result = "";
+          for (var i = 0; i < ph.length; i++) {
+              if (/[aeiou]/.test(ph[i])) ph[i] += "1";
+              result += ph[i] + "-";
+          }
+          if(ph.length > 1) result = result.substring(0, result.length - 1);
+      }
+
+    return result;
   },
 
   _computePhones: function(word) {
@@ -861,7 +873,6 @@ LetterToSound.prototype = {
 
         phoneList.push(RiString._phones.digits[dig]);
       }
-
       return phoneList;
     }
 
