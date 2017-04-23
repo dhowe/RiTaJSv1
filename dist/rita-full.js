@@ -2414,6 +2414,7 @@ RiGrammar.prototype = {
 
     var parts, theCall, callResult, tries = 0,
       maxIterations = 1000;
+
     while (++tries < maxIterations) {
       var next = this._expandRule(rule);
 
@@ -2496,6 +2497,16 @@ RiGrammar.prototype = {
       return res ? res + E : null;
 
     } catch (e) {
+
+      //console.log(process.mainModule.exports);
+      //return;
+      //console.log(process.mainModule.exports);
+      //require('vm').runInThisContext(exec);
+      // var result = function(str){
+      //   console.log(Object.keys(process.mainModule.exports));
+      //   return eval(str);
+      // }.call(process.mainModule.exports, exec);
+
 
       // try with the PApplet context
       // TODO: clean this up
@@ -3165,16 +3176,16 @@ var PosTagger = {
 
     if (RiLexicon.enabled) {
       lex = getLexicon();
-      
+
     } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
-      if (typeof _RiTa_LTS === 'undefined') {
+      if (typeof RiTa._LTS === 'undefined') {
         console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
-      } 
+      }
       else {
         console.warn('No RiLexicon found: part-of-speech tagging will be inaccurate!');
-      } 
+      }
     }
 
     words = is(words, A) ? words : [words];
@@ -3210,7 +3221,7 @@ var PosTagger = {
         }
 
         if (!lex || !lex.containsWord(words[i])) {
-           
+
           if (endsWith(words[i], 's')) {
             var sub2, sub = words[i].substring(0, words[i].length - 1);
 
@@ -3228,15 +3239,13 @@ var PosTagger = {
             var sing = RiTa.singularize(words[i]);
 
             if (this._lexHas("n", sing)) {
-
               choices2d.push("nns");
               tag = 'nns';
+            } else if (checkPluralNoLex(words[i])){
+               tag = 'nns';
+              //common plurals
             }
           }
-        }
-
-        if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
-          tag = 'nns';
         }
         result.push(tag);
 
@@ -4998,7 +5007,7 @@ var PLURAL_RULES = [
 if (!RiTa.SILENT && !isNode() && console)
   console.log('[INFO] RiTaJS.version [' + RiTa.VERSION + ']');
 
-_RiTa_LTS=[
+RiTa._LTS=[
 'TOTAL 13100',
 'INDEX 0 a',
 'STATE 4 r 2 1',
@@ -46502,7 +46511,7 @@ RiLexicon.prototype = {
           results.push(this.keys[i]);
       }
       return (results.length > 0) ? results : EA;
-    
+
 
     return EA;
   },
@@ -46512,7 +46521,7 @@ RiLexicon.prototype = {
     if (word.indexOf(" ") > -1) return [];
 
     if (this._isVowel(word.charAt(0))) return [];
-    
+
 
     matchMinLength = matchMinLength || 4;
 
@@ -46530,7 +46539,7 @@ RiLexicon.prototype = {
         results.push(this.keys[i]);
       }
     }
-   
+
     return shuffle(results);
   },
 
@@ -46544,7 +46553,7 @@ RiLexicon.prototype = {
 
     var c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
       c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
-    
+
     if(this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) return false;
 
     return (strOk(c1) && strOk(c2) && c1 === c2);
@@ -46632,7 +46641,7 @@ RiLexicon.prototype = {
       if (tagArray.indexOf(psa[i]) > -1)
         return true;
     }
-    
+
     return false;
   },
 
@@ -46859,12 +46868,12 @@ RiLexicon.prototype = {
         if (a[0] === "n" || a[0] === "nns")
             a[0] = "nn";
     }
-  
+
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
 
-        
+
         for (i = 0; i < ranWordArr.length; i++) {
           j = (ran + i) % ranWordArr.length;
           rdata = this.data[ranWordArr[j]];
@@ -46890,7 +46899,7 @@ RiLexicon.prototype = {
 
           warn("No words with pos=" + a[0] + " found");
 
-        } else { 
+        } else {
 
           // a[0] = syllableCount
           for (i = 0; i < ranWordArr.length; i++) {
@@ -46952,7 +46961,7 @@ function intersect() {
 
 var LetterToSound = makeClass();
 
-LetterToSound.RULES = typeof _RiTa_LTS !== 'undefined' ? _RiTa_LTS : false;
+LetterToSound.RULES = typeof RiTa._LTS !== 'undefined' ? RiTa._LTS : false;
 LetterToSound.TOTAL = "TOTAL";
 LetterToSound.INDEX = "INDEX";
 LetterToSound.STATE = "STATE";
@@ -47069,7 +47078,7 @@ LetterToSound.prototype = {
       if (!this.warnedForNoLTS) {
 
         this.warnedForNoLTS = true;
-        console.log("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
       }
       return null;
     }

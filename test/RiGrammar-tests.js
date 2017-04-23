@@ -11,9 +11,6 @@ var runtests = function () {
   QUnit.module("RiGrammar", {
     setup: function () {},
     teardown: function () {},
-    temp: function () {
-      return Math.random() < 0.5 ? 'hot' : 'cold';
-    }
   });
 
   var sentenceGrammarJSON = {
@@ -68,7 +65,8 @@ var runtests = function () {
       ok(YAML.parse(sentenceGrammarYAML));
       ok(YAML.parse(sentenceGrammarYAML2));
       ok(YAML.parse(sentenceGrammarYAML3));
-    } else ok(1);
+    }
+    else ok(1);
   });
 
   test("testInit", function () {
@@ -798,67 +796,88 @@ var runtests = function () {
 
   test("testExec1", function () {
 
+    temp = function () { // global: for exec testing
+      return Math.random() < 0.5 ? 'hot' : 'cold';
+    }
+
     var rg = new RiGrammar();
     rg.execDisabled = false;
     ok(rg);
 
-    if (typeof module == 'undefined') { // for node-issue #9
+    //if (typeof module!=='undefined') { // for node-issue #9
 
-      rg.addRule("<start>", "<first> | <second>");
-      rg.addRule("<first>", "the <pet> <action> were `temp()`");
-      rg.addRule("<second>", "the <action> of the `temp()` <pet>");
-      rg.addRule("<pet>", "<bird> | <mammal>");
-      rg.addRule("<bird>", "hawk | crow");
-      rg.addRule("<mammal>", "dog");
-      rg.addRule("<action>", "cries | screams | falls");
+    rg.addRule("<start>", "<first> | <second>");
+    rg.addRule("<first>", "the <pet> <action> were `temp()`");
+    rg.addRule("<second>", "the <action> of the `temp()` <pet>");
+    rg.addRule("<pet>", "<bird> | <mammal>");
+    rg.addRule("<bird>", "hawk | crow");
+    rg.addRule("<mammal>", "dog");
+    rg.addRule("<action>", "cries | screams | falls");
 
-      for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 10; i++) {
 
-        // TODO: fails in NODE  ??
-        // The "this" value passed to eval must be the global object from which eval originated ?
+      // TODO: fails in NODE  ??
+      // The "this" value passed to eval must be the global object from which eval originated ?
 
-        var res = rg.expand();
-        //console.log(res);
-        ok(res && !res.match("`") && res.match(/(hot|cold)/));
-      }
+      var res = rg.expand();
+      //console.log(res);
+      ok(res && !res.match("`") && res.match(/(hot|cold)/));
     }
+    //}
   });
 
-  var newruleg = {
-    '<start>': 'The <noun> chased the `newrule("<noun>")`.',
-    '<noun>': 'dog | cat | mouse',
-    '<verb>': 'rhino'
-  };
 
-  // TODO: fails in NODE/phantomJS ?
   test("testExec2", function () {
+
+    var newruleg = {
+      '<start>': 'The <noun> chased the `newrule("<noun>")`.',
+      '<noun>': 'dog | cat | mouse',
+      '<verb>': 'rhino'
+    };
+
+    newrule = function (n) { // global: for exec testing
+      return '<verb>';
+    }
 
     var rg = new RiGrammar(newruleg);
     rg.execDisabled = false;
     ok(rg);
 
-    if (typeof module == 'undefined') { // for node-issue #9
+    //if (typeof module == 'undefined') { // for node-issue #9
 
-      for (var i = 0; i < 10; i++) {
-        var res = rg.expand();
-        ok(res && res.match(/ chased the rhino\./g));
-      }
+    for (var i = 0; i < 10; i++) {
+      var res = rg.expand();
+      //console.log(res);
+      ok(res && res.match(/ chased the rhino\./g));
     }
+    //}
   });
 
   test("testExecArgs", function () {
 
-    var res, i, rg = new RiGrammar(newruleg);
+    var rl = RiLexicon();
+
+    function isNumeric(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    // globals for exec testing
+    newrule = function (n) {  return '<verb>'; }
+    adj = function(num) { return RiLexicon().randomWord("jj", num) };
+    getFloat = function() { return Math.random() };
+
+    var res, i, rg = new RiGrammar();
     rg.execDisabled = false;
     ok(rg);
 
-    if (typeof module == 'undefined') { // for node-issue #9
+    //if (typeof module == 'undefined') { // for node-issue #9
 
       rg.addRule("<start>", "`getFloat()`");
       for (i = 0; i < 10; i++) {
 
         res = rg.expandFrom("<start>", this);
-        ok(res && res.length && parseFloat(res));
+        //console.log(res);
+        ok(res && res.length && isNumeric(res));
       }
 
       rg.reset();
@@ -866,19 +885,10 @@ var runtests = function () {
       for (i = 0; i < 10; i++) {
 
         res = rg.expandFrom("<start>", this);
-        ok(res && res.length && res === "number");
+        //console.log(res);
+        ok(res && res.length && rl.isAdjective(res));
       }
-
-      rg.reset();
-      rg.addRule("<start>", "`adj(true)`");
-      for (i = 0; i < 10; i++) {
-
-        res = rg.expandFrom("<start>", this);
-        //System.out.println(i + ")" + res);
-        ok(res === "boolean");
-      }
-    }
-
+    //}
   });
 };
 

@@ -275,7 +275,7 @@ RiLexicon.prototype = {
           results.push(this.keys[i]);
       }
       return (results.length > 0) ? results : EA;
-    
+
 
     return EA;
   },
@@ -285,7 +285,7 @@ RiLexicon.prototype = {
     if (word.indexOf(" ") > -1) return [];
 
     if (this._isVowel(word.charAt(0))) return [];
-    
+
 
     matchMinLength = matchMinLength || 4;
 
@@ -303,7 +303,7 @@ RiLexicon.prototype = {
         results.push(this.keys[i]);
       }
     }
-   
+
     return shuffle(results);
   },
 
@@ -317,7 +317,7 @@ RiLexicon.prototype = {
 
     var c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
       c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
-    
+
     if(this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) return false;
 
     return (strOk(c1) && strOk(c2) && c1 === c2);
@@ -405,7 +405,7 @@ RiLexicon.prototype = {
       if (tagArray.indexOf(psa[i]) > -1)
         return true;
     }
-    
+
     return false;
   },
 
@@ -631,12 +631,12 @@ RiLexicon.prototype = {
         if (a[0] === "n" || a[0] === "nns")
             a[0] = "nn";
     }
-  
+
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
 
-        
+
         for (i = 0; i < ranWordArr.length; i++) {
           j = (ran + i) % ranWordArr.length;
           rdata = this.data[ranWordArr[j]];
@@ -662,7 +662,7 @@ RiLexicon.prototype = {
 
           warn("No words with pos=" + a[0] + " found");
 
-        } else { 
+        } else {
 
           // a[0] = syllableCount
           for (i = 0; i < ranWordArr.length; i++) {
@@ -724,7 +724,7 @@ function intersect() {
 
 var LetterToSound = makeClass();
 
-LetterToSound.RULES = typeof _RiTa_LTS !== 'undefined' ? _RiTa_LTS : false;
+LetterToSound.RULES = typeof RiTa._LTS !== 'undefined' ? RiTa._LTS : false;
 LetterToSound.TOTAL = "TOTAL";
 LetterToSound.INDEX = "INDEX";
 LetterToSound.STATE = "STATE";
@@ -854,7 +854,7 @@ LetterToSound.prototype = {
       if (!this.warnedForNoLTS) {
 
         this.warnedForNoLTS = true;
-        console.log("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
       }
       return null;
     }
