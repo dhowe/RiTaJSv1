@@ -2414,6 +2414,7 @@ RiGrammar.prototype = {
 
     var parts, theCall, callResult, tries = 0,
       maxIterations = 1000;
+
     while (++tries < maxIterations) {
       var next = this._expandRule(rule);
 
@@ -2496,6 +2497,16 @@ RiGrammar.prototype = {
       return res ? res + E : null;
 
     } catch (e) {
+
+      //console.log(process.mainModule.exports);
+      //return;
+      //console.log(process.mainModule.exports);
+      //require('vm').runInThisContext(exec);
+      // var result = function(str){
+      //   console.log(Object.keys(process.mainModule.exports));
+      //   return eval(str);
+      // }.call(process.mainModule.exports, exec);
+
 
       // try with the PApplet context
       // TODO: clean this up
@@ -3165,16 +3176,16 @@ var PosTagger = {
 
     if (RiLexicon.enabled) {
       lex = getLexicon();
-      
+
     } else if (!RiTa.SILENT && !this.NOLEX_WARNED) {
 
       this.NOLEX_WARNED = true;
       if (typeof _RiTa_LTS === 'undefined') {
         console.warn('No RiLexicon or LTS-rules found: features will be inaccurate!');
-      } 
+      }
       else {
         console.warn('No RiLexicon found: part-of-speech tagging will be inaccurate!');
-      } 
+      }
     }
 
     words = is(words, A) ? words : [words];
@@ -3210,7 +3221,7 @@ var PosTagger = {
         }
 
         if (!lex || !lex.containsWord(words[i])) {
-           
+
           if (endsWith(words[i], 's')) {
             var sub2, sub = words[i].substring(0, words[i].length - 1);
 
@@ -3228,15 +3239,13 @@ var PosTagger = {
             var sing = RiTa.singularize(words[i]);
 
             if (this._lexHas("n", sing)) {
-
               choices2d.push("nns");
               tag = 'nns';
+            } else if (checkPluralNoLex(words[i])){
+               tag = 'nns';
+              //common plurals
             }
           }
-        }
-
-        if (!RiLexicon.enabled && checkPluralNoLex(words[i])) {
-          tag = 'nns';
         }
         result.push(tag);
 
@@ -5400,6 +5409,7 @@ function _dict() { return {
 'interest':['ih1-n t-r-ah-s-t','nn vbp vb'],
 'invent':['ih-n v-eh1-n-t','vb vbp'],
 'iron':['ay1 er-n','nn vb'],
+'is':['ih1-s','vbz'],
 'island':['ay1 l-ah-n-d','nn'],
 'it':['ih1-t','prp'],
 'job':['jh-aa1-b','nn'],
