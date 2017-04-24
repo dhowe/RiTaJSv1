@@ -1,4 +1,4 @@
-var rita = require('./dist/rita');
+var rita = require('../dist/rita');
 var rg = rita.RiGrammar();
 
 rg.addRule("<start>", "<first> | <second>");
@@ -9,21 +9,14 @@ rg.addRule("<bird>", "hawk | crow");
 rg.addRule("<mammal>", "dog");
 rg.addRule("<action>", "cries | screams | falls");
 
-var temp = exports.temp = function() {
-  return "hot";
-}
-
 function temp() {
-  return "hot";
+  return Math.random() < .5 ? "hot" : "cold";
 }
 
-// The "this" value passed to eval must be the global object from which eval originated ?
-
-var res = rg.expand();
+var res = rg.expand(temp);
 //console.log(res);
+
 if (res && !res.match("`") && res.match(/(hot|cold)/))
   console.log("ok");
 else
   console.log("fail");
-
-//console.log(rita);

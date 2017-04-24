@@ -853,6 +853,28 @@ var runtests = function () {
     //}
   });
 
+  test("testExec3", function () {
+
+    var newruleg2 = {
+      '<start>': 'The <noun> chased the `staticFun()`.',
+      '<noun>': 'dog | cat | mouse',
+    };
+
+    function staticFun() { // global: for exec testing
+      return "rhino";
+    }
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+
+    for (var i = 0; i < 10; i++) {
+      var res = rg.expand(staticFun);
+      //console.log(res);
+      ok(res && res.match(/ chased the rhino\./g));
+    }
+  });
+
   test("testExecArgs", function () {
 
     var rl = RiLexicon();
@@ -872,22 +894,22 @@ var runtests = function () {
 
     //if (typeof module == 'undefined') { // for node-issue #9
 
-      rg.addRule("<start>", "`getFloat()`");
-      for (i = 0; i < 10; i++) {
+    rg.addRule("<start>", "`getFloat()`");
+    for (i = 0; i < 10; i++) {
 
-        res = rg.expandFrom("<start>", this);
-        //console.log(res);
-        ok(res && res.length && isNumeric(res));
-      }
+      res = rg.expandFrom("<start>", this);
+      //console.log(res);
+      ok(res && res.length && isNumeric(res));
+    }
 
-      rg.reset();
-      rg.addRule("<start>", "`adj(2)`");
-      for (i = 0; i < 10; i++) {
+    rg.reset();
+    rg.addRule("<start>", "`adj(2)`");
+    for (i = 0; i < 10; i++) {
 
-        res = rg.expandFrom("<start>", this);
-        //console.log(res);
-        ok(res && res.length && rl.isAdjective(res));
-      }
+      res = rg.expandFrom("<start>", this);
+      //console.log(res);
+      ok(res && res.length && rl.isAdjective(res));
+    }
     //}
   });
 };
