@@ -98,8 +98,8 @@ gulp.task('setup-npm', ['clean-npm','build-minify'], function(done) {
     .pipe(gulp.dest(nodeDir + '/lib'));
 
   // copy in the (core-only) code
-  gulp.src(destDir + '/rita.min.js')
-    .pipe(rename('rita-tiny.js'))
+  gulp.src(destDir + '/rita-small.min.js')
+    .pipe(rename('rita-micro.js'))
     .pipe(gulp.dest(nodeDir + '/lib'));
 
   done();
@@ -171,21 +171,21 @@ gulp.task('build-1000-lex', ['clean'], function() {
 
   return gulp.src(sourceFiles("medium"))
     .pipe(replace('##version##', version))
-    .pipe(concat(rita+'.js'))
+    .pipe(concat(rita+'-small.js'))
     .pipe(size({showFiles:true}))
     .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
 
-// gulp.task('build-nolex', [ 'clean' ], function() {
+gulp.task('build-nolex', [ 'clean' ], function() {
 
-//   return gulp.src(sourceFiles(false))
-//     .pipe(replace('##version##', version))
-//     .pipe(concat(rita+'.js'))
-//     .pipe(size({showFiles:true}))
-//     .pipe(chmod(644))
-//     .pipe(gulp.dest(destDir));
-// });
+  return gulp.src(sourceFiles(false))
+    .pipe(replace('##version##', version))
+    .pipe(concat(rita+'.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
 
 // concatenate/minify sources to 'dist' folder
 
@@ -239,11 +239,24 @@ gulp.task('build-minify-1000-lex', [ 'build-1000-lex' ], function() {
     .pipe(gulpif(sourceMaps, sourcemaps.init()))
     .pipe(uglify())
     .pipe(gulpif(sourceMaps, sourcemaps.write('./')))
+    .pipe(rename(rita+'-small.min.js'))
+    .pipe(size({showFiles:true}))
+    .pipe(chmod(644))
+    .pipe(gulp.dest(destDir));
+});
+
+gulp.task('build-minify-nolex', [ 'build-nolex' ], function() {
+
+  return gulp.src(destDir+'/'+rita+'.js')
+    .pipe(gulpif(sourceMaps, sourcemaps.init()))
+    .pipe(uglify())
+    .pipe(gulpif(sourceMaps, sourcemaps.write('./')))
     .pipe(rename(rita+'.min.js'))
     .pipe(size({showFiles:true}))
     .pipe(chmod(644))
     .pipe(gulp.dest(destDir));
 });
+
 
 // runs tests without loading lexicon
 // usage: gulp test
@@ -385,10 +398,10 @@ function log(msg) { console.log('[INFO] '+ msg); }
 // ----------------------------------------------------
 
 // task composition
-gulp.task('build', [ 'build-lex', 'build-1000-lex']);
+gulp.task('build', [ 'build-lex', 'build-1000-lex','build-nolex']);
 gulp.task('make-sizes', [ 'build-lex', 'build-medium','build-small','build-tiny']);
 gulp.task('build.full', [ 'build', 'build-minify' ]);
-gulp.task('build-minify', [ 'build-minify-1000-lex', 'build-minify-lex' ]);
+gulp.task('build-minify', [ 'build-minify-1000-lex', 'build-minify-lex','build-minify-nolex' ]);
 
 // help is the default task
 gulp.task('default', [ 'help' ]);

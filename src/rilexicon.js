@@ -827,8 +827,8 @@ LetterToSound.prototype = {
     result = result.join(delim).replace(/ax/g, 'ah');
 
     result.replace("/0/g","");
-
-    if (result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
+  
+    if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
           ph = result.split("-");
           result = "";
           for (var i = 0; i < ph.length; i++) {
