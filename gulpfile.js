@@ -235,7 +235,7 @@ gulp.task('build-minify-lex', [ 'build-lex' ], function() {
 // concatenate/minify sources to 'dist' folder
 gulp.task('build-minify-1000-lex', [ 'build-1000-lex' ], function() {
 
-  return gulp.src(destDir+'/'+rita+'.js')
+  return gulp.src(destDir+'/'+rita+'-small.js')
     .pipe(gulpif(sourceMaps, sourcemaps.init()))
     .pipe(uglify())
     .pipe(gulpif(sourceMaps, sourcemaps.write('./')))
