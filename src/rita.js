@@ -6,7 +6,7 @@ RiLexicon._enabled = false;
 
 RiLexicon.prototype.init = function() {
     warn('RiLexicon is not available -- ' +
-      'if needed, make sure to include rilexicon.js');
+      'if needed, use a larger version of RiTa.');
 };
 
 var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
