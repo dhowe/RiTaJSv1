@@ -1,14 +1,18 @@
 
 /*********** Test cases for different sizes ************/
 
-// Note: you should run for '$ gulp make-sizes' before running these tests
 
 console.warn = function(){}  // removes warnings from console output
 
 var lex, result, word, words, expected;
 
 /*********** rita-tiny ************/
-RiTa = require('../dist/rita-tiny.js');
+try {
+  RiTa = require('../dist/rita-tiny.js');
+} catch(e) {
+  return console.error('\n'+e,'\n\nMake sure to run \'$ gulp make-sizes\' first!\n');
+}
+
 word = new RiTa.RiString("autumn");
 if (!word) throw Error("Fail: word undefined");
 
