@@ -156,15 +156,6 @@ function getLexicon() {
 
 'use strict';
 
-var RiLexicon = makeClass(); // stub
-
-RiLexicon._enabled = false;
-
-RiLexicon.prototype.init = function() {
-    warn('RiLexicon is not available -- ' +
-      'if needed, make sure to include rilexicon.js');
-};
-
 var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
@@ -4200,719 +4191,1746 @@ var C = "[bcdfghjklmnpqrstvwxyz]",
   VL = "[lraeiou]";
 
 var PLURAL_RULES = [
-    RE("prognosis", 2, "es"),
-    NULL_PLURALS,
-    RE("^(piano|photo|solo|ego|tobacco|cargo|golf|grief)$", 0, "s"),
-    RE("^(wildlife)$", 0, "s"),
-    RE("^concerto$", 1, "i"),
-    RE(C + "o$", 0, "es"),
-    RE(C + "y$", 1, "ies"),
-    RE("^ox$", 0, "en"),
-    RE("^(stimul|alumn|termin)us$", 2, "i"),
-    RE("^corpus$", 2, "ora"),
-    RE("(xis|sis)$", 2, "es"),
-    RE("whiz$", 0, "zes"),
-    RE("([zsx]|ch|sh)$", 0, "es"),
-    RE(VL + "fe$", 2, "ves"),
-    RE(VL + "f$", 1, "ves"),
-    RE("(eu|eau)$", 0, "x"),
-    RE("(man|woman)$", 2, "en"),
-    RE("money$", 2, "ies"),
-    RE("person$", 4, "ople"),
-    RE("motif$", 0, "s"),
-    RE("^meninx|phalanx$", 1, "ges"),
-    RE("schema$", 0, "ta"),
-    RE("^bus$", 0, "ses"),
-    RE("child$", 0, "ren"),
-    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
-    RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
-    RE("^aide-de-camp$", 8, "s-de-camp"),
-    RE("^apex|cortex$", 2, "ices"),
-    RE("^weltanschauung$", 0, "en"),
-    RE("^lied$", 0, "er"),
-    RE("^tooth$", 4, "eeth"),
-    RE("^[lm]ouse$", 4, "ice"),
-    RE("^foot$", 3, "eet"),
-    RE("femur", 2, "ora"),
-    RE("goose", 4, "eese"),
-    RE("(human|german|roman)$", 0, "s"),
-    RE("^(monarch|loch|stomach)$", 0, "s"),
-    RE("^(taxi|chief|proof|ref|relief|roof|belief)$", 0, "s"),
-    RE("^(co|no)$", 0, "'s"),
-    RE("^blond$", 0, "es"),
-    RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
+  RE("prognosis", 2, "es"),
+  NULL_PLURALS,
+  RE("^(piano|photo|solo|ego|tobacco|cargo|golf|grief)$", 0, "s"),
+  RE("^(wildlife)$", 0, "s"),
+  RE("^concerto$", 1, "i"),
+  RE(C + "o$", 0, "es"),
+  RE(C + "y$", 1, "ies"),
+  RE("^ox$", 0, "en"),
+  RE("^(stimul|alumn|termin)us$", 2, "i"),
+  RE("^corpus$", 2, "ora"),
+  RE("(xis|sis)$", 2, "es"),
+  RE("whiz$", 0, "zes"),
+  RE("([zsx]|ch|sh)$", 0, "es"),
+  RE(VL + "fe$", 2, "ves"),
+  RE(VL + "f$", 1, "ves"),
+  RE("(eu|eau)$", 0, "x"),
+  RE("(man|woman)$", 2, "en"),
+  RE("money$", 2, "ies"),
+  RE("person$", 4, "ople"),
+  RE("motif$", 0, "s"),
+  RE("^meninx|phalanx$", 1, "ges"),
+  RE("schema$", 0, "ta"),
+  RE("^bus$", 0, "ses"),
+  RE("child$", 0, "ren"),
+  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
+  RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
+  RE("^aide-de-camp$", 8, "s-de-camp"),
+  RE("^apex|cortex$", 2, "ices"),
+  RE("^weltanschauung$", 0, "en"),
+  RE("^lied$", 0, "er"),
+  RE("^tooth$", 4, "eeth"),
+  RE("^[lm]ouse$", 4, "ice"),
+  RE("^foot$", 3, "eet"),
+  RE("femur", 2, "ora"),
+  RE("goose", 4, "eese"),
+  RE("(human|german|roman)$", 0, "s"),
+  RE("^(monarch|loch|stomach)$", 0, "s"),
+  RE("^(taxi|chief|proof|ref|relief|roof|belief)$", 0, "s"),
+  RE("^(co|no)$", 0, "'s"),
+  RE("^blond$", 0, "es"),
+  RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
 
-    // Latin stems
-    RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"),
-    RE("^(appendix|index|matrix)", 2, "ices")
-  ],
+  // Latin stems
+  RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"),
+  RE("^(appendix|index|matrix)", 2, "ices")
+],
 
-  ANY_STEM = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$",
-  CONS = "[bcdfghjklmnpqrstvwxyz]",
-  VERBAL_PREFIX = "((be|with|pre|un|over|re|mis|under|out|up|fore|for|counter|co|sub)(-?))",
-  AUXILIARIES = ["do", "have", "be"],
-  MODALS = ["shall", "would", "may", "might", "ought", "should"],
-  SYMBOLS = ["!", "?", "$", "%", "*", "+", "-", "="],
+ANY_STEM = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$",
+CONS = "[bcdfghjklmnpqrstvwxyz]",
+VERBAL_PREFIX = "((be|with|pre|un|over|re|mis|under|out|up|fore|for|counter|co|sub)(-?))",
+AUXILIARIES = ["do", "have", "be"],
+MODALS = ["shall", "would", "may", "might", "ought", "should"],
+SYMBOLS = ["!", "?", "$", "%", "*", "+", "-", "="],
 
-  ING_FORM_RULES = [
-    RE(CONS + "ie$", 2, "ying", 1),
-    RE("[^ie]e$", 1, "ing", 1),
-    RE("^bog-down$", 5, "ging-down", 0),
-    RE("^chivy$", 1, "vying", 0),
-    RE("^trek$", 1, "cking", 0),
-    RE("^bring$", 0, "ing", 0),
-    RE("^be$", 0, "ing", 0),
-    RE("^age$", 1, "ing", 0),
-    RE("(ibe)$", 1, "ing", 0)
-  ],
+ING_FORM_RULES = [
+  RE(CONS + "ie$", 2, "ying", 1),
+  RE("[^ie]e$", 1, "ing", 1),
+  RE("^bog-down$", 5, "ging-down", 0),
+  RE("^chivy$", 1, "vying", 0),
+  RE("^trek$", 1, "cking", 0),
+  RE("^bring$", 0, "ing", 0),
+  RE("^be$", 0, "ing", 0),
+  RE("^age$", 1, "ing", 0),
+  RE("(ibe)$", 1, "ing", 0)
+],
 
-  PAST_PARTICIPLE_RULES = [
+PAST_PARTICIPLE_RULES = [
 
-    RE(CONS + "y$", 1, "ied", 1),
-    RE("^" + VERBAL_PREFIX + "?(bring)$", 3, "ought", 0),
-    RE("^" + VERBAL_PREFIX + "?(take|rise|strew|blow|draw|drive|know|give|" + "arise|gnaw|grave|grow|hew|know|mow|see|sew|throw|prove|saw|quartersaw|" + "partake|sake|shake|shew|show|shrive|sightsee|strew|strive)$",
-      0, "n", 0),
-    RE("^" + VERBAL_PREFIX + "?[gd]o$", 0, "ne", 1),
-    RE("^(beat|eat|be|fall)$", 0, "en", 0),
-    RE("^(have)$", 2, "d", 0),
-    RE("^" + VERBAL_PREFIX + "?bid$", 0, "den", 0),
-    RE("^" + VERBAL_PREFIX + "?[lps]ay$", 1, "id", 1),
-    RE("^behave$", 0, "d", 0),
-    RE("^" + VERBAL_PREFIX + "?have$", 2, "d", 1),
-    RE("(sink|slink|drink|shrink|stink)$", 3, "unk", 0),
-    RE("(([sfc][twlp]?r?|w?r)ing|hang)$", 3, "ung", 0),
-    RE("^" + VERBAL_PREFIX + "?(shear|swear|bear|wear|tear)$", 3, "orn", 0),
-    RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend)$", 1, "t", 0),
-    RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep$)$", 2, "pt", 0),
-    RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old", 0),
-    RE("^(outfight|beseech)$", 4, "ought", 0),
-    RE("^bethink$", 3, "ought", 0),
-    RE("^buy$", 2, "ought", 0),
-    RE("^aby$", 1, "ought", 0),
-    RE("^tarmac", 0, "ked", 0),
-    RE("^abide$", 3, "ode", 0),
-    RE("^" + VERBAL_PREFIX + "?(speak|(a?)wake|break)$", 3, "oken", 0),
-    RE("^backbite$", 1, "ten", 0),
-    RE("^backslide$", 1, "den", 0),
-    RE("^become$", 3, "ame", 0),
-    RE("^begird$", 3, "irt", 0),
-    RE("^outlie$", 2, "ay", 0),
-    RE("^rebind$", 3, "ound", 0),
-    RE("^relay$", 2, "aid", 0),
-    RE("^shit$", 3, "hat", 0),
-    RE("^bereave$", 4, "eft", 0),
-    RE("^foreswear$", 3, "ore", 0),
-    RE("^overfly$", 1, "own", 0),
-    RE("^beget$", 2, "otten", 0),
-    RE("^begin$", 3, "gun", 0),
-    RE("^bestride$", 1, "den", 0),
-    RE("^bite$", 1, "ten", 0),
-    RE("^bleed$", 4, "led", 0),
-    RE("^bog-down$", 5, "ged-down", 0),
-    RE("^bind$", 3, "ound", 0),
-    RE("^(.*)feed$", 4, "fed", 0),
-    RE("^breed$", 4, "red", 0),
-    RE("^brei", 0, "d", 0),
-    RE("^bring$", 3, "ought", 0),
-    RE("^build$", 1, "t", 0),
-    RE("^come", 0),
-    RE("^catch$", 3, "ught", 0),
-    RE("^chivy$", 1, "vied", 0),
-    RE("^choose$", 3, "sen", 0),
-    RE("^cleave$", 4, "oven", 0),
-    RE("^crossbreed$", 4, "red", 0),
-    RE("^deal", 0, "t", 0),
-    RE("^dow$", 1, "ught", 0),
-    RE("^dream", 0, "t", 0),
-    RE("^dig$", 3, "dug", 0),
-    RE("^dwell$", 2, "lt", 0),
-    RE("^enwind$", 3, "ound", 0),
-    RE("^feel$", 3, "elt", 0),
-    RE("^flee$", 2, "ed", 0),
-    RE("^floodlight$", 5, "lit", 0),
-    RE("^fly$", 1, "own", 0),
-    RE("^forbear$", 3, "orne", 0),
-    RE("^forerun$", 3, "ran", 0),
-    RE("^forget$", 2, "otten", 0),
-    RE("^fight$", 4, "ought", 0),
-    RE("^find$", 3, "ound", 0),
-    RE("^freeze$", 4, "ozen", 0),
-    RE("^gainsay$", 2, "aid", 0),
-    RE("^gin$", 3, "gan", 0),
-    RE("^gen-up$", 3, "ned-up", 0),
-    RE("^ghostwrite$", 1, "ten", 0),
-    RE("^get$", 2, "otten", 0),
-    RE("^grind$", 3, "ound", 0),
-    RE("^hacksaw", 0, "n", 0),
-    RE("^hear", 0, "d", 0),
-    RE("^hold$", 3, "eld", 0),
-    RE("^hide$", 1, "den", 0),
-    RE("^honey$", 2, "ied", 0),
-    RE("^inbreed$", 4, "red", 0),
-    RE("^indwell$", 3, "elt", 0),
-    RE("^interbreed$", 4, "red", 0),
-    RE("^interweave$", 4, "oven", 0),
-    RE("^inweave$", 4, "oven", 0),
-    RE("^ken$", 2, "ent", 0),
-    RE("^kneel$", 3, "elt", 0),
-    RE("^lie$", 2, "ain", 0),
-    RE("^leap$", 0, "t", 0),
-    RE("^learn$", 0, "t", 0),
-    RE("^lead$", 4, "led", 0),
-    RE("^leave$", 4, "eft", 0),
-    RE("^light$", 5, "lit", 0),
-    RE("^lose$", 3, "ost", 0),
-    RE("^make$", 3, "ade", 0),
-    RE("^mean", 0, "t", 0),
-    RE("^meet$", 4, "met", 0),
-    RE("^misbecome$", 3, "ame", 0),
-    RE("^misdeal$", 2, "alt", 0),
-    RE("^mishear$", 1, "d", 0),
-    RE("^mislead$", 4, "led", 0),
-    RE("^misunderstand$", 3, "ood", 0),
-    RE("^outbreed$", 4, "red", 0),
-    RE("^outrun$", 3, "ran", 0),
-    RE("^outride$", 1, "den", 0),
-    RE("^outshine$", 3, "one", 0),
-    RE("^outshoot$", 4, "hot", 0),
-    RE("^outstand$", 3, "ood", 0),
-    RE("^outthink$", 3, "ought", 0),
-    RE("^outgo$", 2, "went", 0),
-    RE("^overbear$", 3, "orne", 0),
-    RE("^overbuild$", 3, "ilt", 0),
-    RE("^overcome$", 3, "ame", 0),
-    RE("^overfly$", 2, "lew", 0),
-    RE("^overhear$", 2, "ard", 0),
-    RE("^overlie$", 2, "ain", 0),
-    RE("^overrun$", 3, "ran", 0),
-    RE("^override$", 1, "den", 0),
-    RE("^overshoot$", 4, "hot", 0),
-    RE("^overwind$", 3, "ound", 0),
-    RE("^overwrite$", 1, "ten", 0),
-    RE("^plead$", 2, "d", 0),
-    //RE("^run$", 3, "ran", 0), //DH
-    //RE("^rerun$", 3, "run", 0),
-    RE("^rebuild$", 3, "ilt", 0),
-    RE("^red$", 3, "red", 0),
-    RE("^redo$", 1, "one", 0),
-    RE("^remake$", 3, "ade", 0),
-    RE("^resit$", 3, "sat", 0),
-    RE("^rethink$", 3, "ought", 0),
-    RE("^rewind$", 3, "ound", 0),
-    RE("^rewrite$", 1, "ten", 0),
-    RE("^ride$", 1, "den", 0),
-    RE("^reeve$", 4, "ove", 0),
-    RE("^sit$", 3, "sat", 0),
-    RE("^shoe$", 3, "hod", 0),
-    RE("^shine$", 3, "one", 0),
-    RE("^shoot$", 4, "hot", 0),
-    RE("^ski$", 1, "i'd", 0),
-    RE("^slide$", 1, "den", 0),
-    RE("^smite$", 1, "ten", 0),
-    RE("^seek$", 3, "ought", 0),
-    RE("^spit$", 3, "pat", 0),
-    RE("^speed$", 4, "ped", 0),
-    RE("^spellbind$", 3, "ound", 0),
-    RE("^spoil$", 2, "ilt", 0),
-    RE("^spotlight$", 5, "lit", 0),
-    RE("^spin$", 3, "pun", 0),
-    RE("^steal$", 3, "olen", 0),
-    RE("^stand$", 3, "ood", 0),
-    RE("^stave$", 3, "ove", 0),
-    RE("^stride$", 1, "den", 0),
-    RE("^strike$", 3, "uck", 0),
-    RE("^stick$", 3, "uck", 0),
-    RE("^swell$", 3, "ollen", 0),
-    RE("^swim$", 3, "wum", 0),
-    RE("^teach$", 4, "aught", 0),
-    RE("^think$", 3, "ought", 0),
-    RE("^tread$", 3, "odden", 0),
-    RE("^typewrite$", 1, "ten", 0),
-    RE("^unbind$", 3, "ound", 0),
-    RE("^underbuy$", 2, "ought", 0),
-    RE("^undergird$", 3, "irt", 0),
-    RE("^undergo$", 1, "one", 0),
-    RE("^underlie$", 2, "ain", 0),
-    RE("^undershoot$", 4, "hot", 0),
-    RE("^understand$", 3, "ood", 0),
-    RE("^unfreeze$", 4, "ozen", 0),
-    RE("^unlearn", 0, "t", 0),
-    RE("^unmake$", 3, "ade", 0),
-    RE("^unreeve$", 4, "ove", 0),
-    RE("^unstick$", 3, "uck", 0),
-    RE("^unteach$", 4, "aught", 0),
-    RE("^unthink$", 3, "ought", 0),
-    RE("^untread$", 3, "odden", 0),
-    RE("^unwind$", 3, "ound", 0),
-    RE("^upbuild$", 1, "t", 0),
-    RE("^uphold$", 3, "eld", 0),
-    RE("^upheave$", 4, "ove", 0),
-    RE("^waylay$", 2, "ain", 0),
-    RE("^whipsaw$", 2, "awn", 0),
-    RE("^withhold$", 3, "eld", 0),
-    RE("^withstand$", 3, "ood", 0),
-    RE("^win$", 3, "won", 0),
-    RE("^wind$", 3, "ound", 0),
-    RE("^weave$", 4, "oven", 0),
-    RE("^write$", 1, "ten", 0),
-    RE("^trek$", 1, "cked", 0),
-    RE("^ko$", 1, "o'd", 0),
-    RE("^win$", 2, "on", 0),
+  RE(CONS + "y$", 1, "ied", 1),
+  RE("^" + VERBAL_PREFIX + "?(bring)$", 3, "ought", 0),
+  RE("^" + VERBAL_PREFIX + "?(take|rise|strew|blow|draw|drive|know|give|" + "arise|gnaw|grave|grow|hew|know|mow|see|sew|throw|prove|saw|quartersaw|" + "partake|sake|shake|shew|show|shrive|sightsee|strew|strive)$",
+    0, "n", 0),
+  RE("^" + VERBAL_PREFIX + "?[gd]o$", 0, "ne", 1),
+  RE("^(beat|eat|be|fall)$", 0, "en", 0),
+  RE("^(have)$", 2, "d", 0),
+  RE("^" + VERBAL_PREFIX + "?bid$", 0, "den", 0),
+  RE("^" + VERBAL_PREFIX + "?[lps]ay$", 1, "id", 1),
+  RE("^behave$", 0, "d", 0),
+  RE("^" + VERBAL_PREFIX + "?have$", 2, "d", 1),
+  RE("(sink|slink|drink|shrink|stink)$", 3, "unk", 0),
+  RE("(([sfc][twlp]?r?|w?r)ing|hang)$", 3, "ung", 0),
+  RE("^" + VERBAL_PREFIX + "?(shear|swear|bear|wear|tear)$", 3, "orn", 0),
+  RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend)$", 1, "t", 0),
+  RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep$)$", 2, "pt", 0),
+  RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old", 0),
+  RE("^(outfight|beseech)$", 4, "ought", 0),
+  RE("^bethink$", 3, "ought", 0),
+  RE("^buy$", 2, "ought", 0),
+  RE("^aby$", 1, "ought", 0),
+  RE("^tarmac", 0, "ked", 0),
+  RE("^abide$", 3, "ode", 0),
+  RE("^" + VERBAL_PREFIX + "?(speak|(a?)wake|break)$", 3, "oken", 0),
+  RE("^backbite$", 1, "ten", 0),
+  RE("^backslide$", 1, "den", 0),
+  RE("^become$", 3, "ame", 0),
+  RE("^begird$", 3, "irt", 0),
+  RE("^outlie$", 2, "ay", 0),
+  RE("^rebind$", 3, "ound", 0),
+  RE("^relay$", 2, "aid", 0),
+  RE("^shit$", 3, "hat", 0),
+  RE("^bereave$", 4, "eft", 0),
+  RE("^foreswear$", 3, "ore", 0),
+  RE("^overfly$", 1, "own", 0),
+  RE("^beget$", 2, "otten", 0),
+  RE("^begin$", 3, "gun", 0),
+  RE("^bestride$", 1, "den", 0),
+  RE("^bite$", 1, "ten", 0),
+  RE("^bleed$", 4, "led", 0),
+  RE("^bog-down$", 5, "ged-down", 0),
+  RE("^bind$", 3, "ound", 0),
+  RE("^(.*)feed$", 4, "fed", 0),
+  RE("^breed$", 4, "red", 0),
+  RE("^brei", 0, "d", 0),
+  RE("^bring$", 3, "ought", 0),
+  RE("^build$", 1, "t", 0),
+  RE("^come", 0),
+  RE("^catch$", 3, "ught", 0),
+  RE("^chivy$", 1, "vied", 0),
+  RE("^choose$", 3, "sen", 0),
+  RE("^cleave$", 4, "oven", 0),
+  RE("^crossbreed$", 4, "red", 0),
+  RE("^deal", 0, "t", 0),
+  RE("^dow$", 1, "ught", 0),
+  RE("^dream", 0, "t", 0),
+  RE("^dig$", 3, "dug", 0),
+  RE("^dwell$", 2, "lt", 0),
+  RE("^enwind$", 3, "ound", 0),
+  RE("^feel$", 3, "elt", 0),
+  RE("^flee$", 2, "ed", 0),
+  RE("^floodlight$", 5, "lit", 0),
+  RE("^fly$", 1, "own", 0),
+  RE("^forbear$", 3, "orne", 0),
+  RE("^forerun$", 3, "ran", 0),
+  RE("^forget$", 2, "otten", 0),
+  RE("^fight$", 4, "ought", 0),
+  RE("^find$", 3, "ound", 0),
+  RE("^freeze$", 4, "ozen", 0),
+  RE("^gainsay$", 2, "aid", 0),
+  RE("^gin$", 3, "gan", 0),
+  RE("^gen-up$", 3, "ned-up", 0),
+  RE("^ghostwrite$", 1, "ten", 0),
+  RE("^get$", 2, "otten", 0),
+  RE("^grind$", 3, "ound", 0),
+  RE("^hacksaw", 0, "n", 0),
+  RE("^hear", 0, "d", 0),
+  RE("^hold$", 3, "eld", 0),
+  RE("^hide$", 1, "den", 0),
+  RE("^honey$", 2, "ied", 0),
+  RE("^inbreed$", 4, "red", 0),
+  RE("^indwell$", 3, "elt", 0),
+  RE("^interbreed$", 4, "red", 0),
+  RE("^interweave$", 4, "oven", 0),
+  RE("^inweave$", 4, "oven", 0),
+  RE("^ken$", 2, "ent", 0),
+  RE("^kneel$", 3, "elt", 0),
+  RE("^lie$", 2, "ain", 0),
+  RE("^leap$", 0, "t", 0),
+  RE("^learn$", 0, "t", 0),
+  RE("^lead$", 4, "led", 0),
+  RE("^leave$", 4, "eft", 0),
+  RE("^light$", 5, "lit", 0),
+  RE("^lose$", 3, "ost", 0),
+  RE("^make$", 3, "ade", 0),
+  RE("^mean", 0, "t", 0),
+  RE("^meet$", 4, "met", 0),
+  RE("^misbecome$", 3, "ame", 0),
+  RE("^misdeal$", 2, "alt", 0),
+  RE("^mishear$", 1, "d", 0),
+  RE("^mislead$", 4, "led", 0),
+  RE("^misunderstand$", 3, "ood", 0),
+  RE("^outbreed$", 4, "red", 0),
+  RE("^outrun$", 3, "ran", 0),
+  RE("^outride$", 1, "den", 0),
+  RE("^outshine$", 3, "one", 0),
+  RE("^outshoot$", 4, "hot", 0),
+  RE("^outstand$", 3, "ood", 0),
+  RE("^outthink$", 3, "ought", 0),
+  RE("^outgo$", 2, "went", 0),
+  RE("^overbear$", 3, "orne", 0),
+  RE("^overbuild$", 3, "ilt", 0),
+  RE("^overcome$", 3, "ame", 0),
+  RE("^overfly$", 2, "lew", 0),
+  RE("^overhear$", 2, "ard", 0),
+  RE("^overlie$", 2, "ain", 0),
+  RE("^overrun$", 3, "ran", 0),
+  RE("^override$", 1, "den", 0),
+  RE("^overshoot$", 4, "hot", 0),
+  RE("^overwind$", 3, "ound", 0),
+  RE("^overwrite$", 1, "ten", 0),
+  RE("^plead$", 2, "d", 0),
+  //RE("^run$", 3, "ran", 0), //DH
+  //RE("^rerun$", 3, "run", 0),
+  RE("^rebuild$", 3, "ilt", 0),
+  RE("^red$", 3, "red", 0),
+  RE("^redo$", 1, "one", 0),
+  RE("^remake$", 3, "ade", 0),
+  RE("^resit$", 3, "sat", 0),
+  RE("^rethink$", 3, "ought", 0),
+  RE("^rewind$", 3, "ound", 0),
+  RE("^rewrite$", 1, "ten", 0),
+  RE("^ride$", 1, "den", 0),
+  RE("^reeve$", 4, "ove", 0),
+  RE("^sit$", 3, "sat", 0),
+  RE("^shoe$", 3, "hod", 0),
+  RE("^shine$", 3, "one", 0),
+  RE("^shoot$", 4, "hot", 0),
+  RE("^ski$", 1, "i'd", 0),
+  RE("^slide$", 1, "den", 0),
+  RE("^smite$", 1, "ten", 0),
+  RE("^seek$", 3, "ought", 0),
+  RE("^spit$", 3, "pat", 0),
+  RE("^speed$", 4, "ped", 0),
+  RE("^spellbind$", 3, "ound", 0),
+  RE("^spoil$", 2, "ilt", 0),
+  RE("^spotlight$", 5, "lit", 0),
+  RE("^spin$", 3, "pun", 0),
+  RE("^steal$", 3, "olen", 0),
+  RE("^stand$", 3, "ood", 0),
+  RE("^stave$", 3, "ove", 0),
+  RE("^stride$", 1, "den", 0),
+  RE("^strike$", 3, "uck", 0),
+  RE("^stick$", 3, "uck", 0),
+  RE("^swell$", 3, "ollen", 0),
+  RE("^swim$", 3, "wum", 0),
+  RE("^teach$", 4, "aught", 0),
+  RE("^think$", 3, "ought", 0),
+  RE("^tread$", 3, "odden", 0),
+  RE("^typewrite$", 1, "ten", 0),
+  RE("^unbind$", 3, "ound", 0),
+  RE("^underbuy$", 2, "ought", 0),
+  RE("^undergird$", 3, "irt", 0),
+  RE("^undergo$", 1, "one", 0),
+  RE("^underlie$", 2, "ain", 0),
+  RE("^undershoot$", 4, "hot", 0),
+  RE("^understand$", 3, "ood", 0),
+  RE("^unfreeze$", 4, "ozen", 0),
+  RE("^unlearn", 0, "t", 0),
+  RE("^unmake$", 3, "ade", 0),
+  RE("^unreeve$", 4, "ove", 0),
+  RE("^unstick$", 3, "uck", 0),
+  RE("^unteach$", 4, "aught", 0),
+  RE("^unthink$", 3, "ought", 0),
+  RE("^untread$", 3, "odden", 0),
+  RE("^unwind$", 3, "ound", 0),
+  RE("^upbuild$", 1, "t", 0),
+  RE("^uphold$", 3, "eld", 0),
+  RE("^upheave$", 4, "ove", 0),
+  RE("^waylay$", 2, "ain", 0),
+  RE("^whipsaw$", 2, "awn", 0),
+  RE("^withhold$", 3, "eld", 0),
+  RE("^withstand$", 3, "ood", 0),
+  RE("^win$", 3, "won", 0),
+  RE("^wind$", 3, "ound", 0),
+  RE("^weave$", 4, "oven", 0),
+  RE("^write$", 1, "ten", 0),
+  RE("^trek$", 1, "cked", 0),
+  RE("^ko$", 1, "o'd", 0),
+  RE("^win$", 2, "on", 0),
 
-    RE("e$", 0, "d", 1),
+  RE("e$", 0, "d", 1),
 
-    // Null past forms
-    RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|let|cost|burst|beat|beset|set|upset|hit|offset|put|quit|" + "wed|typeset|wed|spread|split|slit|read|run|rerun|shut|shed)$", 0)
-  ],
+  // Null past forms
+  RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|let|cost|burst|beat|beset|set|upset|hit|offset|put|quit|" + "wed|typeset|wed|spread|split|slit|read|run|rerun|shut|shed)$", 0)
+],
 
-  PAST_TENSE_RULES = [
-    RE("^(reduce)$", 0, "d", 0),
-    RE("e$", 0, "d", 1),
-    RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
-    RE(CONS + "y$", 1, "ied", 1),
-    RE("^(fling|cling|hang)$", 3, "ung", 0),
-    RE("(([sfc][twlp]?r?|w?r)ing)$", 3, "ang", 1),
-    RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend|spend)$", 1, "t", 0),
-    RE("^" + VERBAL_PREFIX + "?lie$", 2, "ay", 0),
-    RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep)$", 2, "pt",
-      0),
-    RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old", 0),
-    RE("^" + VERBAL_PREFIX + "?do$", 1, "id", 0),
-    RE("^" + VERBAL_PREFIX + "?dig$", 2, "ug", 0),
-    RE("^behave$", 0, "d", 0),
-    RE("^(have)$", 2, "d", 0),
-    RE("(sink|drink)$", 3, "ank", 0),
-    RE("^swing$", 3, "ung", 0),
-    RE("^be$", 2, "was", 0),
-    RE("^outfight$", 4, "ought", 0),
-    RE("^tarmac", 0, "ked", 0),
-    RE("^abide$", 3, "ode", 0),
-    RE("^aby$", 1, "ought", 0),
-    RE("^become$", 3, "ame", 0),
-    RE("^begird$", 3, "irt", 0),
-    RE("^outlie$", 2, "ay", 0),
-    RE("^rebind$", 3, "ound", 0),
-    RE("^shit$", 3, "hat", 0),
-    RE("^bereave$", 4, "eft", 0),
-    RE("^foreswear$", 3, "ore", 0),
-    RE("^bename$", 3, "empt", 0),
-    RE("^beseech$", 4, "ought", 0),
-    RE("^bethink$", 3, "ought", 0),
-    RE("^bleed$", 4, "led", 0),
-    RE("^bog-down$", 5, "ged-down", 0),
-    RE("^buy$", 2, "ought", 0),
-    RE("^bind$", 3, "ound", 0),
-    RE("^(.*)feed$", 4, "fed", 0),
-    RE("^breed$", 4, "red", 0),
-    RE("^brei$", 2, "eid", 0),
-    RE("^bring$", 3, "ought", 0),
-    RE("^build$", 3, "ilt", 0),
-    RE("^come$", 3, "ame", 0),
-    RE("^catch$", 3, "ught", 0),
-    RE("^clothe$", 5, "lad", 0),
-    RE("^crossbreed$", 4, "red", 0),
-    RE("^deal$", 2, "alt", 0),
-    RE("^dow$", 1, "ught", 0),
-    RE("^dream$", 2, "amt", 0),
-    RE("^dwell$", 3, "elt", 0),
-    RE("^enwind$", 3, "ound", 0),
-    RE("^feel$", 3, "elt", 0),
-    RE("^flee$", 3, "led", 0),
-    RE("^floodlight$", 5, "lit", 0),
-    RE("^arise$", 3, "ose", 0),
-    RE("^eat$", 3, "ate", 0),
-    RE("^backbite$", 4, "bit", 0),
-    RE("^backslide$", 4, "lid", 0),
-    RE("^befall$", 3, "ell", 0),
-    RE("^begin$", 3, "gan", 0),
-    RE("^beget$", 3, "got", 0),
-    RE("^behold$", 3, "eld", 0),
-    RE("^bespeak$", 3, "oke", 0),
-    RE("^bestride$", 3, "ode", 0),
-    RE("^betake$", 3, "ook", 0),
-    RE("^bite$", 4, "bit", 0),
-    RE("^blow$", 3, "lew", 0),
-    RE("^bear$", 3, "ore", 0),
-    RE("^break$", 3, "oke", 0),
-    RE("^choose$", 4, "ose", 0),
-    RE("^cleave$", 4, "ove", 0),
-    RE("^countersink$", 3, "ank", 0),
-    RE("^drink$", 3, "ank", 0),
-    RE("^draw$", 3, "rew", 0),
-    RE("^drive$", 3, "ove", 0),
-    RE("^fall$", 3, "ell", 0),
-    RE("^fly$", 2, "lew", 0),
-    RE("^flyblow$", 3, "lew", 0),
-    RE("^forbid$", 2, "ade", 0),
-    RE("^forbear$", 3, "ore", 0),
-    RE("^foreknow$", 3, "new", 0),
-    RE("^foresee$", 3, "saw", 0),
-    RE("^forespeak$", 3, "oke", 0),
-    RE("^forego$", 2, "went", 0),
-    RE("^forgive$", 3, "ave", 0),
-    RE("^forget$", 3, "got", 0),
-    RE("^forsake$", 3, "ook", 0),
-    RE("^forspeak$", 3, "oke", 0),
-    RE("^forswear$", 3, "ore", 0),
-    RE("^forgo$", 2, "went", 0),
-    RE("^fight$", 4, "ought", 0),
-    RE("^find$", 3, "ound", 0),
-    RE("^freeze$", 4, "oze", 0),
-    RE("^give$", 3, "ave", 0),
-    RE("^geld$", 3, "elt", 0),
-    RE("^gen-up$", 3, "ned-up", 0),
-    RE("^ghostwrite$", 3, "ote", 0),
-    RE("^get$", 3, "got", 0),
-    RE("^grow$", 3, "rew", 0),
-    RE("^grind$", 3, "ound", 0),
-    RE("^hear$", 2, "ard", 0),
-    RE("^hold$", 3, "eld", 0),
-    RE("^hide$", 4, "hid", 0),
-    RE("^honey$", 2, "ied", 0),
-    RE("^inbreed$", 4, "red", 0),
-    RE("^indwell$", 3, "elt", 0),
-    RE("^interbreed$", 4, "red", 0),
-    RE("^interweave$", 4, "ove", 0),
-    RE("^inweave$", 4, "ove", 0),
-    RE("^ken$", 2, "ent", 0),
-    RE("^kneel$", 3, "elt", 0),
-    RE("^^know$$", 3, "new", 0),
-    RE("^leap$", 2, "apt", 0),
-    RE("^learn$", 2, "rnt", 0),
-    RE("^lead$", 4, "led", 0),
-    RE("^leave$", 4, "eft", 0),
-    RE("^light$", 5, "lit", 0),
-    RE("^lose$", 3, "ost", 0),
-    RE("^make$", 3, "ade", 0),
-    RE("^mean$", 2, "ant", 0),
-    RE("^meet$", 4, "met", 0),
-    RE("^misbecome$", 3, "ame", 0),
-    RE("^misdeal$", 2, "alt", 0),
-    RE("^misgive$", 3, "ave", 0),
-    RE("^mishear$", 2, "ard", 0),
-    RE("^mislead$", 4, "led", 0),
-    RE("^mistake$", 3, "ook", 0),
-    RE("^misunderstand$", 3, "ood", 0),
-    RE("^outbreed$", 4, "red", 0),
-    RE("^outgrow$", 3, "rew", 0),
-    RE("^outride$", 3, "ode", 0),
-    RE("^outshine$", 3, "one", 0),
-    RE("^outshoot$", 4, "hot", 0),
-    RE("^outstand$", 3, "ood", 0),
-    RE("^outthink$", 3, "ought", 0),
-    RE("^outgo$", 2, "went", 0),
-    RE("^outwear$", 3, "ore", 0),
-    RE("^overblow$", 3, "lew", 0),
-    RE("^overbear$", 3, "ore", 0),
-    RE("^overbuild$", 3, "ilt", 0),
-    RE("^overcome$", 3, "ame", 0),
-    RE("^overdraw$", 3, "rew", 0),
-    RE("^overdrive$", 3, "ove", 0),
-    RE("^overfly$", 2, "lew", 0),
-    RE("^overgrow$", 3, "rew", 0),
-    RE("^overhear$", 2, "ard", 0),
-    RE("^overpass$", 3, "ast", 0),
-    RE("^override$", 3, "ode", 0),
-    RE("^oversee$", 3, "saw", 0),
-    RE("^overshoot$", 4, "hot", 0),
-    RE("^overthrow$", 3, "rew", 0),
-    RE("^overtake$", 3, "ook", 0),
-    RE("^overwind$", 3, "ound", 0),
-    RE("^overwrite$", 3, "ote", 0),
-    RE("^partake$", 3, "ook", 0),
-    RE("^" + VERBAL_PREFIX + "?run$", 2, "an", 0),
-    RE("^ring$", 3, "ang", 0),
-    RE("^rebuild$", 3, "ilt", 0),
-    RE("^red", 0),
-    RE("^reave$", 4, "eft", 0),
-    RE("^remake$", 3, "ade", 0),
-    RE("^resit$", 3, "sat", 0),
-    RE("^rethink$", 3, "ought", 0),
-    RE("^retake$", 3, "ook", 0),
-    RE("^rewind$", 3, "ound", 0),
-    RE("^rewrite$", 3, "ote", 0),
-    RE("^ride$", 3, "ode", 0),
-    RE("^rise$", 3, "ose", 0),
-    RE("^reeve$", 4, "ove", 0),
-    RE("^sing$", 3, "ang", 0),
-    RE("^sink$", 3, "ank", 0),
-    RE("^sit$", 3, "sat", 0),
-    RE("^see$", 3, "saw", 0),
-    RE("^shoe$", 3, "hod", 0),
-    RE("^shine$", 3, "one", 0),
-    RE("^shake$", 3, "ook", 0),
-    RE("^shoot$", 4, "hot", 0),
-    RE("^shrink$", 3, "ank", 0),
-    RE("^shrive$", 3, "ove", 0),
-    RE("^sightsee$", 3, "saw", 0),
-    RE("^ski$", 1, "i'd", 0),
-    RE("^skydive$", 3, "ove", 0),
-    RE("^slay$", 3, "lew", 0),
-    RE("^slide$", 4, "lid", 0),
-    RE("^slink$", 3, "unk", 0),
-    RE("^smite$", 4, "mit", 0),
-    RE("^seek$", 3, "ought", 0),
-    RE("^spit$", 3, "pat", 0),
-    RE("^speed$", 4, "ped", 0),
-    RE("^spellbind$", 3, "ound", 0),
-    RE("^spoil$", 2, "ilt", 0),
-    RE("^speak$", 3, "oke", 0),
-    RE("^spotlight$", 5, "lit", 0),
-    RE("^spring$", 3, "ang", 0),
-    RE("^spin$", 3, "pun", 0),
-    RE("^stink$", 3, "ank", 0),
-    RE("^steal$", 3, "ole", 0),
-    RE("^stand$", 3, "ood", 0),
-    RE("^stave$", 3, "ove", 0),
-    RE("^stride$", 3, "ode", 0),
-    RE("^strive$", 3, "ove", 0),
-    RE("^strike$", 3, "uck", 0),
-    RE("^stick$", 3, "uck", 0),
-    RE("^swim$", 3, "wam", 0),
-    RE("^swear$", 3, "ore", 0),
-    RE("^teach$", 4, "aught", 0),
-    RE("^think$", 3, "ought", 0),
-    RE("^throw$", 3, "rew", 0),
-    RE("^take$", 3, "ook", 0),
-    RE("^tear$", 3, "ore", 0),
-    RE("^transship$", 4, "hip", 0),
-    RE("^tread$", 4, "rod", 0),
-    RE("^typewrite$", 3, "ote", 0),
-    RE("^unbind$", 3, "ound", 0),
-    RE("^unclothe$", 5, "lad", 0),
-    RE("^underbuy$", 2, "ought", 0),
-    RE("^undergird$", 3, "irt", 0),
-    RE("^undershoot$", 4, "hot", 0),
-    RE("^understand$", 3, "ood", 0),
-    RE("^undertake$", 3, "ook", 0),
-    RE("^undergo$", 2, "went", 0),
-    RE("^underwrite$", 3, "ote", 0),
-    RE("^unfreeze$", 4, "oze", 0),
-    RE("^unlearn$", 2, "rnt", 0),
-    RE("^unmake$", 3, "ade", 0),
-    RE("^unreeve$", 4, "ove", 0),
-    RE("^unspeak$", 3, "oke", 0),
-    RE("^unstick$", 3, "uck", 0),
-    RE("^unswear$", 3, "ore", 0),
-    RE("^unteach$", 4, "aught", 0),
-    RE("^unthink$", 3, "ought", 0),
-    RE("^untread$", 4, "rod", 0),
-    RE("^unwind$", 3, "ound", 0),
-    RE("^upbuild$", 3, "ilt", 0),
-    RE("^uphold$", 3, "eld", 0),
-    RE("^upheave$", 4, "ove", 0),
-    RE("^uprise$", 3, "ose", 0),
-    RE("^upspring$", 3, "ang", 0),
-    RE("^go$", 2, "went", 0),
-    RE("^wiredraw$", 3, "rew", 0),
-    RE("^withdraw$", 3, "rew", 0),
-    RE("^withhold$", 3, "eld", 0),
-    RE("^withstand$", 3, "ood", 0),
-    RE("^wake$", 3, "oke", 0),
-    RE("^win$", 3, "won", 0),
-    RE("^wear$", 3, "ore", 0),
-    RE("^wind$", 3, "ound", 0),
-    RE("^weave$", 4, "ove", 0),
-    RE("^write$", 3, "ote", 0),
-    RE("^trek$", 1, "cked", 0),
-    RE("^ko$", 1, "o'd", 0),
-    RE("^bid", 2, "ade", 0),
-    RE("^win$", 2, "on", 0),
-    RE("^swim", 2, "am", 0),
+PAST_TENSE_RULES = [
+  RE("^(reduce)$", 0, "d", 0),
+  RE("e$", 0, "d", 1),
+  RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
+  RE(CONS + "y$", 1, "ied", 1),
+  RE("^(fling|cling|hang)$", 3, "ung", 0),
+  RE("(([sfc][twlp]?r?|w?r)ing)$", 3, "ang", 1),
+  RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend|spend)$", 1, "t", 0),
+  RE("^" + VERBAL_PREFIX + "?lie$", 2, "ay", 0),
+  RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep)$", 2, "pt",
+    0),
+  RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old", 0),
+  RE("^" + VERBAL_PREFIX + "?do$", 1, "id", 0),
+  RE("^" + VERBAL_PREFIX + "?dig$", 2, "ug", 0),
+  RE("^behave$", 0, "d", 0),
+  RE("^(have)$", 2, "d", 0),
+  RE("(sink|drink)$", 3, "ank", 0),
+  RE("^swing$", 3, "ung", 0),
+  RE("^be$", 2, "was", 0),
+  RE("^outfight$", 4, "ought", 0),
+  RE("^tarmac", 0, "ked", 0),
+  RE("^abide$", 3, "ode", 0),
+  RE("^aby$", 1, "ought", 0),
+  RE("^become$", 3, "ame", 0),
+  RE("^begird$", 3, "irt", 0),
+  RE("^outlie$", 2, "ay", 0),
+  RE("^rebind$", 3, "ound", 0),
+  RE("^shit$", 3, "hat", 0),
+  RE("^bereave$", 4, "eft", 0),
+  RE("^foreswear$", 3, "ore", 0),
+  RE("^bename$", 3, "empt", 0),
+  RE("^beseech$", 4, "ought", 0),
+  RE("^bethink$", 3, "ought", 0),
+  RE("^bleed$", 4, "led", 0),
+  RE("^bog-down$", 5, "ged-down", 0),
+  RE("^buy$", 2, "ought", 0),
+  RE("^bind$", 3, "ound", 0),
+  RE("^(.*)feed$", 4, "fed", 0),
+  RE("^breed$", 4, "red", 0),
+  RE("^brei$", 2, "eid", 0),
+  RE("^bring$", 3, "ought", 0),
+  RE("^build$", 3, "ilt", 0),
+  RE("^come$", 3, "ame", 0),
+  RE("^catch$", 3, "ught", 0),
+  RE("^clothe$", 5, "lad", 0),
+  RE("^crossbreed$", 4, "red", 0),
+  RE("^deal$", 2, "alt", 0),
+  RE("^dow$", 1, "ught", 0),
+  RE("^dream$", 2, "amt", 0),
+  RE("^dwell$", 3, "elt", 0),
+  RE("^enwind$", 3, "ound", 0),
+  RE("^feel$", 3, "elt", 0),
+  RE("^flee$", 3, "led", 0),
+  RE("^floodlight$", 5, "lit", 0),
+  RE("^arise$", 3, "ose", 0),
+  RE("^eat$", 3, "ate", 0),
+  RE("^backbite$", 4, "bit", 0),
+  RE("^backslide$", 4, "lid", 0),
+  RE("^befall$", 3, "ell", 0),
+  RE("^begin$", 3, "gan", 0),
+  RE("^beget$", 3, "got", 0),
+  RE("^behold$", 3, "eld", 0),
+  RE("^bespeak$", 3, "oke", 0),
+  RE("^bestride$", 3, "ode", 0),
+  RE("^betake$", 3, "ook", 0),
+  RE("^bite$", 4, "bit", 0),
+  RE("^blow$", 3, "lew", 0),
+  RE("^bear$", 3, "ore", 0),
+  RE("^break$", 3, "oke", 0),
+  RE("^choose$", 4, "ose", 0),
+  RE("^cleave$", 4, "ove", 0),
+  RE("^countersink$", 3, "ank", 0),
+  RE("^drink$", 3, "ank", 0),
+  RE("^draw$", 3, "rew", 0),
+  RE("^drive$", 3, "ove", 0),
+  RE("^fall$", 3, "ell", 0),
+  RE("^fly$", 2, "lew", 0),
+  RE("^flyblow$", 3, "lew", 0),
+  RE("^forbid$", 2, "ade", 0),
+  RE("^forbear$", 3, "ore", 0),
+  RE("^foreknow$", 3, "new", 0),
+  RE("^foresee$", 3, "saw", 0),
+  RE("^forespeak$", 3, "oke", 0),
+  RE("^forego$", 2, "went", 0),
+  RE("^forgive$", 3, "ave", 0),
+  RE("^forget$", 3, "got", 0),
+  RE("^forsake$", 3, "ook", 0),
+  RE("^forspeak$", 3, "oke", 0),
+  RE("^forswear$", 3, "ore", 0),
+  RE("^forgo$", 2, "went", 0),
+  RE("^fight$", 4, "ought", 0),
+  RE("^find$", 3, "ound", 0),
+  RE("^freeze$", 4, "oze", 0),
+  RE("^give$", 3, "ave", 0),
+  RE("^geld$", 3, "elt", 0),
+  RE("^gen-up$", 3, "ned-up", 0),
+  RE("^ghostwrite$", 3, "ote", 0),
+  RE("^get$", 3, "got", 0),
+  RE("^grow$", 3, "rew", 0),
+  RE("^grind$", 3, "ound", 0),
+  RE("^hear$", 2, "ard", 0),
+  RE("^hold$", 3, "eld", 0),
+  RE("^hide$", 4, "hid", 0),
+  RE("^honey$", 2, "ied", 0),
+  RE("^inbreed$", 4, "red", 0),
+  RE("^indwell$", 3, "elt", 0),
+  RE("^interbreed$", 4, "red", 0),
+  RE("^interweave$", 4, "ove", 0),
+  RE("^inweave$", 4, "ove", 0),
+  RE("^ken$", 2, "ent", 0),
+  RE("^kneel$", 3, "elt", 0),
+  RE("^^know$$", 3, "new", 0),
+  RE("^leap$", 2, "apt", 0),
+  RE("^learn$", 2, "rnt", 0),
+  RE("^lead$", 4, "led", 0),
+  RE("^leave$", 4, "eft", 0),
+  RE("^light$", 5, "lit", 0),
+  RE("^lose$", 3, "ost", 0),
+  RE("^make$", 3, "ade", 0),
+  RE("^mean$", 2, "ant", 0),
+  RE("^meet$", 4, "met", 0),
+  RE("^misbecome$", 3, "ame", 0),
+  RE("^misdeal$", 2, "alt", 0),
+  RE("^misgive$", 3, "ave", 0),
+  RE("^mishear$", 2, "ard", 0),
+  RE("^mislead$", 4, "led", 0),
+  RE("^mistake$", 3, "ook", 0),
+  RE("^misunderstand$", 3, "ood", 0),
+  RE("^outbreed$", 4, "red", 0),
+  RE("^outgrow$", 3, "rew", 0),
+  RE("^outride$", 3, "ode", 0),
+  RE("^outshine$", 3, "one", 0),
+  RE("^outshoot$", 4, "hot", 0),
+  RE("^outstand$", 3, "ood", 0),
+  RE("^outthink$", 3, "ought", 0),
+  RE("^outgo$", 2, "went", 0),
+  RE("^outwear$", 3, "ore", 0),
+  RE("^overblow$", 3, "lew", 0),
+  RE("^overbear$", 3, "ore", 0),
+  RE("^overbuild$", 3, "ilt", 0),
+  RE("^overcome$", 3, "ame", 0),
+  RE("^overdraw$", 3, "rew", 0),
+  RE("^overdrive$", 3, "ove", 0),
+  RE("^overfly$", 2, "lew", 0),
+  RE("^overgrow$", 3, "rew", 0),
+  RE("^overhear$", 2, "ard", 0),
+  RE("^overpass$", 3, "ast", 0),
+  RE("^override$", 3, "ode", 0),
+  RE("^oversee$", 3, "saw", 0),
+  RE("^overshoot$", 4, "hot", 0),
+  RE("^overthrow$", 3, "rew", 0),
+  RE("^overtake$", 3, "ook", 0),
+  RE("^overwind$", 3, "ound", 0),
+  RE("^overwrite$", 3, "ote", 0),
+  RE("^partake$", 3, "ook", 0),
+  RE("^" + VERBAL_PREFIX + "?run$", 2, "an", 0),
+  RE("^ring$", 3, "ang", 0),
+  RE("^rebuild$", 3, "ilt", 0),
+  RE("^red", 0),
+  RE("^reave$", 4, "eft", 0),
+  RE("^remake$", 3, "ade", 0),
+  RE("^resit$", 3, "sat", 0),
+  RE("^rethink$", 3, "ought", 0),
+  RE("^retake$", 3, "ook", 0),
+  RE("^rewind$", 3, "ound", 0),
+  RE("^rewrite$", 3, "ote", 0),
+  RE("^ride$", 3, "ode", 0),
+  RE("^rise$", 3, "ose", 0),
+  RE("^reeve$", 4, "ove", 0),
+  RE("^sing$", 3, "ang", 0),
+  RE("^sink$", 3, "ank", 0),
+  RE("^sit$", 3, "sat", 0),
+  RE("^see$", 3, "saw", 0),
+  RE("^shoe$", 3, "hod", 0),
+  RE("^shine$", 3, "one", 0),
+  RE("^shake$", 3, "ook", 0),
+  RE("^shoot$", 4, "hot", 0),
+  RE("^shrink$", 3, "ank", 0),
+  RE("^shrive$", 3, "ove", 0),
+  RE("^sightsee$", 3, "saw", 0),
+  RE("^ski$", 1, "i'd", 0),
+  RE("^skydive$", 3, "ove", 0),
+  RE("^slay$", 3, "lew", 0),
+  RE("^slide$", 4, "lid", 0),
+  RE("^slink$", 3, "unk", 0),
+  RE("^smite$", 4, "mit", 0),
+  RE("^seek$", 3, "ought", 0),
+  RE("^spit$", 3, "pat", 0),
+  RE("^speed$", 4, "ped", 0),
+  RE("^spellbind$", 3, "ound", 0),
+  RE("^spoil$", 2, "ilt", 0),
+  RE("^speak$", 3, "oke", 0),
+  RE("^spotlight$", 5, "lit", 0),
+  RE("^spring$", 3, "ang", 0),
+  RE("^spin$", 3, "pun", 0),
+  RE("^stink$", 3, "ank", 0),
+  RE("^steal$", 3, "ole", 0),
+  RE("^stand$", 3, "ood", 0),
+  RE("^stave$", 3, "ove", 0),
+  RE("^stride$", 3, "ode", 0),
+  RE("^strive$", 3, "ove", 0),
+  RE("^strike$", 3, "uck", 0),
+  RE("^stick$", 3, "uck", 0),
+  RE("^swim$", 3, "wam", 0),
+  RE("^swear$", 3, "ore", 0),
+  RE("^teach$", 4, "aught", 0),
+  RE("^think$", 3, "ought", 0),
+  RE("^throw$", 3, "rew", 0),
+  RE("^take$", 3, "ook", 0),
+  RE("^tear$", 3, "ore", 0),
+  RE("^transship$", 4, "hip", 0),
+  RE("^tread$", 4, "rod", 0),
+  RE("^typewrite$", 3, "ote", 0),
+  RE("^unbind$", 3, "ound", 0),
+  RE("^unclothe$", 5, "lad", 0),
+  RE("^underbuy$", 2, "ought", 0),
+  RE("^undergird$", 3, "irt", 0),
+  RE("^undershoot$", 4, "hot", 0),
+  RE("^understand$", 3, "ood", 0),
+  RE("^undertake$", 3, "ook", 0),
+  RE("^undergo$", 2, "went", 0),
+  RE("^underwrite$", 3, "ote", 0),
+  RE("^unfreeze$", 4, "oze", 0),
+  RE("^unlearn$", 2, "rnt", 0),
+  RE("^unmake$", 3, "ade", 0),
+  RE("^unreeve$", 4, "ove", 0),
+  RE("^unspeak$", 3, "oke", 0),
+  RE("^unstick$", 3, "uck", 0),
+  RE("^unswear$", 3, "ore", 0),
+  RE("^unteach$", 4, "aught", 0),
+  RE("^unthink$", 3, "ought", 0),
+  RE("^untread$", 4, "rod", 0),
+  RE("^unwind$", 3, "ound", 0),
+  RE("^upbuild$", 3, "ilt", 0),
+  RE("^uphold$", 3, "eld", 0),
+  RE("^upheave$", 4, "ove", 0),
+  RE("^uprise$", 3, "ose", 0),
+  RE("^upspring$", 3, "ang", 0),
+  RE("^go$", 2, "went", 0),
+  RE("^wiredraw$", 3, "rew", 0),
+  RE("^withdraw$", 3, "rew", 0),
+  RE("^withhold$", 3, "eld", 0),
+  RE("^withstand$", 3, "ood", 0),
+  RE("^wake$", 3, "oke", 0),
+  RE("^win$", 3, "won", 0),
+  RE("^wear$", 3, "ore", 0),
+  RE("^wind$", 3, "ound", 0),
+  RE("^weave$", 4, "ove", 0),
+  RE("^write$", 3, "ote", 0),
+  RE("^trek$", 1, "cked", 0),
+  RE("^ko$", 1, "o'd", 0),
+  RE("^bid", 2, "ade", 0),
+  RE("^win$", 2, "on", 0),
+  RE("^swim", 2, "am", 0),
 
-    // Null past forms
-    RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|" + "let|cost|burst|beat|beset|set|upset|offset|put|quit|wed|typeset|" + "wed|spread|split|slit|read|run|shut|shed|lay)$", 0)
-  ],
+  // Null past forms
+  RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|" + "let|cost|burst|beat|beset|set|upset|offset|put|quit|wed|typeset|" + "wed|spread|split|slit|read|run|shut|shed|lay)$", 0)
+],
 
-  PRESENT_TENSE_RULES = [
-    RE("^aby$", 0, "es", 0),
-    RE("^bog-down$", 5, "s-down", 0),
-    RE("^chivy$", 1, "vies", 0),
-    RE("^gen-up$", 3, "s-up", 0),
-    RE("^prologue$", 3, "gs", 0),
-    RE("^picknic$", 0, "ks", 0),
-    //RE("^swim$", 0, "s", 0),
-    RE("^ko$", 0, "'s", 0),
-    RE("[osz]$", 0, "es", 1),
-    RE("^have$", 2, "s", 0),
-    RE(CONS + "y$", 1, "ies", 1),
-    RE("^be$", 2, "is"),
-    RE("([zsx]|ch|sh)$", 0, "es", 1)
-  ],
+PRESENT_TENSE_RULES = [
+  RE("^aby$", 0, "es", 0),
+  RE("^bog-down$", 5, "s-down", 0),
+  RE("^chivy$", 1, "vies", 0),
+  RE("^gen-up$", 3, "s-up", 0),
+  RE("^prologue$", 3, "gs", 0),
+  RE("^picknic$", 0, "ks", 0),
+  //RE("^swim$", 0, "s", 0),
+  RE("^ko$", 0, "'s", 0),
+  RE("[osz]$", 0, "es", 1),
+  RE("^have$", 2, "s", 0),
+  RE(CONS + "y$", 1, "ies", 1),
+  RE("^be$", 2, "is"),
+  RE("([zsx]|ch|sh)$", 0, "es", 1)
+],
 
-  VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", "adlib",
-    "admit", "aerobat", "aerosol", "agendaset", "allot", "alot", "anagram",
-    "annul", "appal", "apparel", "armbar", "aver", "babysit", "airdrop", "appal",
-    "blackleg", "bobsled", "bur", "chum", "confab", "counterplot", "curet", "dib",
-    "backdrop", "backfil", "backflip", "backlog", "backpedal", "backslap",
-    "backstab", "bag", "balfun", "ballot", "ban", "bar", "barbel", "bareleg",
-    "barrel", "bat", "bayonet", "becom", "bed", "bedevil", "bedwet", "beenhop",
-    "befit", "befog", "beg", "beget", "begin", "bejewel", "bemedal", "benefit",
-    "benum", "beset", "besot", "bestir", "bet", "betassel", "bevel", "bewig",
-    "bib", "bid", "billet", "bin", "bip", "bit", "bitmap", "blab", "blag", "blam",
-    "blan", "blat", "bles", "blim", "blip", "blob", "bloodlet", "blot", "blub",
-    "blur", "bob", "bodypop", "bog", "booby-trap", "boobytrap", "booksel",
-    "bootleg", "bop", "bot", "bowel", "bracket", "brag", "brig", "brim", "bud",
-    "buffet", "bug", "bullshit", "bum", "bun", "bus", "but", "cab", "cabal", "cam",
-    "can", "cancel", "cap", "caracol", "caravan", "carburet", "carnap", "carol",
-    "carpetbag", "castanet", "cat", "catcal", "catnap", "cavil", "chan", "chanel",
-    "channel", "chap", "char", "chargecap", "chat", "chin", "chip", "chir",
-    "chirrup", "chisel", "chop", "chug", "chur", "clam", "clap", "clearcut",
-    "clip", "clodhop", "clog", "clop", "closet", "clot", "club", "co-occur",
-    "co-program", "co-refer", "co-run", "co-star", "cob", "cobweb", "cod", "coif",
-    "com", "combat", "comit", "commit", "compel", "con", "concur", "confer",
-    "confiscat", "control", "cop", "coquet", "coral", "corbel", "corral", "cosset",
-    "cotransmit", "councel", "council", "counsel", "court-martial", "crab", "cram",
-    "crap", "crib", "crop", "crossleg", "cub", "cudgel", "cum", "cun", "cup",
-    "cut", "dab", "dag", "dam", "dan", "dap", "daysit", "de-control", "de-gazet",
-    "de-hul", "de-instal", "de-mob", "de-program", "de-rig", "de-skil", "deadpan",
-    "debag", "debar", "log", "decommit", "decontrol", "defer", "defog", "deg",
-    "degas", "deinstal", "demit", "demob", "demur", "den", "denet", "depig",
-    "depip", "depit", "der", "deskil", "deter", "devil", "diagram", "dial", "dig",
-    "dim", "din", "dip", "disbar", "disbud", "discomfit", "disembed", "disembowel",
-    "dishevel", "disinter", "dispel", "disprefer", "distil", "dog", "dognap",
-    "don", "doorstep", "dot", "dowel", "drag", "drat", "driftnet", "distil",
-    "egotrip", "enrol", "enthral", "extol", "fulfil", "gaffe", "golliwog", "idyl",
-    "inspan", "drip", "drivel", "drop", "drub", "drug", "drum", "dub", "duel",
-    "dun", "dybbuk", "earwig", "eavesdrop", "ecolabel", "eitherspigot",
-    "electroblot", "embed", "emit", "empanel", "enamel", "endlabel", "endtrim",
-    "enrol", "enthral", "entrammel", "entrap", "enwrap", "equal", "equip", "estop",
-    "exaggerat", "excel", "expel", "extol", "fag", "fan", "farewel", "fat",
-    "featherbed", "feget", "fet", "fib", "fig", "fin", "fingerspel", "fingertip",
-    "fit", "flab", "flag", "flap", "flip", "flit", "flog", "flop", "fob", "focus",
-    "fog", "footbal", "footslog", "fop", "forbid", "forget", "format",
-    "fortunetel", "fot", "foxtrot", "frag", "freefal", "fret", "frig", "frip",
-    "frog", "frug", "fuel", "fufil", "fulfil", "fullyfit", "fun", "funnel", "fur",
-    "furpul", "gab", "gad", "gag", "gam", "gambol", "gap", "garot", "garrot",
-    "gas", "gat", "gel", "gen", "get", "giftwrap", "gig", "gimbal", "gin", "glam",
-    "glenden", "glendin", "globetrot", "glug", "glut", "gob", "goldpan", "goostep",
-    "gossip", "grab", "gravel", "grid", "grin", "grip", "grit", "groundhop",
-    "grovel", "grub", "gum", "gun", "gunrun", "gut", "gyp", "haircut", "ham",
-    "han", "handbag", "handicap", "handknit", "handset", "hap", "hareleg", "hat",
-    "headbut", "hedgehop", "hem", "hen", "hiccup", "highwal", "hip", "hit",
-    "hobnob", "hog", "hop", "horsewhip", "hostel", "hot", "hotdog", "hovel", "hug",
-    "hum", "humbug", "hup", "hushkit", "hut", "illfit", "imbed", "immunblot",
-    "immunoblot", "impannel", "impel", "imperil", "incur", "infer", "infil",
-    "inflam", "initial", "input", "inset", "instil", "inter", "interbed",
-    "intercrop", "intercut", "interfer", "instal", "instil", "intermit", "japan",
-    "jug", "kris", "manumit", "mishit", "mousse", "mud", "interwar", "jab", "jag",
-    "jam", "jar", "jawdrop", "jet", "jetlag", "jewel", "jib", "jig", "jitterbug",
-    "job", "jog", "jog-trot", "jot", "jut", "ken", "kennel", "kid", "kidnap",
-    "kip", "kissogram", "kit", "knap", "kneecap", "knit", "knob", "knot", "kor",
-    "label", "lag", "lam", "lap", "lavel", "leafcut", "leapfrog", "leg", "lem",
-    "lep", "let", "level", "libel", "lid", "lig", "lip", "lob", "log", "lok",
-    "lollop", "longleg", "lop", "lowbal", "lug", "mackerel", "mahom", "man", "map",
-    "mar", "marshal", "marvel", "mat", "matchwin", "metal", "micro-program",
-    "microplan", "microprogram", "milksop", "mis-cal", "mis-club", "mis-spel",
-    "miscal", "mishit", "mislabel", "mit", "mob", "mod", "model", "mohmam",
-    "monogram", "mop", "mothbal", "mug", "multilevel", "mum", "nab", "nag", "nan",
-    "nap", "net", "nightclub", "nightsit", "nip", "nod", "nonplus", "norkop",
-    "nostril", "not", "nut", "nutmeg", "occur", "ocur", "offput", "offset", "omit",
-    "ommit", "onlap", "out-general", "out-gun", "out-jab", "out-plan", "out-pol",
-    "out-pul", "out-put", "out-run", "out-sel", "outbid", "outcrop", "outfit",
-    "outgas", "outgun", "outhit", "outjab", "outpol", "output", "outrun",
-    "outship", "outshop", "outsin", "outstrip", "outswel", "outspan", "overcrop",
-    "pettifog", "photostat", "pouf", "preset", "prim", "pug", "ret", "rosin",
-    "outwit", "over-commit", "over-control", "over-fil", "over-fit", "over-lap",
-    "over-model", "over-pedal", "over-pet", "over-run", "over-sel", "over-step",
-    "over-tip", "over-top", "overbid", "overcal", "overcommit", "overcontrol",
-    "overcrap", "overdub", "overfil", "overhat", "overhit", "overlap", "overman",
-    "overplot", "overrun", "overshop", "overstep", "overtip", "overtop", "overwet",
-    "overwil", "pad", "paintbal", "pan", "panel", "paperclip", "par", "parallel",
-    "parcel", "partiescal", "pat", "patrol", "pedal", "peewit", "peg", "pen",
-    "pencil", "pep", "permit", "pet", "petal", "photoset", "phototypeset", "phut",
-    "picket", "pig", "pilot", "pin", "pinbal", "pip", "pipefit", "pipet", "pit",
-    "plan", "plit", "plod", "plop", "plot", "plug", "plumet", "plummet", "pod",
-    "policyset", "polyfil", "ponytrek", "pop", "pot", "pram", "prebag",
-    "predistil", "predril", "prefer", "prefil", "preinstal", "prep", "preplan",
-    "preprogram", "prizewin", "prod", "profer", "prog", "program", "prop",
-    "propel", "pub", "pummel", "pun", "pup", "pushfit", "put", "quarel", "quarrel",
-    "quickskim", "quickstep", "quickwit", "quip", "quit", "quivertip", "quiz",
-    "rabbit", "rabit", "radiolabel", "rag", "ram", "ramrod", "rap", "rat",
-    "ratecap", "ravel", "re-admit", "re-cal", "re-cap", "re-channel", "re-dig",
-    "re-dril", "re-emit", "re-fil", "re-fit", "re-flag", "re-format", "re-fret",
-    "re-hab", "re-instal", "re-inter", "re-lap", "re-let", "re-map", "re-metal",
-    "re-model", "re-pastel", "re-plan", "re-plot", "re-plug", "re-pot",
-    "re-program", "re-refer", "re-rig", "re-rol", "re-run", "re-sel", "re-set",
-    "re-skin", "re-stal", "re-submit", "re-tel", "re-top", "re-transmit",
-    "re-trim", "re-wrap", "readmit", "reallot", "rebel", "rebid", "rebin", "rebut",
-    "recap", "rechannel", "recommit", "recrop", "recur", "recut", "red", "redril",
-    "refer", "refit", "reformat", "refret", "refuel", "reget", "regret", "reinter",
-    "rejig", "rekit", "reknot", "relabel", "relet", "rem", "remap", "remetal",
-    "remit", "remodel", "reoccur", "rep", "repel", "repin", "replan", "replot",
-    "repol", "repot", "reprogram", "rerun", "reset", "resignal", "resit", "reskil",
-    "resubmit", "retransfer", "retransmit", "retro-fit", "retrofit", "rev",
-    "revel", "revet", "rewrap", "rib", "richochet", "ricochet", "rid", "rig",
-    "rim", "ringlet", "rip", "rit", "rival", "rivet", "roadrun", "rob", "rocket",
-    "rod", "roset", "rot", "rowel", "rub", "run", "runnel", "rut", "sab", "sad",
-    "sag", "sandbag", "sap", "scab", "scalpel", "scam", "scan", "scar", "scat",
-    "schlep", "scrag", "scram", "shall", "sled", "smut", "stet", "sulfuret",
-    "trepan", "unrip", "unstop", "whir", "whop", "wig", "scrap", "scrat", "scrub",
-    "scrum", "scud", "scum", "scur", "semi-control", "semi-skil", "semi-skim",
-    "semiskil", "sentinel", "set", "shag", "sham", "shed", "shim", "shin", "ship",
-    "shir", "shit", "shlap", "shop", "shopfit", "shortfal", "shot", "shovel",
-    "shred", "shrinkwrap", "shrivel", "shrug", "shun", "shut", "side-step",
-    "sideslip", "sidestep", "signal", "sin", "sinbin", "sip", "sit", "skid",
-    "skim", "skin", "skip", "skir", "skrag", "slab", "slag", "slam", "slap",
-    "slim", "slip", "slit", "slob", "slog", "slop", "slot", "slowclap", "slug",
-    "slum", "slur", "smit", "snag", "snap", "snip", "snivel", "snog", "snorkel",
-    "snowcem", "snub", "snug", "sob", "sod", "softpedal", "son", "sop", "spam",
-    "span", "spar", "spat", "spiderweb", "spin", "spiral", "spit", "splat",
-    "split", "spot", "sprag", "spraygun", "sprig", "springtip", "spud", "spur",
-    "squat", "squirrel", "stab", "stag", "star", "stem", "sten", "stencil", "step",
-    "stir", "stop", "storytel", "strap", "strim", "strip", "strop", "strug",
-    "strum", "strut", "stub", "stud", "stun", "sub", "subcrop", "sublet", "submit",
-    "subset", "suedetrim", "sum", "summit", "sun", "suntan", "sup", "super-chil",
-    "superad", "swab", "swag", "swan", "swap", "swat", "swig", "swim", "swivel",
-    "swot", "tab", "tag", "tan", "tansfer", "tap", "tar", "tassel", "tat", "tefer",
-    "teleshop", "tendril", "terschel", "th'strip", "thermal", "thermostat", "thin",
-    "throb", "thrum", "thud", "thug", "tightlip", "tin", "tinsel", "tip", "tittup",
-    "toecap", "tog", "tom", "tomorrow", "top", "tot", "total", "towel", "traget",
-    "trainspot", "tram", "trammel", "transfer", "tranship", "transit", "transmit",
-    "transship", "trap", "travel", "trek", "trendset", "trim", "trip", "tripod",
-    "trod", "trog", "trot", "trousseaushop", "trowel", "trup", "tub", "tug",
-    "tunnel", "tup", "tut", "twat", "twig", "twin", "twit", "typeset", "tyset",
-    "un-man", "unban", "unbar", "unbob", "uncap", "unclip", "uncompel", "undam",
-    "under-bil", "under-cut", "under-fit", "under-pin", "under-skil", "underbid",
-    "undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
-    "unlip", "unlywil", "unman", "unpad", "unpeg", "unpin", "unplug", "unravel",
-    "unrol", "unscrol", "unsnap", "unstal", "unstep", "unstir", "untap", "unwrap",
-    "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet", "victual",
-    "vignet", "wad", "wag", "wainscot", "wan", "war", "water-log", "waterfal",
-    "waterfil", "waterlog", "weasel", "web", "wed", "wet", "wham", "whet", "whip",
-    "whir", "whiteskin", "whiz", "whup", "wildcat", "win", "windmil", "wit",
-    "woodchop", "woodcut", "wor", "worship", "wrap", "wiretap", "yen", "yak",
-    "yap", "yarnspin", "yip", "yodel", "zag", "zap", "zig", "zig-zag", "zigzag",
-    "zip", "ztrip", "hand-bag", "hocus", "hocus-pocus"
-  ],
+VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", "adlib",
+  "admit", "aerobat", "aerosol", "agendaset", "allot", "alot", "anagram",
+  "annul", "appal", "apparel", "armbar", "aver", "babysit", "airdrop", "appal",
+  "blackleg", "bobsled", "bur", "chum", "confab", "counterplot", "curet", "dib",
+  "backdrop", "backfil", "backflip", "backlog", "backpedal", "backslap",
+  "backstab", "bag", "balfun", "ballot", "ban", "bar", "barbel", "bareleg",
+  "barrel", "bat", "bayonet", "becom", "bed", "bedevil", "bedwet", "beenhop",
+  "befit", "befog", "beg", "beget", "begin", "bejewel", "bemedal", "benefit",
+  "benum", "beset", "besot", "bestir", "bet", "betassel", "bevel", "bewig",
+  "bib", "bid", "billet", "bin", "bip", "bit", "bitmap", "blab", "blag", "blam",
+  "blan", "blat", "bles", "blim", "blip", "blob", "bloodlet", "blot", "blub",
+  "blur", "bob", "bodypop", "bog", "booby-trap", "boobytrap", "booksel",
+  "bootleg", "bop", "bot", "bowel", "bracket", "brag", "brig", "brim", "bud",
+  "buffet", "bug", "bullshit", "bum", "bun", "bus", "but", "cab", "cabal", "cam",
+  "can", "cancel", "cap", "caracol", "caravan", "carburet", "carnap", "carol",
+  "carpetbag", "castanet", "cat", "catcal", "catnap", "cavil", "chan", "chanel",
+  "channel", "chap", "char", "chargecap", "chat", "chin", "chip", "chir",
+  "chirrup", "chisel", "chop", "chug", "chur", "clam", "clap", "clearcut",
+  "clip", "clodhop", "clog", "clop", "closet", "clot", "club", "co-occur",
+  "co-program", "co-refer", "co-run", "co-star", "cob", "cobweb", "cod", "coif",
+  "com", "combat", "comit", "commit", "compel", "con", "concur", "confer",
+  "confiscat", "control", "cop", "coquet", "coral", "corbel", "corral", "cosset",
+  "cotransmit", "councel", "council", "counsel", "court-martial", "crab", "cram",
+  "crap", "crib", "crop", "crossleg", "cub", "cudgel", "cum", "cun", "cup",
+  "cut", "dab", "dag", "dam", "dan", "dap", "daysit", "de-control", "de-gazet",
+  "de-hul", "de-instal", "de-mob", "de-program", "de-rig", "de-skil", "deadpan",
+  "debag", "debar", "log", "decommit", "decontrol", "defer", "defog", "deg",
+  "degas", "deinstal", "demit", "demob", "demur", "den", "denet", "depig",
+  "depip", "depit", "der", "deskil", "deter", "devil", "diagram", "dial", "dig",
+  "dim", "din", "dip", "disbar", "disbud", "discomfit", "disembed", "disembowel",
+  "dishevel", "disinter", "dispel", "disprefer", "distil", "dog", "dognap",
+  "don", "doorstep", "dot", "dowel", "drag", "drat", "driftnet", "distil",
+  "egotrip", "enrol", "enthral", "extol", "fulfil", "gaffe", "golliwog", "idyl",
+  "inspan", "drip", "drivel", "drop", "drub", "drug", "drum", "dub", "duel",
+  "dun", "dybbuk", "earwig", "eavesdrop", "ecolabel", "eitherspigot",
+  "electroblot", "embed", "emit", "empanel", "enamel", "endlabel", "endtrim",
+  "enrol", "enthral", "entrammel", "entrap", "enwrap", "equal", "equip", "estop",
+  "exaggerat", "excel", "expel", "extol", "fag", "fan", "farewel", "fat",
+  "featherbed", "feget", "fet", "fib", "fig", "fin", "fingerspel", "fingertip",
+  "fit", "flab", "flag", "flap", "flip", "flit", "flog", "flop", "fob", "focus",
+  "fog", "footbal", "footslog", "fop", "forbid", "forget", "format",
+  "fortunetel", "fot", "foxtrot", "frag", "freefal", "fret", "frig", "frip",
+  "frog", "frug", "fuel", "fufil", "fulfil", "fullyfit", "fun", "funnel", "fur",
+  "furpul", "gab", "gad", "gag", "gam", "gambol", "gap", "garot", "garrot",
+  "gas", "gat", "gel", "gen", "get", "giftwrap", "gig", "gimbal", "gin", "glam",
+  "glenden", "glendin", "globetrot", "glug", "glut", "gob", "goldpan", "goostep",
+  "gossip", "grab", "gravel", "grid", "grin", "grip", "grit", "groundhop",
+  "grovel", "grub", "gum", "gun", "gunrun", "gut", "gyp", "haircut", "ham",
+  "han", "handbag", "handicap", "handknit", "handset", "hap", "hareleg", "hat",
+  "headbut", "hedgehop", "hem", "hen", "hiccup", "highwal", "hip", "hit",
+  "hobnob", "hog", "hop", "horsewhip", "hostel", "hot", "hotdog", "hovel", "hug",
+  "hum", "humbug", "hup", "hushkit", "hut", "illfit", "imbed", "immunblot",
+  "immunoblot", "impannel", "impel", "imperil", "incur", "infer", "infil",
+  "inflam", "initial", "input", "inset", "instil", "inter", "interbed",
+  "intercrop", "intercut", "interfer", "instal", "instil", "intermit", "japan",
+  "jug", "kris", "manumit", "mishit", "mousse", "mud", "interwar", "jab", "jag",
+  "jam", "jar", "jawdrop", "jet", "jetlag", "jewel", "jib", "jig", "jitterbug",
+  "job", "jog", "jog-trot", "jot", "jut", "ken", "kennel", "kid", "kidnap",
+  "kip", "kissogram", "kit", "knap", "kneecap", "knit", "knob", "knot", "kor",
+  "label", "lag", "lam", "lap", "lavel", "leafcut", "leapfrog", "leg", "lem",
+  "lep", "let", "level", "libel", "lid", "lig", "lip", "lob", "log", "lok",
+  "lollop", "longleg", "lop", "lowbal", "lug", "mackerel", "mahom", "man", "map",
+  "mar", "marshal", "marvel", "mat", "matchwin", "metal", "micro-program",
+  "microplan", "microprogram", "milksop", "mis-cal", "mis-club", "mis-spel",
+  "miscal", "mishit", "mislabel", "mit", "mob", "mod", "model", "mohmam",
+  "monogram", "mop", "mothbal", "mug", "multilevel", "mum", "nab", "nag", "nan",
+  "nap", "net", "nightclub", "nightsit", "nip", "nod", "nonplus", "norkop",
+  "nostril", "not", "nut", "nutmeg", "occur", "ocur", "offput", "offset", "omit",
+  "ommit", "onlap", "out-general", "out-gun", "out-jab", "out-plan", "out-pol",
+  "out-pul", "out-put", "out-run", "out-sel", "outbid", "outcrop", "outfit",
+  "outgas", "outgun", "outhit", "outjab", "outpol", "output", "outrun",
+  "outship", "outshop", "outsin", "outstrip", "outswel", "outspan", "overcrop",
+  "pettifog", "photostat", "pouf", "preset", "prim", "pug", "ret", "rosin",
+  "outwit", "over-commit", "over-control", "over-fil", "over-fit", "over-lap",
+  "over-model", "over-pedal", "over-pet", "over-run", "over-sel", "over-step",
+  "over-tip", "over-top", "overbid", "overcal", "overcommit", "overcontrol",
+  "overcrap", "overdub", "overfil", "overhat", "overhit", "overlap", "overman",
+  "overplot", "overrun", "overshop", "overstep", "overtip", "overtop", "overwet",
+  "overwil", "pad", "paintbal", "pan", "panel", "paperclip", "par", "parallel",
+  "parcel", "partiescal", "pat", "patrol", "pedal", "peewit", "peg", "pen",
+  "pencil", "pep", "permit", "pet", "petal", "photoset", "phototypeset", "phut",
+  "picket", "pig", "pilot", "pin", "pinbal", "pip", "pipefit", "pipet", "pit",
+  "plan", "plit", "plod", "plop", "plot", "plug", "plumet", "plummet", "pod",
+  "policyset", "polyfil", "ponytrek", "pop", "pot", "pram", "prebag",
+  "predistil", "predril", "prefer", "prefil", "preinstal", "prep", "preplan",
+  "preprogram", "prizewin", "prod", "profer", "prog", "program", "prop",
+  "propel", "pub", "pummel", "pun", "pup", "pushfit", "put", "quarel", "quarrel",
+  "quickskim", "quickstep", "quickwit", "quip", "quit", "quivertip", "quiz",
+  "rabbit", "rabit", "radiolabel", "rag", "ram", "ramrod", "rap", "rat",
+  "ratecap", "ravel", "re-admit", "re-cal", "re-cap", "re-channel", "re-dig",
+  "re-dril", "re-emit", "re-fil", "re-fit", "re-flag", "re-format", "re-fret",
+  "re-hab", "re-instal", "re-inter", "re-lap", "re-let", "re-map", "re-metal",
+  "re-model", "re-pastel", "re-plan", "re-plot", "re-plug", "re-pot",
+  "re-program", "re-refer", "re-rig", "re-rol", "re-run", "re-sel", "re-set",
+  "re-skin", "re-stal", "re-submit", "re-tel", "re-top", "re-transmit",
+  "re-trim", "re-wrap", "readmit", "reallot", "rebel", "rebid", "rebin", "rebut",
+  "recap", "rechannel", "recommit", "recrop", "recur", "recut", "red", "redril",
+  "refer", "refit", "reformat", "refret", "refuel", "reget", "regret", "reinter",
+  "rejig", "rekit", "reknot", "relabel", "relet", "rem", "remap", "remetal",
+  "remit", "remodel", "reoccur", "rep", "repel", "repin", "replan", "replot",
+  "repol", "repot", "reprogram", "rerun", "reset", "resignal", "resit", "reskil",
+  "resubmit", "retransfer", "retransmit", "retro-fit", "retrofit", "rev",
+  "revel", "revet", "rewrap", "rib", "richochet", "ricochet", "rid", "rig",
+  "rim", "ringlet", "rip", "rit", "rival", "rivet", "roadrun", "rob", "rocket",
+  "rod", "roset", "rot", "rowel", "rub", "run", "runnel", "rut", "sab", "sad",
+  "sag", "sandbag", "sap", "scab", "scalpel", "scam", "scan", "scar", "scat",
+  "schlep", "scrag", "scram", "shall", "sled", "smut", "stet", "sulfuret",
+  "trepan", "unrip", "unstop", "whir", "whop", "wig", "scrap", "scrat", "scrub",
+  "scrum", "scud", "scum", "scur", "semi-control", "semi-skil", "semi-skim",
+  "semiskil", "sentinel", "set", "shag", "sham", "shed", "shim", "shin", "ship",
+  "shir", "shit", "shlap", "shop", "shopfit", "shortfal", "shot", "shovel",
+  "shred", "shrinkwrap", "shrivel", "shrug", "shun", "shut", "side-step",
+  "sideslip", "sidestep", "signal", "sin", "sinbin", "sip", "sit", "skid",
+  "skim", "skin", "skip", "skir", "skrag", "slab", "slag", "slam", "slap",
+  "slim", "slip", "slit", "slob", "slog", "slop", "slot", "slowclap", "slug",
+  "slum", "slur", "smit", "snag", "snap", "snip", "snivel", "snog", "snorkel",
+  "snowcem", "snub", "snug", "sob", "sod", "softpedal", "son", "sop", "spam",
+  "span", "spar", "spat", "spiderweb", "spin", "spiral", "spit", "splat",
+  "split", "spot", "sprag", "spraygun", "sprig", "springtip", "spud", "spur",
+  "squat", "squirrel", "stab", "stag", "star", "stem", "sten", "stencil", "step",
+  "stir", "stop", "storytel", "strap", "strim", "strip", "strop", "strug",
+  "strum", "strut", "stub", "stud", "stun", "sub", "subcrop", "sublet", "submit",
+  "subset", "suedetrim", "sum", "summit", "sun", "suntan", "sup", "super-chil",
+  "superad", "swab", "swag", "swan", "swap", "swat", "swig", "swim", "swivel",
+  "swot", "tab", "tag", "tan", "tansfer", "tap", "tar", "tassel", "tat", "tefer",
+  "teleshop", "tendril", "terschel", "th'strip", "thermal", "thermostat", "thin",
+  "throb", "thrum", "thud", "thug", "tightlip", "tin", "tinsel", "tip", "tittup",
+  "toecap", "tog", "tom", "tomorrow", "top", "tot", "total", "towel", "traget",
+  "trainspot", "tram", "trammel", "transfer", "tranship", "transit", "transmit",
+  "transship", "trap", "travel", "trek", "trendset", "trim", "trip", "tripod",
+  "trod", "trog", "trot", "trousseaushop", "trowel", "trup", "tub", "tug",
+  "tunnel", "tup", "tut", "twat", "twig", "twin", "twit", "typeset", "tyset",
+  "un-man", "unban", "unbar", "unbob", "uncap", "unclip", "uncompel", "undam",
+  "under-bil", "under-cut", "under-fit", "under-pin", "under-skil", "underbid",
+  "undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
+  "unlip", "unlywil", "unman", "unpad", "unpeg", "unpin", "unplug", "unravel",
+  "unrol", "unscrol", "unsnap", "unstal", "unstep", "unstir", "untap", "unwrap",
+  "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet", "victual",
+  "vignet", "wad", "wag", "wainscot", "wan", "war", "water-log", "waterfal",
+  "waterfil", "waterlog", "weasel", "web", "wed", "wet", "wham", "whet", "whip",
+  "whir", "whiteskin", "whiz", "whup", "wildcat", "win", "windmil", "wit",
+  "woodchop", "woodcut", "wor", "worship", "wrap", "wiretap", "yen", "yak",
+  "yap", "yarnspin", "yip", "yodel", "zag", "zap", "zig", "zig-zag", "zigzag",
+  "zip", "ztrip", "hand-bag", "hocus", "hocus-pocus"
+],
 
-  PAST_PARTICIPLE_RULESET = {
-    name: "PAST_PARTICIPLE",
-    defaultRule: RE(ANY_STEM, 0, "ed", 2),
-    rules: PAST_PARTICIPLE_RULES,
-    doubling: true
+PAST_PARTICIPLE_RULESET = {
+  name: "PAST_PARTICIPLE",
+  defaultRule: RE(ANY_STEM, 0, "ed", 2),
+  rules: PAST_PARTICIPLE_RULES,
+  doubling: true
+},
+
+PRESENT_PARTICIPLE_RULESET = {
+  name: "ING_FORM",
+  defaultRule: RE(ANY_STEM, 0, "ing", 2),
+  rules: ING_FORM_RULES,
+  doubling: true
+},
+
+PAST_TENSE_RULESET = {
+  name: "PAST_TENSE",
+  defaultRule: RE(ANY_STEM, 0, "ed", 2),
+  rules: PAST_TENSE_RULES,
+  doubling: true
+},
+
+PRESENT_TENSE_RULESET = {
+  name: "PRESENT_TENSE",
+  defaultRule: RE(ANY_STEM, 0, "s", 2),
+  rules: PRESENT_TENSE_RULES,
+  doubling: false
+};
+
+var RiLexicon = makeClass();
+
+RiLexicon.SILENCE_LTS = false;
+RiLexicon._enabled = true;
+
+RiLexicon.prototype = {
+
+  init: function() {
+
+    this.reload();
   },
 
-  PRESENT_PARTICIPLE_RULESET = {
-    name: "ING_FORM",
-    defaultRule: RE(ANY_STEM, 0, "ing", 2),
-    rules: ING_FORM_RULES,
-    doubling: true
+  clear: function() {
+
+    this.data = {};
+    this.keys = [];
   },
 
-  PAST_TENSE_RULESET = {
-    name: "PAST_TENSE",
-    defaultRule: RE(ANY_STEM, 0, "ed", 2),
-    rules: PAST_TENSE_RULES,
-    doubling: true
+  reload: function() {
+
+    this.data = _dict();
+    this.keys = okeys(this.data);
   },
 
-  PRESENT_TENSE_RULESET = {
-    name: "PRESENT_TENSE",
-    defaultRule: RE(ANY_STEM, 0, "s", 2),
-    rules: PRESENT_TENSE_RULES,
-    doubling: false
-  };
+  addWord: function(word, pronunciationData, posData) {
+
+    this.data[word.toLowerCase()] = [
+      pronunciationData.toLowerCase(),
+      posData.toLowerCase()
+    ];
+    this.keys = okeys(this.data);
+    return this;
+  },
+
+  removeWord: function(word) {
+
+    delete this.data[word.toLowerCase()];
+    this.keys = okeys(this.data);
+    return this;
+  },
+
+  similarByLetter: function(input, minAllowedDist, preserveLength) {
+
+    var minVal = Number.MAX_VALUE,
+      minLen = 2,
+      result = [];
+
+    if (!(input && input.length)) return EA;
+
+    input = input.toLowerCase();
+    minAllowedDist = minAllowedDist || 1;
+    preserveLength = preserveLength || false;
+
+    var med, inputS = input + 's',
+      inputES = input + 'es',
+      inputLen = input.length;
+
+    for (var i = 0; i < this.keys.length; i++) {
+
+      var entry = this.keys[i];
+
+      if (entry.length < minLen)
+        continue;
+
+      if (preserveLength && (entry.length != inputLen))
+        continue;
+
+      if (entry === input || entry === inputS || entry === inputES)
+        continue;
+
+      med = MinEditDist.computeRaw(entry, input);
+
+      // we found something even closer
+      if (med >= minAllowedDist && med < minVal) {
+
+        minVal = med;
+        result = [entry];
+      }
+
+      // we have another best to add
+      else if (med === minVal) {
+
+        result.push(entry);
+      }
+    }
+
+    return result;
+  },
+
+  similarBySound: function(input, minEditDist, minimumWordLen) {
+
+    minEditDist = minEditDist || 1;
+
+    var minVal = Number.MAX_VALUE,
+      entry, result = [], minLen = minimumWordLen || 2,
+      phonesArr, phones = RiTa.getPhonemes(input), med,
+      targetPhonesArr = phones ? phones.split('-') : [],
+      input_s = input + 's', input_es = input + 'es',
+      lts = this._letterToSound();
+
+    if (!targetPhonesArr[0] || !(input && input.length)) return EA;
+
+    //console.log("TARGET "+targetPhonesArr);
+
+    for (var i = 0; i < this.keys.length; i++) {
+
+      entry = this.keys[i];
+
+      if (entry.length < minLen) continue;
+
+      // entry = entry.toLowerCase(); // all lowercase
+
+      if (entry === input || entry === input_s || entry === input_es)
+        continue;
+
+      phones = this.data[entry][0];
+      //if (i<10) console.log(phones+" :: "+);
+      phonesArr = phones.replace(/1/g, E).replace(/ /g, '-').split('-');
+
+      med = MinEditDist.computeRaw(phonesArr, targetPhonesArr);
+
+      // found something even closer
+      if (med >= minEditDist && med < minVal) {
+
+        minVal = med;
+        result = [entry];
+        //console.log("BEST "+entry + " "+med + " "+phonesArr);
+      }
+
+      // another best to add
+      else if (med === minVal) {
+
+        //console.log("TIED "+entry + " "+med + " "+phonesArr);
+        result.push(entry);
+      }
+    }
+
+    return result;
+  },
+
+  similarBySoundAndLetter: function(word) {
+
+    var result = [], simSound, simLetter = this.similarByLetter(word);
+
+    if (simLetter.length < 1)
+      return result;
+
+    simSound = this.similarBySound(word);
+
+    if (simSound.length < 1)
+      return result;
+
+    return intersect(simSound, simLetter);
+  },
+
+  substrings: function(word, minLength) {
+
+    minLength = minLength || (minLength === 0) || 4;
+
+    var result = [];
+    for (var i = 0; i < this.keys.length; i++) {
+
+      if (this.keys[i] === word || this.keys[i].length < minLength)
+        continue;
+      if (word.indexOf(this.keys[i]) >= 0)
+        result.push(this.keys[i]);
+    }
+
+    return result;
+  },
+
+  superstrings: function(word) {
+
+    var result = [];
+
+    for (var i = 0; i < this.keys.length; i++) {
+
+      if (this.keys[i] === word) continue;
+      if (this.keys[i].indexOf(word) >= 0)
+        result.push(this.keys[i]);
+    }
+
+    return result;
+  },
+
+  words: function() {
+
+    var a = arguments,
+      shuffled = false,
+      regex, wordArr = [];
+
+    switch (a.length) {
+
+      case 2:
+
+        if (is(a[0], B)) {
+
+          shuffled = a[0];
+          regex = (is(a[1], R)) ? a[1] : new RegExp(a[1]);
+        } else {
+
+          shuffled = a[1];
+          regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
+        }
+
+        break;
+
+      case 1:
+
+        if (is(a[0], B)) {
+          return a[0] ? shuffle(this.keys) : this.keys;
+        }
+
+        regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
+
+        break;
+
+      case 0:
+
+        return this.keys;
+    }
+
+    for (var i = 0; i < this.keys.length; i++) {
+
+      if (regex.test(this.keys[i])) {
+
+        wordArr.push(this.keys[i]);
+      }
+    }
+
+    return shuffled ? shuffle(wordArr) : wordArr;
+  },
+
+  _isVowel: function(c) {
+
+    return (strOk(c) && RiTa.VOWELS.indexOf(c) > -1);
+  },
+
+  _isConsonant: function(p) {
+
+    return (typeof p === S && p.length === 1 &&
+      RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
+  },
+
+  containsWord: function(word) {
+
+    return (strOk(word) && this.data && this.data[word.toLowerCase()]);
+  },
+
+  isRhyme: function(word1, word2, useLTS) {
+    var phones1 = this._getRawPhones(word1, useLTS),
+        phones2 = this._getRawPhones(word2, useLTS);
+
+    if (!strOk(word1) || !strOk(word2) || equalsIgnoreCase(word1, word2) || phones2 === phones1)
+      return false;
+
+    var p1 = this._lastStressedVowelPhonemeToEnd(word1, useLTS),
+      p2 = this._lastStressedVowelPhonemeToEnd(word2, useLTS);
+
+    return (strOk(p1) && strOk(p2) && p1 === p2);
+  },
+
+  rhymes: function(word) {
+
+
+      var p = this._lastStressedPhoneToEnd(word),
+        phones, results = [];
+
+      for (var i = 0; i < this.keys.length; i++) {
+
+        if (this.keys[i] === word)
+          continue;
+
+        phones = this.data[this.keys[i]][0];
+
+        if (endsWith(phones, p))
+          results.push(this.keys[i]);
+      }
+      return (results.length > 0) ? results : EA;
+
+
+    return EA;
+  },
+
+  alliterations: function(word, matchMinLength, useLTS) {
+
+    if (word.indexOf(" ") > -1) return [];
+
+    if (this._isVowel(word.charAt(0))) return [];
+
+
+    matchMinLength = matchMinLength || 4;
+
+    var c2, results = [],
+      c1 = this._firstPhoneme(this._firstStressedSyllable(word, useLTS));
+
+    for (var i = 0; i < this.keys.length; i++) {
+
+      c2 = this._firstPhoneme(
+          this._firstStressedSyllable(this.keys[i], useLTS));
+
+      if(c2._isVowel) return [];
+
+      if (c2 && c1 === c2 && this.keys[i].length >= matchMinLength) {
+        results.push(this.keys[i]);
+      }
+    }
+
+    return shuffle(results);
+  },
+
+  isAlliteration: function(word1, word2, useLTS) {
+
+    if (word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) return false;
+
+    if (!strOk(word1) || !strOk(word2)) return false;
+
+    if (equalsIgnoreCase(word1, word2)) return true;
+
+    var c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
+      c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
+
+    if(this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) return false;
+
+    return (strOk(c1) && strOk(c2) && c1 === c2);
+  },
+
+  _firstSyllable: function(word, useLTS) {
+     var raw = this._getRawPhones(word, useLTS);
+     if (!strOk(raw)) return E;
+     if(word === "URL") console.log(raw);
+     var syllables = raw.split(" ");
+     return syllables[0];
+  },
+
+  _firstStressedSyllable: function(word, useLTS) {
+
+    var raw = this._getRawPhones(word, useLTS),
+      idx = -1, c, firstToEnd;
+
+    if (!strOk(raw)) return E; // return null?
+
+    idx = raw.indexOf(RiTa.STRESSED);
+
+    if (idx < 0) return E; // no stresses... return null?
+
+    c = raw.charAt(--idx);
+
+    while (c != ' ') {
+      if (--idx < 0) {
+        // single-stressed syllable
+        idx = 0;
+        break;
+      }
+      c = raw.charAt(idx);
+    }
+
+    firstToEnd = idx === 0 ? raw : trim(raw.substring(idx));
+    idx = firstToEnd.indexOf(' ');
+
+    return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
+  },
+
+  isVerb: function(word) {
+
+    return this._checkType(word, PosTagger.VERBS);
+  },
+
+  isNoun: function(word) {
+
+    var result = this._checkType(word, PosTagger.NOUNS);
+    if (!result) {
+      var singular = RiTa.singularize(word);
+      if (singular !== word) {
+        result = this._checkType(singular, PosTagger.NOUNS);
+        //result && console.log('found plural noun: '+word+' ('+singular+')');
+      }
+    }
+    return result;
+  },
+
+  isAdverb: function(word) {
+
+    return this._checkType(word, PosTagger.ADV);
+  },
+
+  isAdjective: function(word) {
+
+    return this._checkType(word, PosTagger.ADJ);
+  },
+
+  size: function() {
+
+    return this.keys.length;
+  },
+
+  _checkType: function(word, tagArray) {
+
+    if (word && word.indexOf(SP) != -1)
+      throw Error("[RiTa] _checkType() expects a single word, found: " + word);
+
+    var psa = this._getPosArr(word);
+    if(!PosTagger.NOLEX_WARNED && psa.length < 1 && this.size() < 1000)
+      warn("A minimal Lexicon is currently in use. For word features outside the lexicon, use a larger version of RiTa.")
+
+    for (var i = 0; i < psa.length; i++) {
+      if (tagArray.indexOf(psa[i]) > -1)
+        return true;
+    }
+
+    return false;
+  },
+
+  /*
+   * Returns a String containing the phonemes for each syllable of each word of the input text,
+   * delimited by dashes (phonemes) and semi-colons (words).
+   * For example, the 4 syllables of the phrase
+   * 'The dog ran fast' are "dh-ax:d-ao-g:r-ae-n:f-ae-s-t".
+   */
+  _getSyllables: function(word) {
+
+    // TODO: use feature cache?
+
+    if (!strOk(word)) return E;
+
+    var wordArr = RiTa.tokenize(word), raw = [];
+    for (var i = 0; i < wordArr.length; i++)
+      raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
+    // console.log("[RiTa] syllables" + " " + word + " " + raw);
+    return RiTa.untokenize(raw).replace(/1/g, E).trim();
+  },
+
+  _getPhonemes: function(word) {
+
+    // TODO: use feature cache?
+
+    if (!strOk(word)) return E;
+
+    var wordArr = RiTa.tokenize(word), raw = [];
+
+    for (var i = 0; i < wordArr.length; i++) {
+
+      if (RiTa.isPunctuation(wordArr[i])) continue;
+
+      raw[i] = this._getRawPhones(wordArr[i]);
+
+      if (!raw[i].length) return E;
+
+      raw[i] = raw[i].replace(/ /g, "-");
+    }
+
+    return RiTa.untokenize(raw).replace(/1/g, E).trim();
+  },
+
+  _getStresses: function(word) {
+
+    var i, stresses = [], phones, raw = [],
+      wordArr = is(word, A) ? word : RiTa.tokenize(word);
+
+    if (!strOk(word)) return E;
+
+    for (i = 0; i < wordArr.length; i++) {
+
+      if (!RiTa.isPunctuation(wordArr[i]))
+        raw[i] = this._getRawPhones(wordArr[i]);
+    }
+
+    for (i = 0; i < raw.length; i++) {
+
+      if (raw[i]) { // ignore undefined array items (eg Punctuation)
+
+        phones = raw[i].split(SP);
+        for (var j = 0; j < phones.length; j++) {
+
+          var isStress = (phones[j].indexOf(RiTa.STRESSED) > -1) ?
+            RiTa.STRESSED : RiTa.UNSTRESSED;
+
+          if (j > 0) isStress = "/" + isStress;
+
+          stresses.push(isStress);
+        }
+      }
+    }
+
+    return stresses.join(SP).replace(/ \//g, "/");
+  },
+
+  lexicalData: function(dictionaryDataObject) {
+
+    if (arguments.length === 1) {
+      this.data = dictionaryDataObject;
+      return this;
+    }
+
+    return this.data;
+  },
+
+  /* Returns the raw (RiTa-format) dictionary entry for the given word   */
+  _lookupRaw: function(word) {
+
+    word = word.toLowerCase();
+    if (this.data && this.data[word])
+      return this.data[word];
+    //log("[RiTa] No lexicon entry for '" + word + "'");
+  },
+
+  _getRawPhones: function(word, useLTS) {
+
+    var phones, rdata = this._lookupRaw(word);
+    useLTS = useLTS || false;
+
+    if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
+
+      phones = this._letterToSound().getPhones(word);
+      if (phones && phones.length)
+        return RiString._syllabify(phones);
+
+    }
+    return (rdata && rdata.length === 2) ? rdata[0] : E;
+  },
+
+  _getPosData: function(word) {
+
+    var rdata = this._lookupRaw(word);
+    return (rdata && rdata.length === 2) ? rdata[1] : E;
+  },
+
+
+  _getPosArr: function(word) {
+
+    var pl = this._getPosData(word);
+    if (!strOk(pl)) return EA;
+    return pl.split(SP);
+  },
+
+  _getBestPos: function(word) {
+
+    var pl = this._getPosArr(word);
+    return (pl.length > 0) ? pl[0] : [];
+  },
+
+  _firstPhoneme: function(rawPhones) {
+
+    if (!strOk(rawPhones)) return E;
+
+    var phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+
+    if (phones) return phones[0];
+
+    return E; // return null?
+  },
+
+  _firstConsonant: function(rawPhones) {
+
+    if (!strOk(rawPhones)) return E;
+
+    var phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+
+    if (phones) {
+
+      for (var j = 0; j < phones.length; j++) {
+        if (this._isConsonant(phones[j].charAt(0))) // first letter only
+          return phones[j];
+      }
+    }
+    return E; // return null?
+  },
+
+  _lastStressedVowelPhonemeToEnd: function(word, useLTS) {
+
+    if (!strOk(word)) return E; // return null?
+
+
+    var raw = this._lastStressedPhoneToEnd(word, useLTS);
+    if (!strOk(raw)) return E; // return null?
+
+    var syllables = raw.split(" ");
+    var lastSyllable = syllables[syllables.length - 1];
+    lastSyllable = lastSyllable.replace("[^a-z-1 ]", "");
+
+    var idx = -1;
+    for (var i = 0; i < lastSyllable.length; i++) {
+      var c = lastSyllable.charAt(i);
+      if(this._isVowel(c)){
+        idx = i;
+        break;
+      }
+    }
+  word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
+   return lastSyllable.substring(idx);
+  },
+
+  _lastStressedPhoneToEnd: function(word, useLTS) {
+
+    if (!strOk(word)) return E; // return null?
+
+    var idx, c, result;
+    var raw = this._getRawPhones(word, useLTS);
+
+    if (!strOk(raw)) return E; // return null?
+
+    idx = raw.lastIndexOf(RiTa.STRESSED);
+
+    if (idx < 0) return E; // return null?
+
+    c = raw.charAt(--idx);
+    while (c != '-' && c != ' ') {
+      if (--idx < 0) {
+        return raw; // single-stressed syllable
+      }
+      c = raw.charAt(idx);
+    }
+    result = raw.substring(idx + 1);
+
+    return result;
+  },
+
+  randomWord: function() { // takes nothing, pos, syllableCount, or both
+
+    var i, j, rdata, numSyls,pluralize = false,
+      ran = Math.floor(Math.random() * this.keys.length),
+      found = false, a = arguments, ranWordArr = this.keys;
+
+    if (typeof a[0] === "string") {
+        a[0] = trim(a[0]).toLowerCase();
+
+        if (a[0] === "v")
+            a[0] = "vb";
+        if (a[0] === "r")
+            a[0] = "rb";
+        if (a[0] === "a")
+            a[0] = "jj";
+        if (a[0] === "n" || a[0] === "nns")
+            a[0] = "nn";
+    }
+
+    switch (a.length) {
+
+      case 2: // a[0]=pos  a[1]=syllableCount
+
+
+        for (i = 0; i < ranWordArr.length; i++) {
+          j = (ran + i) % ranWordArr.length;
+          rdata = this.data[ranWordArr[j]];
+          numSyls = rdata[0].split(SP).length;
+          if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
+            return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
+          }
+        }
+
+        warn("No words with pos=" + a[0] + " found");
+
+      case 1:
+
+        if (is(a[0], S)) { // a[0] = pos
+
+          for (i = 0; i < ranWordArr.length; i++) {
+            j = (ran + i) % ranWordArr.length;
+            rdata = this.data[ranWordArr[j]];
+            if (a[0] === rdata[1].split(SP)[0]) {
+              return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
+            }
+          }
+
+          warn("No words with pos=" + a[0] + " found");
+
+        } else {
+
+          // a[0] = syllableCount
+          for (i = 0; i < ranWordArr.length; i++) {
+            j = (ran + i) % ranWordArr.length;
+            rdata = this.data[ranWordArr[j]];
+            if (rdata[0].split(SP).length === a[0]) {
+              return ranWordArr[j];
+            }
+          }
+        }
+        return E;
+
+      case 0:
+        return ranWordArr[ran];
+    }
+    return E;
+  },
+
+  _letterToSound: function() { // lazy load
+    if (!this.lts)
+      this.lts = new LetterToSound();
+    return this.lts;
+  }
+
+};
+
+// from: https://gist.github.com/lovasoa/3361645
+function intersect() {
+  var i, all, n, len, ret = [], obj={}, shortest = 0,
+    nOthers = arguments.length-1, nShortest = arguments[0].length;
+  for (i=0; i<=nOthers; i++){
+    n = arguments[i].length;
+    if (n<nShortest) {
+      shortest = i;
+      nShortest = n;
+    }
+  }
+  for (i=0; i<=nOthers; i++) {
+    n = (i===shortest)?0:(i||shortest);
+    len = arguments[n].length;
+    for (var j=0; j<len; j++) {
+        var elem = arguments[n][j];
+        if(obj[elem] === i-1) {
+          if(i === nOthers) {
+            ret.push(elem);
+            obj[elem]=0;
+          } else {
+            obj[elem]=i;
+          }
+        }else if (i===0) {
+          obj[elem]=0;
+        }
+    }
+  }
+  return ret;
+}
+
+// RiLetterToSound (adapted from FreeTTS text-to-speech)
+
+var LetterToSound = makeClass();
+
+LetterToSound.RULES = typeof RiTa._LTS !== 'undefined' ? RiTa._LTS : false;
+LetterToSound.TOTAL = "TOTAL";
+LetterToSound.INDEX = "INDEX";
+LetterToSound.STATE = "STATE";
+LetterToSound.PHONE = "PHONE";
+
+/*
+ * If true, the state string is tokenized when it is first read. The side
+ * effects of this are quicker lookups, but more memory usage and a longer
+ * startup time.
+ */
+LetterToSound.tokenizeOnLoad = true;
+
+/*
+ * If true, the state string is tokenized the first time it is referenced. The
+ * side effects of this are quicker lookups, but more memory usage.
+ */
+LetterToSound.tokenizeOnLookup = false;
+
+LetterToSound.WINDOW_SIZE = 4;
+
+LetterToSound.prototype = {
+
+  init: function() {
+
+    this.warnedForNoLTS = false;
+    this.letterIndex = {};
+    this.fval_buff = [];
+    this.stateMachine = null;
+    this.numStates = 0;
+
+    // add the rules to the object (static?)
+    for (var i = 0; i < LetterToSound.RULES.length; i++) {
+      this.parseAndAdd(LetterToSound.RULES[i]);
+    }
+  },
+
+  _createState: function(type, tokenizer) {
+
+    if (type === LetterToSound.STATE) {
+      var index = parseInt(tokenizer.nextToken());
+      var c = tokenizer.nextToken();
+      var qtrue = parseInt(tokenizer.nextToken());
+      var qfalse = parseInt(tokenizer.nextToken());
+
+      return new DecisionState(index, c.charAt(0), qtrue, qfalse);
+    } else if (type === LetterToSound.PHONE) {
+      return new FinalState(tokenizer.nextToken());
+    }
+
+    throw Error("Unexpected type: " + type);
+  },
+
+  // Creates a word from an input line and adds it to the state machine
+  parseAndAdd: function(line) {
+
+    var tokenizer = new StringTokenizer(line, SP);
+    var type = tokenizer.nextToken();
+
+    if (type == LetterToSound.STATE || type == LetterToSound.PHONE) {
+      if (LetterToSound.tokenizeOnLoad) {
+        this.stateMachine[this.numStates] = this._createState(type, tokenizer);
+      } else {
+        this.stateMachine[this.numStates] = line;
+      }
+      this.numStates++;
+    } else if (type == LetterToSound.INDEX) {
+      var index = parseInt(tokenizer.nextToken());
+      if (index != this.numStates) {
+        throw Error("Bad INDEX in file.");
+      } else {
+        var c = tokenizer.nextToken();
+        this.letterIndex[c] = index;
+
+      }
+      //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
+    } else if (type == LetterToSound.TOTAL) {
+      this.stateMachine = [];
+      this.stateMachineSize = parseInt(tokenizer.nextToken());
+    }
+  },
+
+  getPhones: function(input, delim) {
+
+    var i, ph, result = [];
+
+    delim = delim || '-';
+
+    if (is(input, S)) {
+
+      if (!input.length) return E;
+
+      input = RiTa.tokenize(input);
+    }
+
+    for (i = 0; i < input.length; i++) {
+      ph = this._computePhones(input[i]);
+      result[i] = ph ? ph.join(delim) : E;
+    }
+
+    result = result.join(delim).replace(/ax/g, 'ah');
+
+    result.replace("/0/g","");
+
+    if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
+          ph = result.split("-");
+          result = "";
+          for (var i = 0; i < ph.length; i++) {
+              if (/[aeiou]/.test(ph[i])) ph[i] += "1";
+              result += ph[i] + "-";
+          }
+          if(ph.length > 1) result = result.substring(0, result.length - 1);
+      }
+
+    return result;
+  },
+
+  _computePhones: function(word) {
+
+    var dig, phoneList = [],
+      full_buff, tmp, currentState, startIndex, stateIndex, c;
+
+
+    if (!word || !word.length || RiTa.isPunctuation(word))
+      return null;
+
+    if (!LetterToSound.RULES) {
+      if (!this.warnedForNoLTS) {
+
+        this.warnedForNoLTS = true;
+        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+      }
+      return null;
+    }
+
+    word = word.toLowerCase();
+
+    if (isNum(word)) {
+
+      word = (word.length > 1) ? word.split(E) : [word];
+
+      for (var k = 0; k < word.length; k++) {
+
+        dig = parseInt(word[k]);
+        if (dig < 0 || dig > 9)
+          throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
+
+        phoneList.push(RiString._phones.digits[dig]);
+      }
+      return phoneList;
+    }
+
+    // Create "000#word#000", uggh
+    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
+
+    for (var pos = 0; pos < word.length; pos++) {
+
+      for (var i = 0; i < LetterToSound.WINDOW_SIZE; i++) {
+
+        this.fval_buff[i] = full_buff[pos + i];
+        this.fval_buff[i + LetterToSound.WINDOW_SIZE] =
+          full_buff[i + pos + 1 + LetterToSound.WINDOW_SIZE];
+      }
+
+      c = word.charAt(pos);
+      startIndex = this.letterIndex[c];
+
+      // must check for null here, not 0 (and not ===)
+      if (!isNum(startIndex)) {
+        warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
+          c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+        return null;
+      }
+
+      stateIndex = parseInt(startIndex);
+
+      currentState = this.getState(stateIndex);
+
+      while (!(currentState instanceof FinalState)) {
+
+        stateIndex = currentState.getNextState(this.fval_buff);
+        currentState = this.getState(stateIndex);
+      }
+
+      currentState.append(phoneList);
+    }
+
+    return phoneList;
+  },
+
+  getState: function(i) {
+
+    if (is(i, N)) {
+
+      var state = null;
+
+      // WORKING HERE: this check should fail :: see java
+      if (is(this.stateMachine[i], S)) {
+
+        state = this.getState(this.stateMachine[i]);
+        if (LetterToSound.tokenizeOnLookup)
+          this.stateMachine[i] = state;
+      } else
+        state = this.stateMachine[i];
+
+      return state;
+    } else {
+
+      var tokenizer = new StringTokenizer(i, " ");
+      return this.getState(tokenizer.nextToken(), tokenizer);
+    }
+  }
+};
+
+// DecisionState
+
+var DecisionState = makeClass();
+
+DecisionState.TYPE = 1;
+
+DecisionState.prototype = {
+
+  init: function(index, c, qtrue, qfalse) {
+
+    this.c = c;
+    this.index = index;
+    this.qtrue = qtrue;
+    this.qfalse = qfalse;
+  },
+
+  type: function() {
+    return "DecisionState";
+  },
+
+  getNextState: function(chars) {
+
+    return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
+  },
+
+
+  toString: function() {
+    return this.STATE + " " + this.index + " " + this.c + " " + this.qtrue + " " + this.qfalse;
+  }
+
+};
+
+// FinalState
+
+var FinalState = makeClass();
+
+FinalState.TYPE = 2;
+
+FinalState.prototype = {
+
+  // "epsilon" is used to indicate an empty list.
+  init: function(phones) {
+
+    this.phoneList = [];
+
+    if (phones === ("epsilon")) {
+      this.phoneList = null;
+    } else if (is(phones, A)) {
+      this.phoneList = phones;
+    } else {
+      var i = phones.indexOf('-');
+      if (i != -1) {
+        this.phoneList[0] = phones.substring(0, i);
+        this.phoneList[1] = phones.substring(i + 1);
+      } else {
+        this.phoneList[0] = phones;
+      }
+    }
+  },
+
+  type: function() { return "FinalState"; },
+
+  /*
+   * Appends the phone list for this state to the given <code>ArrayList</code>.
+   */
+  append: function(array) {
+
+    if (!this.phoneList) return;
+
+    for (var i = 0; i < this.phoneList.length; i++)
+      array.push(this.phoneList[i]);
+  },
+
+  toString: function() {
+
+    if (!this.phoneList) {
+      return LetterToSound.PHONE + " epsilon";
+    } else if (this.phoneList.length == 1) {
+      return LetterToSound.PHONE + " " + this.phoneList[0];
+    } else {
+      return LetterToSound.PHONE + " " + this.phoneList[0] + "-" + this.phoneList[1];
+    }
+  }
+};
 
 // ///////////////////////////// End Functions ////////////////////////////////////
 
@@ -46146,1031 +47164,6 @@ function _dict() { return {
 'zooming':['z-uw1 m-ih-ng','vbg'],
 'zooms':['z-uw1-m-z','vbz']
 }; }
-
-RiLexicon.SILENCE_LTS = false;
-RiLexicon._enabled = true;
-
-RiLexicon.prototype = {
-
-  init: function() {
-
-    this.reload();
-  },
-
-  clear: function() {
-
-    this.data = {};
-    this.keys = [];
-  },
-
-  reload: function() {
-
-    this.data = _dict();
-    this.keys = okeys(this.data);
-  },
-
-  addWord: function(word, pronunciationData, posData) {
-
-    this.data[word.toLowerCase()] = [
-      pronunciationData.toLowerCase(),
-      posData.toLowerCase()
-    ];
-    this.keys = okeys(this.data);
-    return this;
-  },
-
-  removeWord: function(word) {
-
-    delete this.data[word.toLowerCase()];
-    this.keys = okeys(this.data);
-    return this;
-  },
-
-  similarByLetter: function(input, minAllowedDist, preserveLength) {
-
-    var minVal = Number.MAX_VALUE,
-      minLen = 2,
-      result = [];
-
-    if (!(input && input.length)) return EA;
-
-    input = input.toLowerCase();
-    minAllowedDist = minAllowedDist || 1;
-    preserveLength = preserveLength || false;
-
-    var med, inputS = input + 's',
-      inputES = input + 'es',
-      inputLen = input.length;
-
-    for (var i = 0; i < this.keys.length; i++) {
-
-      var entry = this.keys[i];
-
-      if (entry.length < minLen)
-        continue;
-
-      if (preserveLength && (entry.length != inputLen))
-        continue;
-
-      if (entry === input || entry === inputS || entry === inputES)
-        continue;
-
-      med = MinEditDist.computeRaw(entry, input);
-
-      // we found something even closer
-      if (med >= minAllowedDist && med < minVal) {
-
-        minVal = med;
-        result = [entry];
-      }
-
-      // we have another best to add
-      else if (med === minVal) {
-
-        result.push(entry);
-      }
-    }
-
-    return result;
-  },
-
-  similarBySound: function(input, minEditDist, minimumWordLen) {
-
-    minEditDist = minEditDist || 1;
-
-    var minVal = Number.MAX_VALUE,
-      entry, result = [], minLen = minimumWordLen || 2,
-      phonesArr, phones = RiTa.getPhonemes(input), med,
-      targetPhonesArr = phones ? phones.split('-') : [],
-      input_s = input + 's', input_es = input + 'es',
-      lts = this._letterToSound();
-
-    if (!targetPhonesArr[0] || !(input && input.length)) return EA;
-
-    //console.log("TARGET "+targetPhonesArr);
-
-    for (var i = 0; i < this.keys.length; i++) {
-
-      entry = this.keys[i];
-
-      if (entry.length < minLen) continue;
-
-      // entry = entry.toLowerCase(); // all lowercase
-
-      if (entry === input || entry === input_s || entry === input_es)
-        continue;
-
-      phones = this.data[entry][0];
-      //if (i<10) console.log(phones+" :: "+);
-      phonesArr = phones.replace(/1/g, E).replace(/ /g, '-').split('-');
-
-      med = MinEditDist.computeRaw(phonesArr, targetPhonesArr);
-
-      // found something even closer
-      if (med >= minEditDist && med < minVal) {
-
-        minVal = med;
-        result = [entry];
-        //console.log("BEST "+entry + " "+med + " "+phonesArr);
-      }
-
-      // another best to add
-      else if (med === minVal) {
-
-        //console.log("TIED "+entry + " "+med + " "+phonesArr);
-        result.push(entry);
-      }
-    }
-
-    return result;
-  },
-
-  similarBySoundAndLetter: function(word) {
-
-    var result = [], simSound, simLetter = this.similarByLetter(word);
-
-    if (simLetter.length < 1)
-      return result;
-
-    simSound = this.similarBySound(word);
-
-    if (simSound.length < 1)
-      return result;
-
-    return intersect(simSound, simLetter);
-  },
-
-  substrings: function(word, minLength) {
-
-    minLength = minLength || (minLength === 0) || 4;
-
-    var result = [];
-    for (var i = 0; i < this.keys.length; i++) {
-
-      if (this.keys[i] === word || this.keys[i].length < minLength)
-        continue;
-      if (word.indexOf(this.keys[i]) >= 0)
-        result.push(this.keys[i]);
-    }
-
-    return result;
-  },
-
-  superstrings: function(word) {
-
-    var result = [];
-
-    for (var i = 0; i < this.keys.length; i++) {
-
-      if (this.keys[i] === word) continue;
-      if (this.keys[i].indexOf(word) >= 0)
-        result.push(this.keys[i]);
-    }
-
-    return result;
-  },
-
-  words: function() {
-
-    var a = arguments,
-      shuffled = false,
-      regex, wordArr = [];
-
-    switch (a.length) {
-
-      case 2:
-
-        if (is(a[0], B)) {
-
-          shuffled = a[0];
-          regex = (is(a[1], R)) ? a[1] : new RegExp(a[1]);
-        } else {
-
-          shuffled = a[1];
-          regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
-        }
-
-        break;
-
-      case 1:
-
-        if (is(a[0], B)) {
-          return a[0] ? shuffle(this.keys) : this.keys;
-        }
-
-        regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
-
-        break;
-
-      case 0:
-
-        return this.keys;
-    }
-
-    for (var i = 0; i < this.keys.length; i++) {
-
-      if (regex.test(this.keys[i])) {
-
-        wordArr.push(this.keys[i]);
-      }
-    }
-
-    return shuffled ? shuffle(wordArr) : wordArr;
-  },
-
-  _isVowel: function(c) {
-
-    return (strOk(c) && RiTa.VOWELS.indexOf(c) > -1);
-  },
-
-  _isConsonant: function(p) {
-
-    return (typeof p === S && p.length === 1 &&
-      RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
-  },
-
-  containsWord: function(word) {
-
-    return (strOk(word) && this.data && this.data[word.toLowerCase()]);
-  },
-
-  isRhyme: function(word1, word2, useLTS) {
-    var phones1 = this._getRawPhones(word1, useLTS),
-        phones2 = this._getRawPhones(word2, useLTS);
-
-    if (!strOk(word1) || !strOk(word2) || equalsIgnoreCase(word1, word2) || phones2 === phones1)
-      return false;
-
-    var p1 = this._lastStressedVowelPhonemeToEnd(word1, useLTS),
-      p2 = this._lastStressedVowelPhonemeToEnd(word2, useLTS);
-
-    return (strOk(p1) && strOk(p2) && p1 === p2);
-  },
-
-  rhymes: function(word) {
-
-
-      var p = this._lastStressedPhoneToEnd(word),
-        phones, results = [];
-
-      for (var i = 0; i < this.keys.length; i++) {
-
-        if (this.keys[i] === word)
-          continue;
-
-        phones = this.data[this.keys[i]][0];
-
-        if (endsWith(phones, p))
-          results.push(this.keys[i]);
-      }
-      return (results.length > 0) ? results : EA;
-
-
-    return EA;
-  },
-
-  alliterations: function(word, matchMinLength, useLTS) {
-
-    if (word.indexOf(" ") > -1) return [];
-
-    if (this._isVowel(word.charAt(0))) return [];
-
-
-    matchMinLength = matchMinLength || 4;
-
-    var c2, results = [],
-      c1 = this._firstPhoneme(this._firstStressedSyllable(word, useLTS));
-
-    for (var i = 0; i < this.keys.length; i++) {
-
-      c2 = this._firstPhoneme(
-          this._firstStressedSyllable(this.keys[i], useLTS));
-
-      if(c2._isVowel) return [];
-
-      if (c2 && c1 === c2 && this.keys[i].length >= matchMinLength) {
-        results.push(this.keys[i]);
-      }
-    }
-
-    return shuffle(results);
-  },
-
-  isAlliteration: function(word1, word2, useLTS) {
-
-    if (word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) return false;
-
-    if (!strOk(word1) || !strOk(word2)) return false;
-
-    if (equalsIgnoreCase(word1, word2)) return true;
-
-    var c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
-      c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
-
-    if(this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) return false;
-
-    return (strOk(c1) && strOk(c2) && c1 === c2);
-  },
-
-  _firstSyllable: function(word, useLTS) {
-     var raw = this._getRawPhones(word, useLTS);
-     if (!strOk(raw)) return E;
-     if(word === "URL") console.log(raw);
-     var syllables = raw.split(" ");
-     return syllables[0];
-  },
-
-  _firstStressedSyllable: function(word, useLTS) {
-
-    var raw = this._getRawPhones(word, useLTS),
-      idx = -1, c, firstToEnd;
-
-    if (!strOk(raw)) return E; // return null?
-
-    idx = raw.indexOf(RiTa.STRESSED);
-
-    if (idx < 0) return E; // no stresses... return null?
-
-    c = raw.charAt(--idx);
-
-    while (c != ' ') {
-      if (--idx < 0) {
-        // single-stressed syllable
-        idx = 0;
-        break;
-      }
-      c = raw.charAt(idx);
-    }
-
-    firstToEnd = idx === 0 ? raw : trim(raw.substring(idx));
-    idx = firstToEnd.indexOf(' ');
-
-    return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
-  },
-
-  isVerb: function(word) {
-
-    return this._checkType(word, PosTagger.VERBS);
-  },
-
-  isNoun: function(word) {
-
-    var result = this._checkType(word, PosTagger.NOUNS);
-    if (!result) {
-      var singular = RiTa.singularize(word);
-      if (singular !== word) {
-        result = this._checkType(singular, PosTagger.NOUNS);
-        //result && console.log('found plural noun: '+word+' ('+singular+')');
-      }
-    }
-    return result;
-  },
-
-  isAdverb: function(word) {
-
-    return this._checkType(word, PosTagger.ADV);
-  },
-
-  isAdjective: function(word) {
-
-    return this._checkType(word, PosTagger.ADJ);
-  },
-
-  size: function() {
-
-    return this.keys.length;
-  },
-
-  _checkType: function(word, tagArray) {
-
-    if (word && word.indexOf(SP) != -1)
-      throw Error("[RiTa] _checkType() expects a single word, found: " + word);
-
-    var psa = this._getPosArr(word);
-    if(!PosTagger.NOLEX_WARNED && psa.length < 1 && this.size() < 1000)
-      warn("A minimal Lexicon is currently in use. For word features outside the lexicon, use a larger version of RiTa.")
-
-    for (var i = 0; i < psa.length; i++) {
-      if (tagArray.indexOf(psa[i]) > -1)
-        return true;
-    }
-
-    return false;
-  },
-
-  /*
-   * Returns a String containing the phonemes for each syllable of each word of the input text,
-   * delimited by dashes (phonemes) and semi-colons (words).
-   * For example, the 4 syllables of the phrase
-   * 'The dog ran fast' are "dh-ax:d-ao-g:r-ae-n:f-ae-s-t".
-   */
-  _getSyllables: function(word) {
-
-    // TODO: use feature cache?
-
-    if (!strOk(word)) return E;
-
-    var wordArr = RiTa.tokenize(word), raw = [];
-    for (var i = 0; i < wordArr.length; i++)
-      raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
-    // console.log("[RiTa] syllables" + " " + word + " " + raw);
-    return RiTa.untokenize(raw).replace(/1/g, E).trim();
-  },
-
-  _getPhonemes: function(word) {
-
-    // TODO: use feature cache?
-
-    if (!strOk(word)) return E;
-
-    var wordArr = RiTa.tokenize(word), raw = [];
-
-    for (var i = 0; i < wordArr.length; i++) {
-
-      if (RiTa.isPunctuation(wordArr[i])) continue;
-
-      raw[i] = this._getRawPhones(wordArr[i]);
-
-      if (!raw[i].length) return E;
-
-      raw[i] = raw[i].replace(/ /g, "-");
-    }
-
-    return RiTa.untokenize(raw).replace(/1/g, E).trim();
-  },
-
-  _getStresses: function(word) {
-
-    var i, stresses = [], phones, raw = [],
-      wordArr = is(word, A) ? word : RiTa.tokenize(word);
-
-    if (!strOk(word)) return E;
-
-    for (i = 0; i < wordArr.length; i++) {
-
-      if (!RiTa.isPunctuation(wordArr[i]))
-        raw[i] = this._getRawPhones(wordArr[i]);
-    }
-
-    for (i = 0; i < raw.length; i++) {
-
-      if (raw[i]) { // ignore undefined array items (eg Punctuation)
-
-        phones = raw[i].split(SP);
-        for (var j = 0; j < phones.length; j++) {
-
-          var isStress = (phones[j].indexOf(RiTa.STRESSED) > -1) ?
-            RiTa.STRESSED : RiTa.UNSTRESSED;
-
-          if (j > 0) isStress = "/" + isStress;
-
-          stresses.push(isStress);
-        }
-      }
-    }
-
-    return stresses.join(SP).replace(/ \//g, "/");
-  },
-
-  lexicalData: function(dictionaryDataObject) {
-
-    if (arguments.length === 1) {
-      this.data = dictionaryDataObject;
-      return this;
-    }
-
-    return this.data;
-  },
-
-  /* Returns the raw (RiTa-format) dictionary entry for the given word   */
-  _lookupRaw: function(word) {
-
-    word = word.toLowerCase();
-    if (this.data && this.data[word])
-      return this.data[word];
-    //log("[RiTa] No lexicon entry for '" + word + "'");
-  },
-
-  _getRawPhones: function(word, useLTS) {
-
-    var phones, rdata = this._lookupRaw(word);
-    useLTS = useLTS || false;
-
-    if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
-
-      phones = this._letterToSound().getPhones(word);
-      if (phones && phones.length)
-        return RiString._syllabify(phones);
-
-    }
-    return (rdata && rdata.length === 2) ? rdata[0] : E;
-  },
-
-  _getPosData: function(word) {
-
-    var rdata = this._lookupRaw(word);
-    return (rdata && rdata.length === 2) ? rdata[1] : E;
-  },
-
-
-  _getPosArr: function(word) {
-
-    var pl = this._getPosData(word);
-    if (!strOk(pl)) return EA;
-    return pl.split(SP);
-  },
-
-  _getBestPos: function(word) {
-
-    var pl = this._getPosArr(word);
-    return (pl.length > 0) ? pl[0] : [];
-  },
-
-  _firstPhoneme: function(rawPhones) {
-
-    if (!strOk(rawPhones)) return E;
-
-    var phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
-
-    if (phones) return phones[0];
-
-    return E; // return null?
-  },
-
-  _firstConsonant: function(rawPhones) {
-
-    if (!strOk(rawPhones)) return E;
-
-    var phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
-
-    if (phones) {
-
-      for (var j = 0; j < phones.length; j++) {
-        if (this._isConsonant(phones[j].charAt(0))) // first letter only
-          return phones[j];
-      }
-    }
-    return E; // return null?
-  },
-
-  _lastStressedVowelPhonemeToEnd: function(word, useLTS) {
-
-    if (!strOk(word)) return E; // return null?
-
-
-    var raw = this._lastStressedPhoneToEnd(word, useLTS);
-    if (!strOk(raw)) return E; // return null?
-
-    var syllables = raw.split(" ");
-    var lastSyllable = syllables[syllables.length - 1];
-    lastSyllable = lastSyllable.replace("[^a-z-1 ]", "");
-
-    var idx = -1;
-    for (var i = 0; i < lastSyllable.length; i++) {
-      var c = lastSyllable.charAt(i);
-      if(this._isVowel(c)){
-        idx = i;
-        break;
-      }
-    }
-  word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
-   return lastSyllable.substring(idx);
-  },
-
-  _lastStressedPhoneToEnd: function(word, useLTS) {
-
-    if (!strOk(word)) return E; // return null?
-
-    var idx, c, result;
-    var raw = this._getRawPhones(word, useLTS);
-
-    if (!strOk(raw)) return E; // return null?
-
-    idx = raw.lastIndexOf(RiTa.STRESSED);
-
-    if (idx < 0) return E; // return null?
-
-    c = raw.charAt(--idx);
-    while (c != '-' && c != ' ') {
-      if (--idx < 0) {
-        return raw; // single-stressed syllable
-      }
-      c = raw.charAt(idx);
-    }
-    result = raw.substring(idx + 1);
-
-    return result;
-  },
-
-  randomWord: function() { // takes nothing, pos, syllableCount, or both
-
-    var i, j, rdata, numSyls,pluralize = false,
-      ran = Math.floor(Math.random() * this.keys.length),
-      found = false, a = arguments, ranWordArr = this.keys;
-
-    if (typeof a[0] === "string") {
-        a[0] = trim(a[0]).toLowerCase();
-
-        if (a[0] === "v")
-            a[0] = "vb";
-        if (a[0] === "r")
-            a[0] = "rb";
-        if (a[0] === "a")
-            a[0] = "jj";
-        if (a[0] === "n" || a[0] === "nns")
-            a[0] = "nn";
-    }
-
-    switch (a.length) {
-
-      case 2: // a[0]=pos  a[1]=syllableCount
-
-
-        for (i = 0; i < ranWordArr.length; i++) {
-          j = (ran + i) % ranWordArr.length;
-          rdata = this.data[ranWordArr[j]];
-          numSyls = rdata[0].split(SP).length;
-          if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-            return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
-          }
-        }
-
-        warn("No words with pos=" + a[0] + " found");
-
-      case 1:
-
-        if (is(a[0], S)) { // a[0] = pos
-
-          for (i = 0; i < ranWordArr.length; i++) {
-            j = (ran + i) % ranWordArr.length;
-            rdata = this.data[ranWordArr[j]];
-            if (a[0] === rdata[1].split(SP)[0]) {
-              return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
-            }
-          }
-
-          warn("No words with pos=" + a[0] + " found");
-
-        } else {
-
-          // a[0] = syllableCount
-          for (i = 0; i < ranWordArr.length; i++) {
-            j = (ran + i) % ranWordArr.length;
-            rdata = this.data[ranWordArr[j]];
-            if (rdata[0].split(SP).length === a[0]) {
-              return ranWordArr[j];
-            }
-          }
-        }
-        return E;
-
-      case 0:
-        return ranWordArr[ran];
-    }
-    return E;
-  },
-
-  _letterToSound: function() { // lazy load
-    if (!this.lts)
-      this.lts = new LetterToSound();
-    return this.lts;
-  }
-
-};
-
-// from: https://gist.github.com/lovasoa/3361645
-function intersect() {
-  var i, all, n, len, ret = [], obj={}, shortest = 0,
-    nOthers = arguments.length-1, nShortest = arguments[0].length;
-  for (i=0; i<=nOthers; i++){
-    n = arguments[i].length;
-    if (n<nShortest) {
-      shortest = i;
-      nShortest = n;
-    }
-  }
-  for (i=0; i<=nOthers; i++) {
-    n = (i===shortest)?0:(i||shortest);
-    len = arguments[n].length;
-    for (var j=0; j<len; j++) {
-        var elem = arguments[n][j];
-        if(obj[elem] === i-1) {
-          if(i === nOthers) {
-            ret.push(elem);
-            obj[elem]=0;
-          } else {
-            obj[elem]=i;
-          }
-        }else if (i===0) {
-          obj[elem]=0;
-        }
-    }
-  }
-  return ret;
-}
-
-// RiLetterToSound (adapted from FreeTTS text-to-speech)
-
-var LetterToSound = makeClass();
-
-LetterToSound.RULES = typeof RiTa._LTS !== 'undefined' ? RiTa._LTS : false;
-LetterToSound.TOTAL = "TOTAL";
-LetterToSound.INDEX = "INDEX";
-LetterToSound.STATE = "STATE";
-LetterToSound.PHONE = "PHONE";
-
-/*
- * If true, the state string is tokenized when it is first read. The side
- * effects of this are quicker lookups, but more memory usage and a longer
- * startup time.
- */
-LetterToSound.tokenizeOnLoad = true;
-
-/*
- * If true, the state string is tokenized the first time it is referenced. The
- * side effects of this are quicker lookups, but more memory usage.
- */
-LetterToSound.tokenizeOnLookup = false;
-
-LetterToSound.WINDOW_SIZE = 4;
-
-LetterToSound.prototype = {
-
-  init: function() {
-
-    this.warnedForNoLTS = false;
-    this.letterIndex = {};
-    this.fval_buff = [];
-    this.stateMachine = null;
-    this.numStates = 0;
-
-    // add the rules to the object (static?)
-    for (var i = 0; i < LetterToSound.RULES.length; i++) {
-      this.parseAndAdd(LetterToSound.RULES[i]);
-    }
-  },
-
-  _createState: function(type, tokenizer) {
-
-    if (type === LetterToSound.STATE) {
-      var index = parseInt(tokenizer.nextToken());
-      var c = tokenizer.nextToken();
-      var qtrue = parseInt(tokenizer.nextToken());
-      var qfalse = parseInt(tokenizer.nextToken());
-
-      return new DecisionState(index, c.charAt(0), qtrue, qfalse);
-    } else if (type === LetterToSound.PHONE) {
-      return new FinalState(tokenizer.nextToken());
-    }
-
-    throw Error("Unexpected type: " + type);
-  },
-
-  // Creates a word from an input line and adds it to the state machine
-  parseAndAdd: function(line) {
-
-    var tokenizer = new StringTokenizer(line, SP);
-    var type = tokenizer.nextToken();
-
-    if (type == LetterToSound.STATE || type == LetterToSound.PHONE) {
-      if (LetterToSound.tokenizeOnLoad) {
-        this.stateMachine[this.numStates] = this._createState(type, tokenizer);
-      } else {
-        this.stateMachine[this.numStates] = line;
-      }
-      this.numStates++;
-    } else if (type == LetterToSound.INDEX) {
-      var index = parseInt(tokenizer.nextToken());
-      if (index != this.numStates) {
-        throw Error("Bad INDEX in file.");
-      } else {
-        var c = tokenizer.nextToken();
-        this.letterIndex[c] = index;
-
-      }
-      //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
-    } else if (type == LetterToSound.TOTAL) {
-      this.stateMachine = [];
-      this.stateMachineSize = parseInt(tokenizer.nextToken());
-    }
-  },
-
-  getPhones: function(input, delim) {
-
-    var i, ph, result = [];
-
-    delim = delim || '-';
-
-    if (is(input, S)) {
-
-      if (!input.length) return E;
-
-      input = RiTa.tokenize(input);
-    }
-
-    for (i = 0; i < input.length; i++) {
-      ph = this._computePhones(input[i]);
-      result[i] = ph ? ph.join(delim) : E;
-    }
-
-    result = result.join(delim).replace(/ax/g, 'ah');
-
-    result.replace("/0/g","");
-  
-    if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
-          ph = result.split("-");
-          result = "";
-          for (var i = 0; i < ph.length; i++) {
-              if (/[aeiou]/.test(ph[i])) ph[i] += "1";
-              result += ph[i] + "-";
-          }
-          if(ph.length > 1) result = result.substring(0, result.length - 1);
-      }
-
-    return result;
-  },
-
-  _computePhones: function(word) {
-
-    var dig, phoneList = [],
-      full_buff, tmp, currentState, startIndex, stateIndex, c;
-
-
-    if (!word || !word.length || RiTa.isPunctuation(word))
-      return null;
-
-    if (!LetterToSound.RULES) {
-      if (!this.warnedForNoLTS) {
-
-        this.warnedForNoLTS = true;
-        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
-      }
-      return null;
-    }
-
-    word = word.toLowerCase();
-
-    if (isNum(word)) {
-
-      word = (word.length > 1) ? word.split(E) : [word];
-
-      for (var k = 0; k < word.length; k++) {
-
-        dig = parseInt(word[k]);
-        if (dig < 0 || dig > 9)
-          throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
-
-        phoneList.push(RiString._phones.digits[dig]);
-      }
-      return phoneList;
-    }
-
-    // Create "000#word#000", uggh
-    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
-
-    for (var pos = 0; pos < word.length; pos++) {
-
-      for (var i = 0; i < LetterToSound.WINDOW_SIZE; i++) {
-
-        this.fval_buff[i] = full_buff[pos + i];
-        this.fval_buff[i + LetterToSound.WINDOW_SIZE] =
-          full_buff[i + pos + 1 + LetterToSound.WINDOW_SIZE];
-      }
-
-      c = word.charAt(pos);
-      startIndex = this.letterIndex[c];
-
-      // must check for null here, not 0 (and not ===)
-      if (!isNum(startIndex)) {
-        warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
-          c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
-        return null;
-      }
-
-      stateIndex = parseInt(startIndex);
-
-      currentState = this.getState(stateIndex);
-
-      while (!(currentState instanceof FinalState)) {
-
-        stateIndex = currentState.getNextState(this.fval_buff);
-        currentState = this.getState(stateIndex);
-      }
-
-      currentState.append(phoneList);
-    }
-
-    return phoneList;
-  },
-
-  getState: function(i) {
-
-    if (is(i, N)) {
-
-      var state = null;
-
-      // WORKING HERE: this check should fail :: see java
-      if (is(this.stateMachine[i], S)) {
-
-        state = this.getState(this.stateMachine[i]);
-        if (LetterToSound.tokenizeOnLookup)
-          this.stateMachine[i] = state;
-      } else
-        state = this.stateMachine[i];
-
-      return state;
-    } else {
-
-      var tokenizer = new StringTokenizer(i, " ");
-      return this.getState(tokenizer.nextToken(), tokenizer);
-    }
-  }
-};
-
-// DecisionState
-
-var DecisionState = makeClass();
-
-DecisionState.TYPE = 1;
-
-DecisionState.prototype = {
-
-  init: function(index, c, qtrue, qfalse) {
-
-    this.c = c;
-    this.index = index;
-    this.qtrue = qtrue;
-    this.qfalse = qfalse;
-  },
-
-  type: function() {
-    return "DecisionState";
-  },
-
-  getNextState: function(chars) {
-
-    return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
-  },
-
-
-  toString: function() {
-    return this.STATE + " " + this.index + " " + this.c + " " + this.qtrue + " " + this.qfalse;
-  }
-
-};
-
-// FinalState
-
-var FinalState = makeClass();
-
-FinalState.TYPE = 2;
-
-FinalState.prototype = {
-
-  // "epsilon" is used to indicate an empty list.
-  init: function(phones) {
-
-    this.phoneList = [];
-
-    if (phones === ("epsilon")) {
-      this.phoneList = null;
-    } else if (is(phones, A)) {
-      this.phoneList = phones;
-    } else {
-      var i = phones.indexOf('-');
-      if (i != -1) {
-        this.phoneList[0] = phones.substring(0, i);
-        this.phoneList[1] = phones.substring(i + 1);
-      } else {
-        this.phoneList[0] = phones;
-      }
-    }
-  },
-
-  type: function() { return "FinalState"; },
-
-  /*
-   * Appends the phone list for this state to the given <code>ArrayList</code>.
-   */
-  append: function(array) {
-
-    if (!this.phoneList) return;
-
-    for (var i = 0; i < this.phoneList.length; i++)
-      array.push(this.phoneList[i]);
-  },
-
-  toString: function() {
-
-    if (!this.phoneList) {
-      return LetterToSound.PHONE + " epsilon";
-    } else if (this.phoneList.length == 1) {
-      return LetterToSound.PHONE + " " + this.phoneList[0];
-    } else {
-      return LetterToSound.PHONE + " " + this.phoneList[0] + "-" + this.phoneList[1];
-    }
-  }
-};
 
 
 /*jshint -W069 */

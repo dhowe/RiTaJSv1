@@ -369,21 +369,21 @@ function sourceFiles(lexStatus) {
   if (lexStatus === "full") {
     src.push(srcDir + '/rita_lts.js');
     src.push(srcDir + '/rita_dict.js');
-    src.push(srcDir + '/rilexicon.js');
+    //src.push(srcDir + '/rilexicon.js');
   }
   else if ( lexStatus === "medium") {
      src.push(srcDir + '/rita_dict_1000.js');
      src.push(srcDir + '/rita_lts.js');
-     src.push(srcDir + '/rilexicon.js');
+     //src.push(srcDir + '/rilexicon.js');
   }
   else if ( lexStatus === "small") {
      src.push(srcDir + '/rita_dict_1000.js');
-     src.push(srcDir + '/rilexicon.js');
+     //src.push(srcDir + '/rilexicon.js');
   }
   else if (lexStatus === "novb") {
     src.push(srcDir + '/rita_lts.js');
     src.push(srcDir + '/rita_dict_novb.js');
-    src.push(srcDir + '/rilexicon.js');
+    //src.push(srcDir + '/rilexicon.js');
   }
   //tiny only rita.js
 
