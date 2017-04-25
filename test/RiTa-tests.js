@@ -992,11 +992,6 @@ var runtests = function () {
 
     test("testStem(lancaster)", function () {
 
-      if (!RiTa.stemmers.Lancaster) {
-        console.warn("[INFO] RiTa-tests: skipping Lancaster tests");
-        return ok(1);
-      }
-
       var type = 'Lancaster';
 
       var tests = ["run", "runs", "running"];
