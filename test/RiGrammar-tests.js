@@ -875,6 +875,24 @@ var runtests = function () {
     }
   });
 
+  test("testExec4", function () {
+
+    var newruleg2 = {
+      '<start>': 'The <noun> chased the `RiTa.pluralize(\'<noun>\')`.',
+      '<noun>': 'dog | cat | mouse',
+    };
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+
+    for (var i = 0; i < 10; i++) {
+      var res = rg.expand();
+      //console.log(res);
+      ok(res && res.match(/(dogs|cats|mice)\./g));
+    }
+  });
+
   test("testExecArgs", function () {
 
     var rl = RiLexicon();

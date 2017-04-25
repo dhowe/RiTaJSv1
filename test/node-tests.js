@@ -141,7 +141,7 @@ words = RiTa.RiString("The dog ate the cat.");
 if (!arrayEquals(words.get('tokens').split(' '), expected))
   throw Error("Fail4");
 
-console.log('Tests passed for ');
+console.log('Tests passed for syntax');
 
 
 /*********** helpers ************/

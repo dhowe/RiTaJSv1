@@ -369,18 +369,15 @@ var RiTa = {
     return Conjugator().getPastParticiple(verb);
   },
 
-  // TODO: 2 examples
   concordance: function(text, options) {
     return Concorder(text, options).concordance();
   },
 
-  // TODO: 2 examples (add cache)
   kwic: function(text, word, options) {
     wordCount = (options && options.wordCount) || 4;
     return Concorder(text, options).kwic(word, wordCount);
   },
 
-  // TODO: 2 examples
   conjugate: function(verb, args) {
     return Conjugator().conjugate(verb, args);
   },
@@ -583,7 +580,6 @@ var RiTa = {
 
   // TODO: update 'return' value in docs (for preload())
   loadStrings: function(url, callback, linebreakChars) {
-
 
     var loadStringsNode = function(url, callback) {
 
@@ -2405,48 +2401,39 @@ RiGrammar.prototype = {
       return null; // no rules matched
     }
 
-    var execSingleFunction = function(exec, context) {
-
-      var parts = exec.split('(');
-      if (parts && parts.length == 2) {
-
-        var args, g = context, funName = parts[0], argStr = parts[1].replace(/\)/,E);
-        if (!g && typeof window != 'undefined') g = window;
-        if (g && g[funName] && is(g[funName], F)) {
-
-          args = argStr.split(',');
-          //log("calling "+funName + "("+argStr+");");
-          res = g[funName].apply(g, args);
-          return res ? res + E : null;
-        }
-      }
-
-      warn("RiGrammar failed parsing: " + input + BN + " -> " + e.message);
-
-      return null;
-    }
-
-    var Scope = function() {
+    var Scope = function(context) { // class
       "use strict";
+
       this.names = [];
       this.eval = function(s) {
         return eval(s);
       };
-    }
+      this.put = function(name, val) {
+        "use strict";
+        var code = "(function() {\n";
+        code += 'var ' + name + ' = '+val+';\n';
+        code += 'return function(str) {return eval(str)};\n})()';
+        this.eval = this.eval(code);
+        this.names.push(name);
+      };
 
-    Scope.prototype.put = function(name, val) {
-      "use strict";
-      var code = "(function() {\n";
-      code += 'var ' + name + ' = '+val+';\n';
-      code += 'return function(str) {return eval(str)};\n})()';
-      this.eval = this.eval(code);
-      this.names.push(name);
+      if (context) {
+        var scope = this;
+        if (typeof context === 'function') {
+          scope.put(context.name, context);
+        }
+        else if (typeof context === 'object') {
+          Object.keys(context).forEach(function (f) {
+            if (typeof context[f] === 'function')
+              scope.put(f, context[f]);
+          });
+        }
+      }
     }
 
     var handleExec = function(input, context) {
 
-      // TODO: check that we can still access RiTa functions (in js and node)
-
+      //console.log('handleExec('+input+", ",context+')');
       if (!input || !input.length) return null;
 
       // strip backticks and eval
@@ -2459,39 +2446,13 @@ RiGrammar.prototype = {
 
       } catch (e) {
 
-        if (context) {
-
-          var sandbox = {};
-
-          if (typeof context === 'function') {
-            sandbox[context.name] = context;
-          }
-          else if (typeof context === 'object') {
-            Object.keys(context).forEach(function (f) {
-              if (typeof context[f] === 'function')
-                  sandbox[f] = context[f];
-            });
-          }
-
-          var scope = new Scope(); // move into constructor
-          Object.keys(sandbox).forEach(function (f) {
-            scope.put(f, sandbox[f]);
-          });
+        if (context) { // create sandbox for context args
 
           try {
-            res = scope.eval(exec);
-            //console.log("GOT: "+(res+''));
+            res = new Scope(context).eval(exec);
             return res ? res + '' : null;
           }
           catch (e) { /* fall through */ }
-        }
-
-        if (typeof p5 !== 'undefined') {
-
-          // TODO: do we still need this for p5.js
-          try {
-            execSingleFunction(exec, p5);
-          } catch (e) { /* give up */ }
         }
       }
       return input;
