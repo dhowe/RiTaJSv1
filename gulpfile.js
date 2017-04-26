@@ -42,7 +42,7 @@ gulp.task('test-npm-test', ['npm.build'], function(done) {
   var cmd = 'cp '+tgz+' '+tmpDir+' && cd '+tmpDir+' && npm install '+tgz+' &&';
   cmd += ' cd node_modules/rita && npm install && npm test';
   exec(cmd, function (err, stdout, stderr) {
-    log("Copied "+nodeDir+'/'+stdout);
+    log("Running 'npm test' on "+tgz);
     stderr && console.error(stderr);
     done(err);
   });
