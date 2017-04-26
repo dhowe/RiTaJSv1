@@ -162,14 +162,14 @@ RiLexicon._enabled = false;
 
 RiLexicon.prototype.init = function() {
     warn('RiLexicon is not available -- ' +
-      'if needed, make sure to include rilexicon.js');
+      'if needed, use a larger version of RiTa.');
 };
 
 var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
 
-  VERSION: '1.1.54',
+  VERSION: '1.1.60',
 
   LEXICON: null, // static RiLexicon instance
 
@@ -3372,8 +3372,7 @@ var PosTagger = {
  *  Ported from Porter, 1980, An algorithm for suffix stripping, Program, Vol. 14,
  *  no. 3, pp 130-137, see also http:www.tartarus.org/~martin/PorterStemmer
  *
- *  Porter is the default Stemmer (Pling is also included).
- *  For Lancaster (in JS), include lancaster.js
+ *  Porter is the default Stemmer (Pling and Lancaster are also included).
  */
 RiTa.stemmers.Porter = (function() {
 
