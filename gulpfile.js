@@ -36,11 +36,11 @@ var testDir = 'test',
   minimize = false,
   sourceMaps = false;
 
-// do npm pack on whatever is already in the dist dir
+// create a pkg in tmpDir then run 'npm test' on it
 gulp.task('test-npm-test', ['npm.build'], function(done) {
   var tgz = 'rita-'+version+'.tgz';
-  var cmd = 'cp '+tgz+' /tmp/ && cd /tmp && npm install '+tgz+' &&';
-  cmd += 'cd node_modules/rita && npm install && npm test';
+  var cmd = 'cp '+tgz+' '+tmpDir+' && cd '+tmpDir+' && npm install '+tgz+' &&';
+  cmd += ' cd node_modules/rita && npm install && npm test';
   exec(cmd, function (err, stdout, stderr) {
     log("Copied "+nodeDir+'/'+stdout);
     stderr && console.error(stderr);
@@ -59,7 +59,7 @@ gulp.task('npm.build', ['setup-npm'], function(done) {
 });
 
 // do npm publish on an already created .tgz file
-gulp.task('npm.publish', ['npm.build'], function(done) {
+gulp.task('npm.publish', [], function(done) {
   var tgz = 'rita-'+version+'.tgz';
   exec(npm + ' publish '+tgz, function (err, stdout, stderr) {
     log("Publishing "+tgz, stdout);
