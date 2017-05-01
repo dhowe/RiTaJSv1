@@ -99,7 +99,7 @@ gulp.task('setup-npm', ['clean-npm','build-minify'], function(done) {
 
   // copy in the (core-only) code
   gulp.src(destDir + '/rita-small.min.js')
-    .pipe(rename('rita-micro.js'))
+    .pipe(rename('rita-tiny.js'))
     .pipe(gulp.dest(nodeDir + '/lib'));
 
   done();
