@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "1.1.60",
+  "version": "1.1.63",
   "author": "Daniel C. Howe <daniel@rednoise.org>",
   "description": "RiTa: A toolkit for natural language and computational literature",
   "homepage": "https://rednoise.org/rita",
@@ -30,7 +30,7 @@
   "dependencies": {},
   "tonicExampleFilename": "tonic.js",
   "optionalDependencies": {
-    "yamljs": "^0.2.3"
+    "yamljs": "^0.2.10"
   },
   "devDependencies": {
     "argv": "0.0.2",

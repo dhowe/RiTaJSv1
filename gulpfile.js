@@ -73,7 +73,7 @@ gulp.task('make.lib', [ 'build.full', 'bower-update' ], function(done) {
   gulp.start('npm.build');
 });
 
-gulp.task('setup-npm', ['clean-npm','build-minify'], function(done) {
+gulp.task('setup-npm', ['clean-npm', 'build-minify'], function(done) {
 
   // copy in the node readme
   gulp.src('README.node.md')
