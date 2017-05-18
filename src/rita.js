@@ -2484,7 +2484,7 @@ RiString.prototype = {
 
     var phonemes = E, syllables = E, stresses = E, slash = '/',
       delim = '-', stressyls, phones, lts, ltsPhones, useRaw,
-      words = RiTa.tokenize(this._text), lex = getLexicon();
+      words = RiTa.tokenize(this._text), lex = RiTa.lexicon;
 
     if (!this._features) initFeatureMap(this);
 
@@ -3829,21 +3829,12 @@ var PosTagger = { // singleton
 
     var result = [],
       choices2d = [],
-      lex = getLexicon();
-
-    if (!RiTa.SILENT && RiTa.LTS_WARN && typeof LetterToSound.RULES === 'undefined') {
-      console.warn(RiTa.LTS_WARN);
-      RiTa.LTS_WARN = false;
-    }
+      lex = RiTa.lexicon;
 
     words = is(words, A) ? words : [words];
 
     for (var i = 0, l = words.length; i < l; i++) {
 
-      if (!RiTa.SILENT && RiTa.LEX_WARN && !lex.containsWord(words[i]) && lex.size() <= 1000) {
-        warn(RiTa.LEX_WARN);
-        RiTa.LEX_WARN = false; // only once
-      }
 
       if (words[i].length < 1) {
 
@@ -3858,7 +3849,7 @@ var PosTagger = { // singleton
       }
 
       var data = lex && lex._getPosArr(words[i]);
-      if (!data || !data.length) {
+      if (!data.length) {
 
         // use stemmer categories if no lexicon
 
@@ -3868,7 +3859,18 @@ var PosTagger = { // singleton
           tag = 'nns';
         }
 
-        if (!lex || !lex.containsWord(words[i])) {
+        if (!lex.containsWord(words[i])) {
+
+          if (!RiTa.SILENT) { // warn
+            if (RiTa.LEX_WARN && !lex.containsWord(words[i]) && lex.size() <= 1000) {
+              warn(RiTa.LEX_WARN);
+              RiTa.LEX_WARN = false;
+            }
+            if (RiTa.LTS_WARN && LetterToSound.RULES === 'undefined') {
+              warn(RiTa.LTS_WARN);
+              RiTa.LTS_WARN = false;
+            }
+          }
 
           if (endsWith(words[i], 's')) {
             var sub2, sub = words[i].substring(0, words[i].length - 1);
@@ -3884,6 +3886,7 @@ var PosTagger = { // singleton
             }
 
           } else {
+
             var sing = RiTa.singularize(words[i]);
 
             if (this._lexHas("n", sing)) {
@@ -4071,17 +4074,15 @@ var PosTagger = { // singleton
 
   _lexHas: function(pos, words) { // takes ([n|v|a|r] or a full tag)
 
-    if (!RiLexicon._enabled) return false;
-
-    var lex = getLexicon(), words = is(words, A) || [words];
+    var words = is(words, A) || [words];
 
     for (var i = 0; i < words.length; i++) {
 
-      if (lex.containsWord(words[i])) {
+      if (RiTa.lexicon.containsWord(words[i])) {
 
         if (pos == null) return true;
 
-        var tags = lex._getPosArr(words[i]);
+        var tags = RiTa.lexicon._getPosArr(words[i]);
 
         for (var j = 0; j < tags.length; j++) {
 
@@ -4095,9 +4096,7 @@ var PosTagger = { // singleton
           }
         }
       }
-
     }
-    return false;
   }
 
 }; // end PosTagger

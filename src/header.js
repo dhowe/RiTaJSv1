@@ -145,8 +145,3 @@ function tagForWordNet(words) {
   }
   return EA;
 }
-
-function getLexicon() {
-  RiTa.lexicon = RiTa.lexicon || new RiLexicon();
-  return RiTa.lexicon;
-}

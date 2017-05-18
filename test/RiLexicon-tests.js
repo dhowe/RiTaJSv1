@@ -27,7 +27,7 @@ var testResults = [{
 
 var runtests = function() {
 
-  var lex = new RiLexicon();
+  var lex = RiTa.lexicon;
 
   QUnit.module("RiLexicon", {
     setup: function() {},
@@ -466,7 +466,6 @@ var runtests = function() {
 
   test("testIsAlliteration", function() {
 
-    lex = RiLexicon();
 
     ok(lex.isAlliteration("sally", "silly"));
     ok(lex.isAlliteration("sea", "seven"));
@@ -542,7 +541,6 @@ var runtests = function() {
 
   test("testIsRhyme", function() {
 
-    lex = RiLexicon();
 
     var rhymes = [
     "candle", "handle",
@@ -959,7 +957,6 @@ var runtests = function() {
     deepEqual(result, obj)
 
     lex.clear();
-    console.log(lex.size());
     ok(lex.size() < 1);
 
     lex = RiLexicon(); // restore global
@@ -967,7 +964,6 @@ var runtests = function() {
 
   test("testReload", function() {
 
-    lex = RiLexicon();
     var originalSize = lex.size();
 
     ok(lex.containsWord("are"));

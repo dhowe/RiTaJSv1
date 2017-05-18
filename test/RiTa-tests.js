@@ -38,7 +38,6 @@ var runtests = function () {
     // ------------------------------------------------------------------------
     test("testGetSyllables", function () { // new-style
 
-      if (noLexicon()) return;
 
       var func = RiTa.getSyllables,
         tests = testResults[0].tests;
@@ -55,8 +54,6 @@ var runtests = function () {
       result = RiTa.getSyllables('');
       answer = '';
       equal(result, answer);
-
-      if (noLexicon()) return;
 
       txt = 'The dog ran faster than the other dog. But the other dog was prettier.';
       result = RiTa.getSyllables(txt);
@@ -680,7 +677,7 @@ var runtests = function () {
       var answer = "";
       equal(result, answer);
 
-      if (noLexicon()) return;
+
 
       var result = RiTa.getPhonemes("The");
       var answer = "dh-ah";
@@ -746,8 +743,6 @@ var runtests = function () {
       var answer = ["nns"];
       deepEqual(result, answer);
 
-      if (noLexicon()) return;
-
       deepEqual(RiTa.getPosTags("flunks"), [ "vbz" ]);
 
       deepEqual(RiTa.getPosTags("outnumbers"),  [ "vbz" ]);
@@ -808,7 +803,6 @@ var runtests = function () {
       deepEqual(result, answer);
 
       // Tests for verb conjugation
-
       deepEqual(RiTa.getPosTags("is"), [ "vbz" ]);
       deepEqual(RiTa.getPosTags("am"), [ "vbp" ]);
       deepEqual(RiTa.getPosTags("be"), [ "vb"  ]);
@@ -838,9 +832,7 @@ var runtests = function () {
       deepEqual(RiTa.getPosTags("She outnumbered us"), [ "prp", "vbd", "prp"]);
     });
 
-    test("testGetPosTags(sns)", function () {
-
-      if (noLexicon()) return;
+    test("testGetPosTags(endsWithS)", function () {
 
       var checks = ["emphasis", "stress", "discus", "colossus", "fibrosis", "digitalis", "pettiness", "mess", "cleanliness", "orderliness", "bronchitis", "preparedness", "highness"];
       for (var i = 0, j = checks.length; i < j; i++) {
@@ -868,7 +860,7 @@ var runtests = function () {
       var answer = "teeth/nns";
       deepEqual(result, answer);
 
-      if (noLexicon()) return;
+
 
       var result = RiTa.getPosTagsInline("There is a cat.");
       var answer = "There/ex is/vbz a/dt cat/nn .";
@@ -890,7 +882,7 @@ var runtests = function () {
       var answer = "";
       equal(result, answer);
 
-      if (noLexicon()) return;
+
 
       var result = RiTa.getStresses("The emperor had no clothes on");
       var answer = "0 1/0/0 1 1 1 1";
@@ -1093,7 +1085,7 @@ var runtests = function () {
 
     test("testLTSEngine", function () {
 
-      if (noLexicon()) return;
+
 
       //getPhonemes
       var result = RiTa.getPhonemes("asdfgasdasdasdasdsadasf");
@@ -1661,18 +1653,6 @@ var runtests = function () {
         equal(c, a[i]);
       }
     });
-
-    function noLexicon() {
-      if (!RiLexicon._enabled) {
-        if (!lexWarningRiTa) {
-          lexWarningRiTa = true;
-          console.warn('[INFO] RiTa-tests: skipping lexicon-required tests');
-        }
-        ok(1);
-        return true;
-      }
-    }
-    var lexWarningRiTa = false;
 
   } // end runtests
 

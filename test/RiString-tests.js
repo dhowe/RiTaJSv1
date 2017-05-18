@@ -58,10 +58,8 @@ var runtests = function () {
 
   test("testAnalyze", function () { // same tests as testFeatures() below
 
-    if (noLexicon()) return;
-
     var features;
-/*
+
     features = RiString("123").analyze().features();
     ok(features);
     equal(features.phonemes, "w-ah-n-t-uw-th-r-iy");
@@ -80,11 +78,11 @@ var runtests = function () {
     equal(features.phonemes, "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .");
     equal(features.syllables, "dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .");
     equal(features.stresses, "0 1 1 1/0 1 0 1/0 1 . 1 0 1/0 1 1 1/0/0 .");
-*/
+
     features = RiString("The laggin dragon").analyze().features();
     ok(features);
     equal(features.phonemes, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
-return;
+
     equal(features.syllables, "dh-ah l-ae/g-ih-n d-r-ae/g-ah-n");
     equal(features.stresses, "0 1/1 1/0");
 
@@ -122,8 +120,6 @@ return;
     ok(feats[RiTa.POS]);
     equal(feats[RiTa.TEXT], txt);
     deepEqual(feats[RiTa.TOKENS], RiTa.tokenize(txt).join(' '));
-
-    if (noLexicon()) return;
 
     txt = "Returns the array of words.";
     rs = RiString(txt).analyze();
@@ -206,7 +202,7 @@ return;
     rs2 = rs.copy();
     equal(rs.get("myFeatureName"), rs2.get("myFeatureName"));
 
-    if (noLexicon()) return;
+
 
     rs = new RiString("copy cat");
     rs.analyze();
@@ -578,7 +574,7 @@ return;
     result = rs.pos();
     deepEqual(result, ["nns"]);
 
-    if (noLexicon()) return;
+
 
     rs = new RiString("There is a cat.");
     result = rs.pos();
@@ -602,7 +598,7 @@ return;
     result = rs.posAt(3);
     equal("nn", result);
 
-    if (noLexicon()) return;
+
 
     rs = new RiString("There is a cat.");
     result = rs.posAt(2);
@@ -1310,7 +1306,7 @@ return;
     ok(rs);
     ok(rs.features());
 
-    if (noLexicon()) return;
+
 
     var ph = rs.get(RiTa.PHONEMES);
     var sy = rs.get(RiTa.SYLLABLES);
@@ -1326,7 +1322,7 @@ return;
     ok(rs);
     ok(rs.features());
 
-    if (noLexicon()) return;
+
 
     var ph = rs.get(RiTa.PHONEMES);
     var sy = rs.get(RiTa.SYLLABLES);
@@ -1454,17 +1450,6 @@ return;
     var result = RiString._syllabify(test);
     deepEqual(result, expected);
   });
-
-  function noLexicon() {
-    if (!RiLexicon._enabled) {
-      if (!lexWarningRiString) {
-        lexWarningRiString = true;
-        console.warn('[INFO] RiString-tests: skipping lexicon-required tests');
-      }
-      ok(1);
-      return true;
-    }
-  } var lexWarningRiString = false;
 };
 
 if (typeof exports != 'undefined') {

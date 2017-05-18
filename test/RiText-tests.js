@@ -143,8 +143,6 @@ var runtests = function() {
 
   test("testAnalyze()", function() {
 
-    if (noLexicon()) return;
-
     var features = RiText("the laggin dragon").analyze().features();
     ok(features);
     equal(features.phonemes, "dh-ah l-ae-g-ih-n d-r-ae-g-ah-n");
@@ -172,7 +170,6 @@ var runtests = function() {
 
   test("testFeatures()", function() {
 
-    if (noLexicon()) return;
 
 
     var rs = [RiText("Returns the array of words."), RiText(this, "Returns the array of words.")];
@@ -614,7 +611,6 @@ var runtests = function() {
     var result = rs.pos();
     deepEqual(result, ["nns"]);
 
-    if (noLexicon()) return;
 
     var rs = new RiText("There is a cat.");
     var result = rs.pos();
@@ -636,7 +632,6 @@ var runtests = function() {
     var result = rs.posAt(3);
     equal("nn", result);
 
-    if (noLexicon()) return;
 
     var rs = new RiText("There is a cat.");
     var result = rs.posAt(1);
@@ -1346,16 +1341,6 @@ var runtests = function() {
     deepEqual(rt4.fill(), rt3.fill());
   });
 
-  function noLexicon() {
-    if (!RiLexicon._enabled) {
-      if (!lexWarningRiText) {
-        lexWarningRiText = true;
-        console.warn('[INFO] RiText-tests: skipping lexicon-required tests');
-      }
-      ok(1);
-      return true;
-    }
-  } var lexWarningRiText = false;
 }
 
 if (typeof exports != 'undefined') runtests();

@@ -10,7 +10,7 @@ for (var i = 0; i < funs.length; i++) {
     var f = RiTa.lexicon[funs[i]];
     if (is(f,F)) {
       RiTa[funs[i]] = f.bind(RiTa.lexicon);
-      //console.log('RiTa.'+funs[i], RiTa[funs[i]].this);
+      //console.log('RiTa.'+funs[i], typeof RiTa[funs[i]]);
     }
   }
 }
