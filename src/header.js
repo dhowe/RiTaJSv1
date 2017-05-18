@@ -15,12 +15,10 @@ function makeClass() { // from: Resig, TODO: make work with strict
   };
 }
 
-// Returns true if the object is of type 'type', otherwise false
 function is(obj, type) {
   return get(obj) === type;
 }
 
-// Throws TypeError if not the correct type, else returns true
 function ok(obj, type) {
   if (get(obj) != type) {
     throw TypeError('Expected ' + (type ? type.toUpperCase() : type + E) +
@@ -70,12 +68,12 @@ function trim(str) {
   return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
-function last(word) { // last char of string
+function last(word) {
   if (!word || !word.length) return E;
   return word.charAt(word.length - 1);
 }
 
-function extend(l1, l2) { // python extend
+function extend(l1, l2) {
   for (var i = 0; i < l2.length; i++)
     l1.push(l2[i]);
 }
@@ -95,7 +93,6 @@ function equalsIgnoreCase(str1, str2) {
     (str1.toLowerCase() === str2.toLowerCase()) : false;
 }
 
-// Returns true if NodeJS is the current environment
 function isNode() {
   return (typeof module != 'undefined' && module.exports);
 }
@@ -150,6 +147,6 @@ function tagForWordNet(words) {
 }
 
 function getLexicon() {
-  RiTa.LEXICON = RiTa.LEXICON || new RiLexicon();
-  return RiTa.LEXICON;
+  RiTa.lexicon = RiTa.lexicon || new RiLexicon();
+  return RiTa.lexicon;
 }

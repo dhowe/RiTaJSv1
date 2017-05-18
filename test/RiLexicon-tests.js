@@ -27,11 +27,6 @@ var testResults = [{
 
 var runtests = function() {
 
-  if (!RiLexicon._enabled) {
-    console.warn("[INFO] RiLexicon-tests: skipping ALL tests...");
-    return;
-  }
-
   var lex = new RiLexicon();
 
   QUnit.module("RiLexicon", {
@@ -60,6 +55,8 @@ var runtests = function() {
     lex.data['hello'] = undefined;
     ok(!lex.containsWord("hello"));
     lex.data['hello'] = tmp; // restore data
+
+    // what about plurals??
   });
 
   test("testAlliterations", function() {
@@ -605,8 +602,16 @@ var runtests = function() {
   });
 
   test("testSimilarByLetter", function() {
+    var result;
+
+    result = lex.similarByLetter("banana", true);
+    deepEqual(result, ["cabana"]);
+
+    result = lex.similarByLetter("banana", false);
+    deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
+
     //delete the word 'lice', not exists anymore in dict.
-    var result = lex.similarByLetter("banana");
+    result = lex.similarByLetter("banana");
     deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
 
     result = lex.similarByLetter("banana", 1, true);
@@ -935,10 +940,15 @@ var runtests = function() {
     lex = RiLexicon(); // restore global
   });
 
+  function removeWord(word) {
+    delete lex.data[word.toLowerCase()];
+    lex.keys = Object.keys(lex.data);
+  }
+
   test("testClear", function() {
 
     ok(lex.containsWord("banana"));
-    lex.removeWord("banana");
+    removeWord("banana");
 
     ok(!lex.containsWord("banana"));
 
@@ -949,28 +959,8 @@ var runtests = function() {
     deepEqual(result, obj)
 
     lex.clear();
+    console.log(lex.size());
     ok(lex.size() < 1);
-
-    lex = RiLexicon(); // restore global
-  });
-
-  test("testRemoveWord", function() {
-
-    ok(lex.containsWord("banana"));
-    lex.removeWord("banana");
-    ok(!lex.containsWord("banana"));
-
-    lex.removeWord("a");
-    ok(!lex.containsWord("a"));
-    ok(lex.containsWord("are")); //check that others r still there
-    lex.removeWord("aaa");
-    ok(!lex.containsWord("aaa"));
-
-    lex.removeWord("");
-
-    // ok(!lex._getPhonemes("banana"));
-    //-> now letter to sound will be used to get phonemes
-    //  if a word is not in the dictionary
 
     lex = RiLexicon(); // restore global
   });
@@ -981,7 +971,7 @@ var runtests = function() {
     var originalSize = lex.size();
 
     ok(lex.containsWord("are"));
-    lex.removeWord("are");
+    removeWord("are");
     ok(!lex.containsWord("are"));
     var removeOneWordSize = lex.size();
     ok(lex.size()===originalSize-1);
@@ -990,12 +980,12 @@ var runtests = function() {
     ok(lex.size() === originalSize);
 
     ok(lex.containsWord("cat"));
-    lex.removeWord("cat");
+    removeWord("cat");
     ok(!lex.containsWord("cat"));
     ok(lex.size()===originalSize-1);
 
     ok(lex.containsWord("are"));
-    lex.removeWord("are");
+    removeWord("are");
     ok(!lex.containsWord("are"));
     ok(lex.size()===originalSize-2);
 

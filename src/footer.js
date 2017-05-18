@@ -1,6 +1,20 @@
 
 /*jshint -W069 */
 
+RiTa.lexicon = RiLexicon(); // create the lexicon
+
+// add RiLexicon member functions to RiTa object
+var funs = okeys(RiTa.lexicon);
+for (var i = 0; i < funs.length; i++) {
+  if (!startsWith(funs[i], '_')) {
+    var f = RiTa.lexicon[funs[i]];
+    if (is(f,F)) {
+      RiTa[funs[i]] = f.bind(RiTa.lexicon);
+      //console.log('RiTa.'+funs[i], RiTa[funs[i]].this);
+    }
+  }
+}
+
 if (window) { // for browser
 
   window['RiTa'] = RiTa;
@@ -10,6 +24,8 @@ if (window) { // for browser
   window['RiWordNet'] = RiWordNet;
   window['RiLexicon'] = RiLexicon;
   window['RiTaEvent'] = RiTaEvent;
+
+  var rlfuns = okeys();
 
 } else if (typeof module !== 'undefined') { // for node
 
@@ -21,7 +37,8 @@ if (window) { // for browser
   module.exports['RiLexicon'] = RiLexicon;
   module.exports['RiTaEvent'] = RiTaEvent;
 
-  var funs = Object.keys(RiTa);
+  // add RiTa.* functions directly to exported object
+  var funs = okeys(RiTa);
   for (var i = 0; i < funs.length; i++) {
     if (!startsWith(funs[i], '_')) {
       module.exports[funs[i]] = RiTa[funs[i]];

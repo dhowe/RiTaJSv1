@@ -15,7 +15,6 @@ var runtests = function() {
     ok(typeof RiLexicon != 'undefined');
     ok(typeof RiGrammar != 'undefined');
     ok(typeof RiMarkov != 'undefined');
-    //ok(typeof RiTaEvent != 'undefined');
     ok(typeof RiWordNet != 'undefined');
     if (typeof window != 'undefined' && window) {
       ok(typeof RiText != 'undefined');
@@ -51,6 +50,8 @@ var runtests = function() {
     equal(typeof rg.loadTokens, 'function');
     rg = new RiMarkov(2);
     equal(typeof rg.loadTokens, 'function');
+    var rl = new RiLexicon();
+    equal(typeof rl.containsWord, 'function');
   });
 
   test("Member Variables", function() {
@@ -66,6 +67,7 @@ var runtests = function() {
     equal(typeof RiTa.splitSentences, 'function');
     equal(typeof RiTa.getPhonemes, 'function');
     equal(typeof RiTa.random, 'function');
+    equal(typeof RiTa.containsWord, 'function');
   });
 
   test("Public Constants", function() {

@@ -1,4 +1,4 @@
-RiTa._LTS=[
+LetterToSound.RULES=[
 'TOTAL 13100',
 'INDEX 0 a',
 'STATE 4 r 2 1',
