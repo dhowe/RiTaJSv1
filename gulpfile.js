@@ -134,13 +134,13 @@ gulp.task('lint.full', ['build'], function() {
 });
 
 // watch the src-dir for changes, then build
-gulp.task('watch.full', function() {
+gulp.task('watch.full', ['build.full'], function() {
 
   log('Watching ' + srcDir + '/*.js');
   gulp.watch(srcDir + '/*.js', [ 'build.full' ]);
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', [ 'build' ], function() {
 
   log('Watching ' + srcDir + '/*.js');
   gulp.watch(srcDir + '/*.js', [ 'build' ]);

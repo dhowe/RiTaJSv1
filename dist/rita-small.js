@@ -152,7 +152,7 @@ var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
 
-  VERSION: '1.1.62',
+  VERSION: '1.1.71',
 
   /* For tokenization, Can't -> Can not, etc. */
   SPLIT_CONTRACTIONS: false,
@@ -1115,8 +1115,8 @@ RiLexicon.prototype = {
   containsWord: function(word) {
 
     if (!strOk(word)) return false;
-    var input = word.toLowerCase(), input_s = input + 's', input_es = input + 'es';
-    return this.data && (this.data[input] || this.data[input_s] || this.data[input_es]);
+    var input = word.toLowerCase(), input_s = RiTa.singularize(input);
+    return this.data && (this.data[input] || this.data[input_s]);
   },
 
   isRhyme: function(word1, word2, useLTS) {
@@ -1270,9 +1270,9 @@ RiLexicon.prototype = {
       throw Error("[RiTa] _checkType() expects a single word, found: " + word);
 
     var psa = this._getPosArr(word);
-    if (PosTagger.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
-      warn(PosTagger.LEX_WARN);
-      PosTagger.LEX_WARN = 0; // only once
+    if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
+      warn(RiTa.LEX_WARN);
+      RiTa.LEX_WARN = 0; // only once
     }
 
     for (var i = 0; i < psa.length; i++) {
@@ -3998,7 +3998,7 @@ var PosTagger = { // singleton
 
       var data = lex && lex._getPosArr(words[i]);
       if (!data.length) {
-
+       
         // use stemmer categories if no lexicon
 
         choices2d[i] = [];
@@ -4007,10 +4007,10 @@ var PosTagger = { // singleton
           tag = 'nns';
         }
 
-        if (!lex.containsWord(words[i])) {
+        if (data.length === 0) {
 
           if (!RiTa.SILENT) { // warn
-            if (RiTa.LEX_WARN && !lex.containsWord(words[i]) && lex.size() <= 1000) {
+            if (RiTa.LEX_WARN && lex.size() <= 1000) {
               warn(RiTa.LEX_WARN);
               RiTa.LEX_WARN = false;
             }
