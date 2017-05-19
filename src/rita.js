@@ -967,8 +967,8 @@ RiLexicon.prototype = {
   containsWord: function(word) {
 
     if (!strOk(word)) return false;
-    var input = word.toLowerCase(), input_s = input + 's', input_es = input + 'es';
-    return this.data && (this.data[input] || this.data[input_s] || this.data[input_es]);
+    var input = word.toLowerCase(), input_s = RiTa.singularize(input);
+    return this.data && (this.data[input] || this.data[input_s]);
   },
 
   isRhyme: function(word1, word2, useLTS) {
@@ -3850,7 +3850,7 @@ var PosTagger = { // singleton
 
       var data = lex && lex._getPosArr(words[i]);
       if (!data.length) {
-
+       
         // use stemmer categories if no lexicon
 
         choices2d[i] = [];
@@ -3859,7 +3859,7 @@ var PosTagger = { // singleton
           tag = 'nns';
         }
 
-        if (!lex.containsWord(words[i])) {
+        if (data.length === 0) {
 
           if (!RiTa.SILENT) { // warn
             if (RiTa.LEX_WARN && !lex.containsWord(words[i]) && lex.size() <= 1000) {

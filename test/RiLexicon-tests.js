@@ -56,7 +56,26 @@ var runtests = function() {
     ok(!lex.containsWord("hello"));
     lex.data['hello'] = tmp; // restore data
 
-    // what about plurals??
+    // plurals
+    ok(lex.containsWord("teeth"));
+    ok(lex.containsWord("apples"));
+    ok(lex.containsWord("buses"));
+    ok(lex.containsWord("prognoses"));
+    ok(lex.containsWord("oxen"));
+    ok(lex.containsWord("theses"));
+    ok(lex.containsWord("stimuli"));
+    ok(lex.containsWord("crises"));
+    ok(lex.containsWord("media"));
+    
+    
+    //vb* ?
+    ok(lex.containsWord("runs"));
+    ok(lex.containsWord("running"));
+    ok(lex.containsWord("ran"));
+    ok(lex.containsWord("moved"));
+    ok(lex.containsWord("went"));
+    ok(lex.containsWord("spent"));
+
   });
 
   test("testAlliterations", function() {
