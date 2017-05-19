@@ -1,3 +1,246 @@
+
+var LetterToSound = makeClass(); // (adapted from FreeTTS)
+
+LetterToSound.prototype = {
+
+  init: function() {
+    this.warnedForNoLTS = false;
+    this.letterIndex = {};
+    this.fval_buff = [];
+    this.stateMachine = null;
+    this.numStates = 0;
+    for (var i = 0; i < LetterToSound.RULES.length; i++)
+      this.parseAndAdd(LetterToSound.RULES[i]);
+  },
+
+  _createState: function(type, tokenizer) {
+
+    if (type === "STATE") {
+      var index = parseInt(tokenizer.nextToken());
+      var c = tokenizer.nextToken();
+      var qtrue = parseInt(tokenizer.nextToken());
+      var qfalse = parseInt(tokenizer.nextToken());
+
+      return new DecisionState(index, c.charAt(0), qtrue, qfalse);
+
+    } else if (type === "PHONE") {
+
+      return new FinalState(tokenizer.nextToken());
+    }
+
+    throw Error("Unexpected type: " + type);
+  },
+
+  // Creates a word from an input line and adds it to the state machine
+  parseAndAdd: function(line) {
+    var tokenizer = new StringTokenizer(line, SP);
+    var type = tokenizer.nextToken();
+
+    if (type === "STATE" || type === "PHONE") {
+      this.stateMachine[this.numStates++] = this._createState(type, tokenizer);
+    } else if (type === "INDEX") {
+      var index = parseInt(tokenizer.nextToken());
+      if (index != this.numStates) {
+        throw Error("Bad INDEX in file.");
+      } else {
+        var c = tokenizer.nextToken();
+        this.letterIndex[c] = index;
+      }
+      //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
+    } else if (type == "TOTAL") {
+      this.stateMachine = [];
+      this.stateMachineSize = parseInt(tokenizer.nextToken());
+    }
+  },
+
+  getPhones: function(input, delim) {
+
+    var i, ph, result = [];
+
+    delim = delim || '-';
+
+    if (is(input, S)) {
+
+      if (!input.length) return E;
+
+      input = RiTa.tokenize(input);
+    }
+
+    for (i = 0; i < input.length; i++) {
+      ph = this._computePhones(input[i]);
+      result[i] = ph ? ph.join(delim) : E;
+    }
+
+    result = result.join(delim).replace(/ax/g, 'ah');
+
+    result.replace("/0/g","");
+
+    if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
+          ph = result.split("-");
+          result = "";
+          for (var i = 0; i < ph.length; i++) {
+              if (/[aeiou]/.test(ph[i])) ph[i] += "1";
+              result += ph[i] + "-";
+          }
+          if(ph.length > 1) result = result.substring(0, result.length - 1);
+      }
+
+    return result;
+  },
+
+  _computePhones: function(word) {
+
+    var dig, phoneList = [], windowSize = 4,
+      full_buff, tmp, currentState, startIndex, stateIndex, c;
+
+
+    if (!word || !word.length || RiTa.isPunctuation(word))
+      return null;
+
+    if (!LetterToSound.RULES) {
+      if (!this.warnedForNoLTS) {
+
+        this.warnedForNoLTS = true;
+        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+      }
+      return null;
+    }
+
+    word = word.toLowerCase();
+
+    if (isNum(word)) {
+
+      word = (word.length > 1) ? word.split(E) : [word];
+
+      for (var k = 0; k < word.length; k++) {
+
+        dig = parseInt(word[k]);
+        if (dig < 0 || dig > 9)
+          throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
+
+        phoneList.push(RiString._phones.digits[dig]);
+      }
+      return phoneList;
+    }
+
+    // Create "000#word#000", uggh
+    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
+
+    for (var pos = 0; pos < word.length; pos++) {
+
+      for (var i = 0; i < windowSize; i++) {
+
+        this.fval_buff[i] = full_buff[pos + i];
+        this.fval_buff[i + windowSize] =
+          full_buff[i + pos + 1 + windowSize];
+      }
+
+      c = word.charAt(pos);
+      startIndex = this.letterIndex[c];
+
+      // must check for null here, not 0 (and not ===)
+      if (!isNum(startIndex)) {
+        warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
+          c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+        return null;
+      }
+
+      stateIndex = parseInt(startIndex);
+
+      currentState = this.getState(stateIndex);
+
+      while (!(currentState instanceof FinalState)) {
+
+        stateIndex = currentState.getNextState(this.fval_buff);
+        currentState = this.getState(stateIndex);
+      }
+
+      currentState.append(phoneList);
+    }
+
+    return phoneList;
+  },
+
+  getState: function(i) {
+
+    if (is(i, N)) {
+      var state = null;
+      if (is(this.stateMachine[i], S)) {
+        state = this.getState(this.stateMachine[i]);
+      } else
+        state = this.stateMachine[i];
+      return state;
+    } else {
+      var tokenizer = new StringTokenizer(i, " ");
+      return this.getState(tokenizer.nextToken(), tokenizer);
+    }
+  }
+};
+
+// DecisionState
+
+var DecisionState = makeClass();
+
+DecisionState.TYPE = 1;
+
+DecisionState.prototype = {
+
+  init: function(index, c, qtrue, qfalse) {
+
+    this.c = c;
+    this.index = index;
+    this.qtrue = qtrue;
+    this.qfalse = qfalse;
+  },
+
+  type: function() {
+    return "DecisionState";
+  },
+
+  getNextState: function(chars) {
+
+    return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
+  }
+};
+
+// FinalState
+
+var FinalState = makeClass();
+
+FinalState.TYPE = 2;
+
+FinalState.prototype = {
+
+  // "epsilon" is used to indicate an empty list.
+  init: function(phones) {
+
+    this.phoneList = [];
+
+    if (phones === ("epsilon")) {
+      this.phoneList = null;
+    } else if (is(phones, A)) {
+      this.phoneList = phones;
+    } else {
+      var i = phones.indexOf('-');
+      if (i != -1) {
+        this.phoneList[0] = phones.substring(0, i);
+        this.phoneList[1] = phones.substring(i + 1);
+      } else {
+        this.phoneList[0] = phones;
+      }
+    }
+  },
+
+  type: function() { return "FinalState"; },
+
+  append: function(array) {
+
+    if (!this.phoneList) return;
+    for (var i = 0; i < this.phoneList.length; i++)
+      array.push(this.phoneList[i]);
+  }
+};
+
 LetterToSound.RULES=[
 'TOTAL 13100',
 'INDEX 0 a',

@@ -719,29 +719,35 @@ var RiTa = {
 
 }; // end RiTa object
 
-// set property names as RiTa constants
+// set feature names (PHONEMES, SYLLABLES, etc.) as RiTa constants
 for (var i = 0; i < FEATURES.length; i++) {
   RiTa[FEATURES[i].toUpperCase()] = FEATURES[i];
 }
 
 var RiLexicon = makeClass();
+
 RiLexicon.SILENCE_LTS = false;
 
 RiLexicon.prototype = {
 
   init: function() {
 
-    if (typeof _dict !== 'undefined')
+    if (typeof _dict === 'undefined') {
+      this.data = {};
+      this.keys = [];
+    }
+    else
       this.reload();
   },
 
   clear: function() {
 
     this.data = {};
-    this.keys = okeys(this.data); // cache
+    this.keys = [];
   },
 
   reload: function() {
+
     this.data = _dict();
     this.keys = okeys(this.data); // cache
   },
@@ -817,8 +823,7 @@ RiLexicon.prototype = {
       entry, result = [], minLen = minimumWordLen || 2,
       phonesArr, phones = RiTa.getPhonemes(input), med,
       targetPhonesArr = phones ? phones.split('-') : [],
-      input_s = input + 's', input_es = input + 'es',
-      lts = this._letterToSound();
+      input_s = input + 's', input_es = input + 'es';
 
     if (!targetPhonesArr[0] || !(input && input.length)) return EA;
 
@@ -861,6 +866,36 @@ RiLexicon.prototype = {
   },
 
   similarBySoundAndLetter: function(word) {
+
+    function intersect() { // https://gist.github.com/lovasoa/3361645
+      var i, all, n, len, ret = [], obj={}, shortest = 0,
+        nOthers = arguments.length-1, nShortest = arguments[0].length;
+      for (i=0; i<=nOthers; i++){
+        n = arguments[i].length;
+        if (n < nShortest) {
+          shortest = i;
+          nShortest = n;
+        }
+      }
+      for (i=0; i <= nOthers; i++) {
+        n = (i ===  shortest)? 0 : (i || shortest);
+        len = arguments[n].length;
+        for (var j=0; j < len; j++) {
+          var elem = arguments[n][j];
+          if (obj[elem] === i - 1) {
+            if (i === nOthers) {
+              ret.push(elem);
+              obj[elem] = 0;
+            } else {
+              obj[elem] = i;
+            }
+          } else if (i === 0) {
+            obj[elem] = 0;
+          }
+        }
+      }
+      return ret;
+    }
 
     var result = [], simSound, simLetter = this.similarByLetter(word);
 
@@ -1221,12 +1256,13 @@ RiLexicon.prototype = {
 
   _getRawPhones: function(word, useLTS) {
 
-    var phones, rdata = this._lookupRaw(word);
+    var phones, lts, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
 
     if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiLexicon.SILENCE_LTS)) {
 
-      phones = this._letterToSound().getPhones(word);
+      lts = this._letterToSound();
+      phones = lts && lts.getPhones(word);
       if (phones && phones.length)
         return RiString._syllabify(phones);
 
@@ -1401,287 +1437,14 @@ RiLexicon.prototype = {
   },
 
   _letterToSound: function() { // lazy load
-    if (!this.lts)
-      this.lts = new LetterToSound();
+    if (!this.lts) {
+      if (typeof LetterToSound !== 'undefined')
+        this.lts = new LetterToSound();
+    }
     return this.lts;
   }
 
 };
-
-// from: https://gist.github.com/lovasoa/3361645
-function intersect() {
-  var i, all, n, len, ret = [], obj={}, shortest = 0,
-    nOthers = arguments.length-1, nShortest = arguments[0].length;
-  for (i=0; i<=nOthers; i++){
-    n = arguments[i].length;
-    if (n<nShortest) {
-      shortest = i;
-      nShortest = n;
-    }
-  }
-  for (i=0; i<=nOthers; i++) {
-    n = (i===shortest)?0:(i||shortest);
-    len = arguments[n].length;
-    for (var j=0; j<len; j++) {
-        var elem = arguments[n][j];
-        if(obj[elem] === i-1) {
-          if(i === nOthers) {
-            ret.push(elem);
-            obj[elem]=0;
-          } else {
-            obj[elem]=i;
-          }
-        }else if (i===0) {
-          obj[elem]=0;
-        }
-    }
-  }
-  return ret;
-}
-
-var LetterToSound = makeClass(); // (adapted from FreeTTS)
-
-LetterToSound.prototype = {
-
-  init: function() {
-    this.warnedForNoLTS = false;
-    this.letterIndex = {};
-    this.fval_buff = [];
-    this.stateMachine = null;
-    this.numStates = 0;
-    for (var i = 0; i < LetterToSound.RULES.length; i++)
-      this.parseAndAdd(LetterToSound.RULES[i]);
-  },
-
-  _createState: function(type, tokenizer) {
-
-    if (type === "STATE") {
-      var index = parseInt(tokenizer.nextToken());
-      var c = tokenizer.nextToken();
-      var qtrue = parseInt(tokenizer.nextToken());
-      var qfalse = parseInt(tokenizer.nextToken());
-
-      return new DecisionState(index, c.charAt(0), qtrue, qfalse);
-
-    } else if (type === "PHONE") {
-
-      return new FinalState(tokenizer.nextToken());
-    }
-
-    throw Error("Unexpected type: " + type);
-  },
-
-  // Creates a word from an input line and adds it to the state machine
-  parseAndAdd: function(line) {
-    var tokenizer = new StringTokenizer(line, SP);
-    var type = tokenizer.nextToken();
-
-    if (type === "STATE" || type === "PHONE") {
-      this.stateMachine[this.numStates++] = this._createState(type, tokenizer);
-    } else if (type === "INDEX") {
-      var index = parseInt(tokenizer.nextToken());
-      if (index != this.numStates) {
-        throw Error("Bad INDEX in file.");
-      } else {
-        var c = tokenizer.nextToken();
-        this.letterIndex[c] = index;
-      }
-      //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
-    } else if (type == "TOTAL") {
-      this.stateMachine = [];
-      this.stateMachineSize = parseInt(tokenizer.nextToken());
-    }
-  },
-
-  getPhones: function(input, delim) {
-
-    var i, ph, result = [];
-
-    delim = delim || '-';
-
-    if (is(input, S)) {
-
-      if (!input.length) return E;
-
-      input = RiTa.tokenize(input);
-    }
-
-    for (i = 0; i < input.length; i++) {
-      ph = this._computePhones(input[i]);
-      result[i] = ph ? ph.join(delim) : E;
-    }
-
-    result = result.join(delim).replace(/ax/g, 'ah');
-
-    result.replace("/0/g","");
-
-    if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
-          ph = result.split("-");
-          result = "";
-          for (var i = 0; i < ph.length; i++) {
-              if (/[aeiou]/.test(ph[i])) ph[i] += "1";
-              result += ph[i] + "-";
-          }
-          if(ph.length > 1) result = result.substring(0, result.length - 1);
-      }
-
-    return result;
-  },
-
-  _computePhones: function(word) {
-
-    var dig, phoneList = [], windowSize = 4,
-      full_buff, tmp, currentState, startIndex, stateIndex, c;
-
-
-    if (!word || !word.length || RiTa.isPunctuation(word))
-      return null;
-
-    if (!LetterToSound.RULES) {
-      if (!this.warnedForNoLTS) {
-
-        this.warnedForNoLTS = true;
-        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
-      }
-      return null;
-    }
-
-    word = word.toLowerCase();
-
-    if (isNum(word)) {
-
-      word = (word.length > 1) ? word.split(E) : [word];
-
-      for (var k = 0; k < word.length; k++) {
-
-        dig = parseInt(word[k]);
-        if (dig < 0 || dig > 9)
-          throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
-
-        phoneList.push(RiString._phones.digits[dig]);
-      }
-      return phoneList;
-    }
-
-    // Create "000#word#000", uggh
-    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
-
-    for (var pos = 0; pos < word.length; pos++) {
-
-      for (var i = 0; i < windowSize; i++) {
-
-        this.fval_buff[i] = full_buff[pos + i];
-        this.fval_buff[i + windowSize] =
-          full_buff[i + pos + 1 + windowSize];
-      }
-
-      c = word.charAt(pos);
-      startIndex = this.letterIndex[c];
-
-      // must check for null here, not 0 (and not ===)
-      if (!isNum(startIndex)) {
-        warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
-          c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
-        return null;
-      }
-
-      stateIndex = parseInt(startIndex);
-
-      currentState = this.getState(stateIndex);
-
-      while (!(currentState instanceof FinalState)) {
-
-        stateIndex = currentState.getNextState(this.fval_buff);
-        currentState = this.getState(stateIndex);
-      }
-
-      currentState.append(phoneList);
-    }
-
-    return phoneList;
-  },
-
-  getState: function(i) {
-
-    if (is(i, N)) {
-      var state = null;
-      if (is(this.stateMachine[i], S)) {
-        state = this.getState(this.stateMachine[i]);
-      } else
-        state = this.stateMachine[i];
-      return state;
-    } else {
-      var tokenizer = new StringTokenizer(i, " ");
-      return this.getState(tokenizer.nextToken(), tokenizer);
-    }
-  }
-};
-
-// DecisionState
-
-var DecisionState = makeClass();
-
-DecisionState.TYPE = 1;
-
-DecisionState.prototype = {
-
-  init: function(index, c, qtrue, qfalse) {
-
-    this.c = c;
-    this.index = index;
-    this.qtrue = qtrue;
-    this.qfalse = qfalse;
-  },
-
-  type: function() {
-    return "DecisionState";
-  },
-
-  getNextState: function(chars) {
-
-    return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
-  }
-};
-
-// FinalState
-
-var FinalState = makeClass();
-
-FinalState.TYPE = 2;
-
-FinalState.prototype = {
-
-  // "epsilon" is used to indicate an empty list.
-  init: function(phones) {
-
-    this.phoneList = [];
-
-    if (phones === ("epsilon")) {
-      this.phoneList = null;
-    } else if (is(phones, A)) {
-      this.phoneList = phones;
-    } else {
-      var i = phones.indexOf('-');
-      if (i != -1) {
-        this.phoneList[0] = phones.substring(0, i);
-        this.phoneList[1] = phones.substring(i + 1);
-      } else {
-        this.phoneList[0] = phones;
-      }
-    }
-  },
-
-  type: function() { return "FinalState"; },
-
-  append: function(array) {
-
-    if (!this.phoneList) return;
-    for (var i = 0; i < this.phoneList.length; i++)
-      array.push(this.phoneList[i]);
-  }
-};
-
-// ===========================================================================
 
 var RiMarkov = makeClass();
 
@@ -2494,23 +2257,21 @@ RiString.prototype = {
     for (var i = 0, l = words.length; i < l; i++) {
 
       useRaw = false;
-
-      phones = lex && lex._getRawPhones(words[i]);
+      phones = lex._getRawPhones(words[i]);
 
       if (!phones) {
 
-        if (LetterToSound.RULES && words[i].match(/[a-zA-Z]+/))
-          log("[RiTa] Used LTS-rules for '" + words[i] + "'");
-
         lts = lex._letterToSound();
-
-        ltsPhones = lts.getPhones(words[i]);
-
+        ltsPhones = lts && lts.getPhones(words[i]);
         if (ltsPhones && ltsPhones.length > 0) {
+
+          if (words[i].match(/[a-zA-Z]+/))
+            log("[RiTa] Used LTS-rules for '" + words[i] + "'");
 
           phones = RiString._syllabify(ltsPhones);
 
         } else {
+
           phones = words[i];
           useRaw = true;
         }
@@ -3850,7 +3611,7 @@ var PosTagger = { // singleton
 
       var data = lex && lex._getPosArr(words[i]);
       if (!data.length) {
-       
+
         // use stemmer categories if no lexicon
 
         choices2d[i] = [];
@@ -3859,45 +3620,43 @@ var PosTagger = { // singleton
           tag = 'nns';
         }
 
-        if (data.length === 0) {
-
-          if (!RiTa.SILENT) { // warn
-            if (RiTa.LEX_WARN && lex.size() <= 1000) {
-              warn(RiTa.LEX_WARN);
-              RiTa.LEX_WARN = false;
-            }
-            if (RiTa.LTS_WARN && LetterToSound.RULES === 'undefined') {
-              warn(RiTa.LTS_WARN);
-              RiTa.LTS_WARN = false;
-            }
+        if (!RiTa.SILENT) { // warn
+          if (RiTa.LEX_WARN && lex.size() <= 1000) {
+            warn(RiTa.LEX_WARN);
+            RiTa.LEX_WARN = false;
           }
-
-          if (endsWith(words[i], 's')) {
-            var sub2, sub = words[i].substring(0, words[i].length - 1);
-
-            if (endsWith(words[i], 'es'))
-              sub2 = words[i].substring(0, words[i].length - 2)
-
-            if (this._lexHas("n", sub) || (sub2 && this._lexHas("n", sub2))) {
-              choices2d.push("nns");
-            } else {
-              var sing = RiTa.singularize(words[i]);
-              if (this._lexHas("n", sing)) choices2d.push("nns");
-            }
-
-          } else {
-
-            var sing = RiTa.singularize(words[i]);
-
-            if (this._lexHas("n", sing)) {
-              choices2d.push("nns");
-              tag = 'nns';
-            } else if (checkPluralNoLex(words[i])){
-               tag = 'nns';
-              //common plurals
-            }
+          if (RiTa.LTS_WARN && typeof LetterToSound === 'undefined') {
+            warn(RiTa.LTS_WARN);
+            RiTa.LTS_WARN = false;
           }
         }
+
+        if (endsWith(words[i], 's')) {
+          var sub2, sub = words[i].substring(0, words[i].length - 1);
+
+          if (endsWith(words[i], 'es'))
+            sub2 = words[i].substring(0, words[i].length - 2)
+
+          if (this._lexHas("n", sub) || (sub2 && this._lexHas("n", sub2))) {
+            choices2d.push("nns");
+          } else {
+            var sing = RiTa.singularize(words[i]);
+            if (this._lexHas("n", sing)) choices2d.push("nns");
+          }
+
+        } else {
+
+          var sing = RiTa.singularize(words[i]);
+
+          if (this._lexHas("n", sing)) {
+            choices2d.push("nns");
+            tag = 'nns';
+          } else if (checkPluralNoLex(words[i])){
+             tag = 'nns';
+            //common plurals
+          }
+        }
+
         result.push(tag);
 
       } else {

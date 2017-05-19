@@ -8,10 +8,7 @@ var funs = okeys(RiTa.lexicon);
 for (var i = 0; i < funs.length; i++) {
   if (!startsWith(funs[i], '_')) {
     var f = RiTa.lexicon[funs[i]];
-    if (is(f,F)) {
-      RiTa[funs[i]] = f.bind(RiTa.lexicon);
-      //console.log('RiTa.'+funs[i], typeof RiTa[funs[i]]);
-    }
+    is(f,F) && (RiTa[funs[i]] = f.bind(RiTa.lexicon));
   }
 }
 
