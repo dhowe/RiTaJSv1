@@ -747,9 +747,10 @@ RiLexicon.prototype = {
   },
 
   reload: function() {
-
-    this.data = _dict();
-    this.keys = okeys(this.data); // cache
+    if (typeof _dict != 'undefined') {
+        this.data = _dict();
+        this.keys = okeys(this.data); // cache
+    }
   },
 
   addWord: function(word, pronunciationData, posData) {
