@@ -1122,9 +1122,9 @@ RiLexicon.prototype = {
       throw Error("[RiTa] _checkType() expects a single word, found: " + word);
 
     var psa = this._getPosArr(word);
-    if (PosTagger.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
-      warn(PosTagger.LEX_WARN);
-      PosTagger.LEX_WARN = 0; // only once
+    if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
+      warn(RiTa.LEX_WARN);
+      RiTa.LEX_WARN = 0; // only once
     }
 
     for (var i = 0; i < psa.length; i++) {
@@ -3862,7 +3862,7 @@ var PosTagger = { // singleton
         if (data.length === 0) {
 
           if (!RiTa.SILENT) { // warn
-            if (RiTa.LEX_WARN && !lex.containsWord(words[i]) && lex.size() <= 1000) {
+            if (RiTa.LEX_WARN && lex.size() <= 1000) {
               warn(RiTa.LEX_WARN);
               RiTa.LEX_WARN = false;
             }
