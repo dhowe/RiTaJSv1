@@ -152,7 +152,7 @@ var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
 
-  VERSION: '1.1.71',
+  VERSION: '1.1.72',
 
   /* For tokenization, Can't -> Can not, etc. */
   SPLIT_CONTRACTIONS: false,
@@ -1147,11 +1147,26 @@ RiLexicon.prototype = {
       RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
   },
 
+  _isPlural: function(word) {
+
+    var stem = RiTa.stem(word, 'Pling');
+    if (stem === word) return false;
+    var data = this.data[RiTa.singularize(word)];
+    if (data && data.length === 2) {
+      var pos = data[1].split(SP);
+      for (var i = 0; i < pos.length; i++) {
+        if (pos[i] === 'nn')
+          return true;
+      }
+    }
+    return false;
+  },
+
   containsWord: function(word) {
 
-    if (!strOk(word)) return false;
-    var input = word.toLowerCase(), input_s = RiTa.singularize(input);
-    return this.data && (this.data[input] || this.data[input_s]);
+    if (!this.data || !strOk(word)) return false;
+    word = word.toLowerCase();
+    return this.data[word] || this._isPlural(word);
   },
 
   isRhyme: function(word1, word2, useLTS) {

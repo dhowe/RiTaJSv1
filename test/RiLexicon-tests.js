@@ -36,7 +36,31 @@ var runtests = function() {
 
   test("testSize", function() {
 
-    ok(lex.size() > 27000);
+    ok(lex.size() > 20000);
+  });
+
+  test("test_isPlural", function() {
+
+    ok(lex._isPlural("cats"));
+    ok(lex._isPlural("boxes"));
+    ok(lex._isPlural("teeth"));
+    ok(lex._isPlural("apples"));
+    ok(lex._isPlural("buses"));
+    ok(lex._isPlural("prognoses"));
+    ok(lex._isPlural("oxen"));
+    ok(lex._isPlural("theses"));
+    ok(lex._isPlural("stimuli"));
+    ok(lex._isPlural("crises"));
+    ok(lex._isPlural("media"));
+
+    ok(!lex._isPlural("cat"));
+    ok(!lex._isPlural("funny"));
+    ok(!lex._isPlural("pass"));
+    ok(!lex._isPlural("base"));
+    ok(!lex._isPlural("moved"));
+    ok(!lex._isPlural("went"));
+    ok(!lex._isPlural("spent"));
+    ok(!lex._isPlural("abates"));
   });
 
   test("testContainsWord", function() {
@@ -66,8 +90,8 @@ var runtests = function() {
     ok(lex.containsWord("stimuli"));
     ok(lex.containsWord("crises"));
     ok(lex.containsWord("media"));
-    
-    
+
+
     //vb* ?
     ok(lex.containsWord("runs"));
     ok(lex.containsWord("running"));
@@ -311,6 +335,16 @@ var runtests = function() {
     ok(lex.isNoun("dance"));
     ok(lex.isNoun("dancing"));
     ok(lex.isNoun("dancer"));
+    ok(lex.isNoun("cats"));
+    ok(lex.isNoun("boxes"));
+    ok(lex.isNoun("teeth"));
+    ok(lex.isNoun("apples"));
+    ok(lex.isNoun("buses"));
+    ok(lex.isNoun("prognoses"));
+    ok(lex.isNoun("oxen"));
+    ok(lex.isNoun("theses"));
+    ok(lex.isNoun("stimuli"));
+    ok(lex.isNoun("crises"));
 
     //verb
     ok(lex.isNoun("wash")); //"TODO:also false in processing -> nn" shoulbe be both Verb and Noun
@@ -724,7 +758,7 @@ var runtests = function() {
     deepEqual(result, answer);
 
     var result = lex.substrings("banana", 1);
-    var answer = ["a", "an", "b", "ban", "n", "na"];
+    var answer = ["a", "an", "ban"];
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 3);
