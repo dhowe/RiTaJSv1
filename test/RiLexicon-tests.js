@@ -1,30 +1,3 @@
-var testResults = [{
-
-  testName: 'testRhymes',
-  testClass: 'RiLexicon',
-  testMethod: 'rhymes',
-  assertion: 'deepEqual',
-  tests: [{
-    input: '',
-    output: []
-  }, {
-    input: 'apple.',
-    output: []
-  }, {
-    input: 'goxgle',
-    output: []
-  }, {
-    input: 'happens in here',
-    output: []
-  }, {
-    input: 'apple',
-    output: ['chapel', 'grapple', 'pineapple']
-  }, {
-    input: 'bible.',
-    output: ['libel', 'tribal']
-  }, ]
-}];
-
 var runtests = function() {
 
   var lex = RiTa.lexicon;
@@ -347,13 +320,18 @@ var runtests = function() {
     ok(lex.isNoun("crises"));
 
     //verb
-    ok(lex.isNoun("wash")); //"TODO:also false in processing -> nn" shoulbe be both Verb and Noun
+    ok(lex.isNoun("wash")); //"TODO:also false in processing -> nn" shoulbe be both Verb and Noun  ??
     ok(lex.isNoun("walk"));
     ok(lex.isNoun("play"));
     ok(lex.isNoun("throw"));
-    ok(lex.isNoun("drink")); //TODO:"also false in processing -> nn" shoulbe be both Verb and Noun
+    ok(lex.isNoun("drink")); //TODO:"also false in processing -> nn" shoulbe be both Verb and Noun ??
+
     ok(!lex.isNoun("eat"));
     ok(!lex.isNoun("chew"));
+    ok(!lex.isNoun("moved"));
+    ok(!lex.isNoun("went"));
+    ok(!lex.isNoun("spent"));
+    ok(!lex.isNoun("abates"));
 
     //adj
     ok(!lex.isNoun("hard"));
@@ -383,6 +361,8 @@ var runtests = function() {
     ok(!lex.isNoun("energetically"));
 
     ok(!lex.isNoun(""));
+
+
 
     throws(function() {
       RiTa.SILENT = 1;
