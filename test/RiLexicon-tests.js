@@ -38,6 +38,8 @@ var runtests = function() {
 
   test("testContainsWord", function() {
 
+    ok(!lex.containsWord("shalls"));
+
     ok(lex.containsWord("cat"));
     ok(!lex.containsWord("cated"));
     ok(lex.containsWord("funny"));
@@ -641,17 +643,17 @@ var runtests = function() {
     deepEqual(result, ["cabana"]);
 
     result = lex.similarByLetter("banana", false);
-    deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
 
     //delete the word 'lice', not exists anymore in dict.
     result = lex.similarByLetter("banana");
-    deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
+    deepEqual(result, ["banal", "bonanza", "cabana","manna"]);
 
     result = lex.similarByLetter("banana", 1, true);
     deepEqual(result, ["cabana"]);
 
     result = lex.similarByLetter("banana", 1, false);
-    deepEqual(result, ["banal", "bonanza", "cabana", "lantana", "manna", "wanna"]);
+    deepEqual(result, ["banal", "bonanza", "cabana",  "manna"]);
 
     result = lex.similarByLetter("tornado");
     deepEqual(result, ["torpedo"]);
@@ -732,11 +734,11 @@ var runtests = function() {
   test("testSubstrings", function() {
 
     var result = lex.substrings("thousand");
-    var answer = ["sand", "thou"];
+    var answer = ["sand",];
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 2);
-    var answer = [ 'an', 'and', 'sand', 'thou', 'us' ];
+    var answer = [ 'an', 'and', 'sand', 'us' ];
     deepEqual(result, answer);
 
     var result = lex.substrings("banana", 1);
@@ -744,11 +746,11 @@ var runtests = function() {
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 3);
-    var answer = ["and", "sand", "thou"];
+    var answer = ["and", "sand" ];
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand"); // min-length=4
-    var answer = ["sand", "thou"];
+    var answer = ["sand"];
     deepEqual(result, answer);
 
     var result = lex.substrings("");

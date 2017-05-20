@@ -138,7 +138,7 @@ var runtests = function() {
   test("testSubstrings", function() {
 
     var result = RiTa.substrings("thousand");
-    var answer = ["sand", "thou"];
+    var answer = ["sand"];
     deepEqual(result, answer);
 
   });
@@ -199,12 +199,6 @@ var runtests = function() {
     ok(RiTa.lexicon._getPhonemes('gonna'));
   });
 
-  test("RiLexicon-gets", function() {
-
-    var word = "aberration";
-    var output1 = RiTa.lexicon._getSyllables(word);
-  });
-
   test("testAddWord", function() {
 
     var result = RiTa.addWord("bananana", "b-ax-n ae1-n ax ax", "nn");
@@ -225,10 +219,6 @@ var runtests = function() {
     delete RiTa.lexicon.data[word.toLowerCase()];
     RiTa.lexicon.keys = Object.keys(RiTa.lexicon.data);
   }
-
-  test("testReload", function() {
-    RiTa.lexicon.reload(); // restore global
-  });
 
   test("testLexicalData", function() {
 

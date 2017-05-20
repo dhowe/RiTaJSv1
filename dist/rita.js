@@ -895,9 +895,10 @@ RiLexicon.prototype = {
   },
 
   reload: function() {
-
-    this.data = _dict();
-    this.keys = okeys(this.data); // cache
+    if (typeof _dict != 'undefined') {
+        this.data = _dict();
+        this.keys = okeys(this.data); // cache
+    }
   },
 
   addWord: function(word, pronunciationData, posData) {
@@ -1293,7 +1294,6 @@ RiLexicon.prototype = {
       var singular = RiTa.singularize(word);
       if (singular !== word) {
         result = this._checkType(singular, PosTagger.NOUNS);
-        //result && console.log('found plural noun: '+word+' ('+singular+')');
       }
     }
     return result;
