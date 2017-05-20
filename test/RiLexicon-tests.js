@@ -54,6 +54,8 @@ var runtests = function() {
     lex.data['hello'] = tmp; // restore data
 
     // plurals
+    ok(lex.containsWord("cats"));
+    ok(lex.containsWord("boxes"));
     ok(lex.containsWord("teeth"));
     ok(lex.containsWord("apples"));
     ok(lex.containsWord("buses"));
