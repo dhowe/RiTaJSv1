@@ -14,6 +14,7 @@ var runtests = function() {
 
   test("test_isPlural", function() {
 
+    ok(lex._isPlural("veils"));
     ok(lex._isPlural("cats"));
     ok(lex._isPlural("boxes"));
     ok(lex._isPlural("teeth"));
@@ -38,6 +39,7 @@ var runtests = function() {
 
   test("testContainsWord", function() {
 
+    ok(lex.containsWord("veils"));
     ok(!lex.containsWord("shalls"));
 
     ok(lex.containsWord("cat"));
@@ -68,7 +70,6 @@ var runtests = function() {
     ok(lex.containsWord("crises"));
     ok(lex.containsWord("media"));
 
-
     //vb* ?
     ok(lex.containsWord("runs"));
     ok(lex.containsWord("running"));
@@ -77,6 +78,8 @@ var runtests = function() {
     ok(lex.containsWord("went"));
     ok(lex.containsWord("spent"));
 
+    // nonsense
+    ok(!lex.containsWord("pleae"));
   });
 
   test("testAlliterations", function() {

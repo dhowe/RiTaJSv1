@@ -4911,7 +4911,7 @@ RiTa.stemmers.Pling = (function() {
 
     // -a to -ae
     // No other common words end in -ae
-    if (s._endsWith("ae"))
+    if (s._endsWith("ae") && s !== 'pleae') // special case
       return (cut(s, "e"));
 
     // -a to -ata

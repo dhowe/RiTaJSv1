@@ -1238,6 +1238,7 @@ return;
         equal(RiTa.singularize(tests[i]),tests[i+1]);
       }
 
+      equal(RiTa.singularize("pleae"), "pleae"); // special-cased in code
       equal(RiTa.singularize("whizzes"), "whiz");
       equal(RiTa.singularize("selves"), "self");
       equal(RiTa.singularize("bookshelves"), "bookshelf");
