@@ -1,4 +1,4 @@
-var tagsDict, word, sy, ph, ss;
+var tagsDict, word, ipaPhones, sy, ph, ss;
 var bubbles = [], colors = [];
 var pos = '', maxWordLength = 12;
 
@@ -30,11 +30,17 @@ function draw() {
   fill(56, 66, 90);
   textAlign(LEFT);
   textSize(36);
-  text(word, 80, 100);
-
-  // pos-tag
+  text(word, 80, 50);
+  
+  
+   //IPA
   textSize(18);
-  text(pos.toUpperCase(), 20, 30);
+  ipaPhones = arpaToIPA(lexicon._getRawPhones(word));
+  text("/" + ipaPhones + "/", 80, 75);
+  // pos-tag
+  textSize(14);
+  textStyle(ITALIC);
+  text(pos.toLowerCase(), 80, 105);
 
   for (var i = 0; i < bubbles.length; i++)
     bubbles[i].draw(i);
