@@ -30,15 +30,17 @@ function draw() {
   fill(56, 66, 90);
   textAlign(LEFT);
   textSize(36);
-  text(word, 80, 90);
-
-  // pos-tag
-  textSize(18);
-  text(pos.toUpperCase(), 20, 30);
-
+  text(word, 80, 50);
+  
+  
    //IPA
+  textSize(18);
   ipaPhones = arpaToIPA(lexicon._getRawPhones(word));
-  text("/" + ipaPhones + "/", 80, 115);
+  text("/" + ipaPhones + "/", 80, 75);
+  // pos-tag
+  textSize(14);
+  textStyle(ITALIC);
+  text(pos.toLowerCase(), 80, 105);
 
   for (var i = 0; i < bubbles.length; i++)
     bubbles[i].draw(i);
