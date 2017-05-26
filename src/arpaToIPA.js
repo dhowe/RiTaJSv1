@@ -45,27 +45,28 @@ var amap = {
 
 function arpaToIPA(phones) {
 
-    //console.log("arpaToIPA("+phones+")");
-
-    var syllables = phones.trim().split(RiTa.WORD_BOUNDARY),
+    var syllables = phones.trim().split(" "),
         ipaPhones ="";
 
     var needStress = true;
 
-    if (syllables.length == 1) {
+    if (syllables.length === 1) {
         // one-syllable words dont get stresses 
         needStress = false;
     }
-
+    
     for (var i = 0; i < syllables.length; i++) {
-        ipaPhones = syllableToIPA(syllables[i], needStress)
+        var ipa = syllableToIPA(syllables[i], needStress);
+        if (ipaPhones.length > 0 && !ipa.startsWith(IPA_STRESS) && !ipa.startsWith(IPA_2NDSTRESS))
+         ipa = " " + ipa;
+        ipaPhones += ipa;
     }
 
     return ipaPhones;
 }
 
 function syllableToIPA(arpaSyl, needStress) {
-
+    
     var primarystressed = false,
         secondarydStressed = false;
 
@@ -79,38 +80,35 @@ function syllableToIPA(arpaSyl, needStress) {
     var isAHStressed = false,
         isAEStressed = false;
 
-    var ipaSyl = "", arpaPhones = arpaSyl.trim().split(RiTa.PHONEME_BOUNDARY);
-
+    var ipaSyl = "", arpaPhones = arpaSyl.trim().split("-");
+    
     for (var i = 0; i < arpaPhones.length; i++) {
-        var arpaPhone = arpaPhones[i];
-        //System.out.println(arpaPhone);
+        var arpaPhone = arpaPhones[i],
+            stress = arpaPhone.charAt(arpaPhone.length - 1);
 
-        var stress = arpaPhone.charAt(arpaPhone.length - 1);
-
-        if (stress == RiTa.UNSTRESSED) // no stress
-            arpaPhone = arpaPhone.substring(0, arpaPhone.length() - 1);
-        else if (stress == RiTa.STRESSED) { // primary stress
-            arpaPhone = arpaPhone.substring(0, arpaPhone.length() - 1);
+        if (stress === RiTa.UNSTRESSED) // no stress
+            arpaPhone = arpaPhone.substring(0, arpaPhone.length - 1);
+        else if (stress === RiTa.STRESSED) { // primary stress
+            arpaPhone = arpaPhone.substring(0, arpaPhone.length - 1);
             primarystressed = true;
 
-            if (arpaPhone.equals("aa")) isAAStressed = true;
-            else if (arpaPhone.equals("er")) isUWStressed = true;
-            else if (arpaPhone.equals("iy")) isIYStressed = true;
-            else if (arpaPhone.equals("ao")) isUWStressed = true;
-            else if (arpaPhone.equals("uw")) isUWStressed = true;
+            if (arpaPhone === "aa") isAAStressed = true;
+            else if (arpaPhone === "er") isUWStressed = true;
+            else if (arpaPhone === "iy") isIYStressed = true;
+            else if (arpaPhone === "ao") isUWStressed = true;
+            else if (arpaPhone === "uw") isUWStressed = true;
 
-            else if (arpaPhone.equals("ah")) isAHStressed = true;
-            else if (arpaPhone.equals("ae") && arpaPhones.length > 2 // 'at'
-                && !arpaPhones[i > 0 ? i - 1 : i].equals("th") // e.g. for 'thank', 'ae1' is always 'æ'
-                && !arpaPhones[i > 0 ? i - 1 : i].equals("dh") // 'that'
-                && !arpaPhones[i > 0 ? i - 1 : i].equals("m") // 'man'
-                && !arpaPhones[i > 0 ? i - 1 : i].equals("k")) // 'catnip'
+            else if (arpaPhone === "ah") isAHStressed = true;
+            else if (arpaPhone === "ae" && arpaPhones.length > 2 // 'at'
+                && !arpaPhones[i > 0 ? i - 1 : i] === "th" // e.g. for 'thank', 'ae1' is always 'æ'
+                && !arpaPhones[i > 0 ? i - 1 : i] === "dh" // 'that'
+                && !arpaPhones[i > 0 ? i - 1 : i] === "m" // 'man'
+                && !arpaPhones[i > 0 ? i - 1 : i] === "k") // 'catnip'
                 isAEStressed = true;
-        } else if (stress == '2') { // secondary stress
+        } else if (stress === '2') { // secondary stress
             arpaPhone = arpaPhone.substring(0, arpaPhone.length() - 1);
             secondarydStressed = true;
-
-            if (arpaPhone.equals("ah")) isAHStressed = true;
+            if (arpaPhone === "ah") isAHStressed = true;
         }
 
         var IPASyl = phoneToIPA(arpaPhone);
@@ -131,15 +129,15 @@ function syllableToIPA(arpaSyl, needStress) {
         ipaSyl += IPASyl;
     }
 
-    if (needStress && primarystressed) ipaSyl.insert(0, IPA_STRESS);
-    else if (needStress && secondarydStressed) ipaSyl.insert(0, IPA_2NDSTRESS);
+    if (needStress && primarystressed) ipaSyl = IPA_STRESS + ipaSyl;
+    else if (needStress && secondarydStressed) ipaSyl = IPA_2NDSTRESS + ipaSyl;
 
     return ipaSyl;
 }
 
 function phoneToIPA(arpaPhone) {
     ipaPhoneme = amap[arpaPhone];
-    if (ipaPhoneme == null) {
+    if (ipaPhoneme === null) {
         console.error("Unexpected Phoneme: " + arpaPhone);
     }
     return ipaPhoneme;
