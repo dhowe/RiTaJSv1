@@ -14,10 +14,13 @@ var runtests = function() {
     var lex = RiTa.lexicon;
 
     for (var i = 0; i < words.length; i++) {
-       var data = lex._getPhonemes(words[i], true);
-       ok(results[i], arpaToIPA(data));
+       var data = lex._getRawPhones(words[i], false);
+       equal(arpaToIPA(data), results[i]);
     }
+
   });
+
+
 
 }
 

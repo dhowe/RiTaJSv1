@@ -27,9 +27,11 @@ $(document).ready(function () {
 
     var tags = RiTa.getPosTags(word, true);
     var pos = tagName(tags[0]);
+    var ipaPhones = ipaPhones = arpaToIPA(lexicon._getRawPhones(word));
 
     $('#word').text(word);
     $('#pos').text(pos);
+    $('#ipa').text("/" + ipaPhones + "/");
 
     refreshBubble(ph.split('-'));
 
@@ -82,7 +84,7 @@ $(document).ready(function () {
       (function (that, i) {
         var t = setTimeout(function () {
           $(that).animate({
-            'margin-top': 150,
+            'margin-top': 180,
           }, "slow");
         }, 40 * i);
       })(this, index);
