@@ -32,7 +32,6 @@ var RiTa = {
   SENTENCE_BOUNDARY: "|",
   VOWELS: "aeiou",
   ABBREVIATIONS: ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
-  ALL_PHONES: ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'],
   LEX_WARN: "A minimal Lexicon is currently in use. For word features outside the lexicon, use a larger version of RiTa.",
   LTS_WARN: 'No LTS-rules found: features/tagging may be inaccurate!',
 
@@ -3560,13 +3559,6 @@ Conjugator.prototype = {
 
 var PosTagger = { // singleton
 
-  TAGS: ['cc', 'cd', 'dt', 'ex', 'fw', 'in', 'jj',
-    'jjr', 'jjs', 'ls', 'md', 'nn', 'nns', 'nnp',
-    'nnps', 'pdt', 'pos', 'prp', 'prp$', 'rb',
-    'rbr', 'rbs', 'rp', 'sym', 'to', 'uh', 'vb',
-    'vbd', 'vbg', 'vbn', 'vbp', 'vbz', 'wdt',
-    'wp', 'wp$', 'wrb'
-  ],
   NOUNS: ['nn', 'nns', 'nnp', 'nnps'],
   VERBS: ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'],
   ADJ: ['jj', 'jjr', 'jjs'],
@@ -3587,10 +3579,6 @@ var PosTagger = { // singleton
 
   isAdj: function(tag) {
     return inArray(this.ADJ, tag);
-  },
-
-  isTag: function(tag) {
-    return inArray(this.TAGS, tag);
   },
 
   hasTag: function(choices, tag) {
