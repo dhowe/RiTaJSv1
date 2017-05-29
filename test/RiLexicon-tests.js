@@ -35,6 +35,14 @@ var runtests = function() {
     ok(!lex._isPlural("went"));
     ok(!lex._isPlural("spent"));
     ok(!lex._isPlural("abates"));
+
+    ok(lex._isPlural("hardness"));
+    ok(lex._isPlural("shortness"));
+    ok(lex._isPlural("dreariness"));
+    ok(lex._isPlural("unwillingness"));
+    ok(lex._isPlural("deer"));
+    ok(lex._isPlural("fish"));
+    
   });
 
   test("testContainsWord", function() {

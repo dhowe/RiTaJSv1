@@ -2,6 +2,12 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
     lex = RiLexicon();
+    
+    test("testSingularize", function () {
+      equal("ooze", RiTa.singularize("oozes"));
+      equal("enterprise", RiTa.singularize("enterprises"));
+      equal("treatise", RiTa.singularize("treatises")); //->Known Issues
+    });
 
     test("testIsRhymeStringString", function() {
 
