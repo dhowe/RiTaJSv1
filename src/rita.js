@@ -1384,10 +1384,13 @@ RiLexicon.prototype = {
 
     var i, j, rdata, numSyls, pluralize = false,
       ran = Math.floor(Math.random() * this.keys.length),
-      found = false, a = arguments, ranWordArr = this.keys;
+      found = false, a = arguments, words = this.keys;
 
     if (typeof a[0] === "string") {
+
         a[0] = trim(a[0]).toLowerCase();
+
+        pluralize = (a[0] === "nns");
 
         if (a[0] === "v")
             a[0] = "vb";
@@ -1395,23 +1398,24 @@ RiLexicon.prototype = {
             a[0] = "rb";
         if (a[0] === "a")
             a[0] = "jj";
-        if (a[0] === "n" || a[0] === "nns")
+        if (a[0] === "n" || a[0] === "nns") {
             a[0] = "nn";
+        }
     }
-    else if (typeof a[0] === "object") {
 
-    }
+    console.log('randomWord.pluralize='+pluralize);
+
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
 
 
-        for (i = 0; i < ranWordArr.length; i++) {
-          j = (ran + i) % ranWordArr.length;
-          rdata = this.data[ranWordArr[j]];
+        for (i = 0; i < words.length; i++) {
+          j = (ran + i) % words.length;
+          rdata = this.data[words[j]];
           numSyls = rdata[0].split(SP).length;
           if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-            return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
+            return pluralize ? RiTa.pluralize(words[j]) : words[j];
           }
         }
 
@@ -1421,11 +1425,11 @@ RiLexicon.prototype = {
 
         if (is(a[0], S)) { // a[0] = pos
 
-          for (i = 0; i < ranWordArr.length; i++) {
-            j = (ran + i) % ranWordArr.length;
-            rdata = this.data[ranWordArr[j]];
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
             if (a[0] === rdata[1].split(SP)[0]) {
-              return pluralize ? RiTa.pluralize(ranWordArr[j]) : ranWordArr[j];
+              return pluralize ? RiTa.pluralize(words[j]) : words[j];
             }
           }
 
@@ -1434,19 +1438,20 @@ RiLexicon.prototype = {
         } else {
 
           // a[0] = syllableCount
-          for (i = 0; i < ranWordArr.length; i++) {
-            j = (ran + i) % ranWordArr.length;
-            rdata = this.data[ranWordArr[j]];
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
             if (rdata[0].split(SP).length === a[0]) {
-              return ranWordArr[j];
+              return words[j];
             }
           }
         }
         return E;
 
       case 0:
-        return ranWordArr[ran];
+        return words[ran];
     }
+
     return E;
   },
 

@@ -153,7 +153,7 @@ var runtests = function() {
 
     // no result
     result = lex.randomWord("fw");
-    ok(result.length < 1);
+    ok(result.length < 1, "randomWord fw: " + result);
 
     result = lex.randomWord("rp");
     ok(result.length < 1, "randomWord rp: " + result);
@@ -171,6 +171,12 @@ var runtests = function() {
     //tag, int
     result = lex.randomWord("nns", 5);
     ok(result.length > 0, "randomWord nns: " + result);
+
+    for (var j = 0; j < 20; j++) {
+      // tag
+      result = lex.randomWord("nns");
+      ok(lex._isPlural(result), "randomWord nns: " + result);
+    }
 
   });
 
