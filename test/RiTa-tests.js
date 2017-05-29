@@ -1219,6 +1219,13 @@ return;
       equal("corpora", RiTa.pluralize("corpus"));
       equal("menus", RiTa.pluralize("menu"));
 
+      equal("hardness", RiTa.pluralize("hardness"));
+      equal("shortness", RiTa.pluralize("shortness"));
+      equal("dreariness", RiTa.pluralize("dreariness"));
+      equal("unwillingness", RiTa.pluralize("unwillingness"));
+      equal("deer", RiTa.pluralize("deer"));
+      equal("fish", RiTa.pluralize("fish"));
+
     });
 
     test("testSingularize", function () {
@@ -1330,6 +1337,18 @@ return;
       equal("guru", RiTa.singularize("gurus"));
 
       equal("", RiTa.singularize(""));
+      equal("hardness", RiTa.singularize("hardness"));
+      equal("shortness", RiTa.singularize("shortness"));
+      equal("dreariness", RiTa.singularize("dreariness"));
+      equal("unwillingness", RiTa.singularize("unwillingness"));
+      equal("deer", RiTa.singularize("deer"));
+      equal("fish", RiTa.singularize("fish"));
+
+      // equal("ooze", RiTa.singularize("oozes"));
+      // equal("enterprise", RiTa.singularize("enterprises"));
+      // equal("treatise", RiTa.singularize("treatises")); /->Known Issues
+      
+
     });
 
     test("testGetPastParticiple", function () {

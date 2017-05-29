@@ -1000,7 +1000,7 @@ RiLexicon.prototype = {
   },
 
   _isPlural: function(word) {
-
+     if (NULL_PLURALS.applies(word)) return true;
     var stem = RiTa.stem(word, 'Pling');
     if (stem === word) return false;
     var data = this.data[RiTa.singularize(word)];
