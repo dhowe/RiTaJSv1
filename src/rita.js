@@ -1403,8 +1403,6 @@ RiLexicon.prototype = {
         }
     }
 
-    console.log('randomWord.pluralize='+pluralize);
-
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
