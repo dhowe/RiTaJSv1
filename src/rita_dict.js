@@ -461,7 +461,7 @@ function _dict() { return {
 'advice':['ae-d v-ay1-s','nn'],
 'advisability':['ae-d v-ay z-ah b-ih1 l-ih t-iy','nn'],
 'advisable':['ah-d v-ay1 z-ah b-ah-l','jj'],
-'advise':['ae-d v-ay1-z','vb vbp nn'],
+'advise':['ae-d v-ay1-z','vb vbp'],
 'advised':['ae-d v-ay1-z-d','vbn vbd jj'],
 'advisedly':['ae-d v-ay1 z-ah-d l-iy','rb'],
 'advisement':['ah-d v-ay1-z m-ah-n-t','nn'],

@@ -1403,8 +1403,6 @@ RiLexicon.prototype = {
         }
     }
 
-    console.log('randomWord.pluralize='+pluralize);
-
     switch (a.length) {
 
       case 2: // a[0]=pos  a[1]=syllableCount
@@ -4753,7 +4751,7 @@ RiTa.stemmers.Lancaster = (function() {
 var categorySP = ['acoustics', 'aestetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dermatoglyphics', 'dialectics', 'deer', 'dynamics', 'esthetics', 'ethics', 'harmonics', 'heroics', 'isometrics', 'mechanics', 'metrics', 'statistics', 'optic', 'people', 'physics', 'polemics', 'propaedeutics', 'pyrotechnics', 'quadratics', 'quarters', 'statistics', 'tactics', 'tropics'];
 
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
-var categorySE_SES = ['nurses', 'cruises'];
+var categorySE_SES = ['abuses','blouses','bruises','cheeses','chemises','clauses','corpses','courses','cruises','curses','databases','defenses','dioceses','discourses','diseases','doses','eclipses','enterprises','expenses','fuses','glimpses','guises','horses','impulses','noises','noses','nurses','offenses','overdoses','phrases','pretenses','pulses','purposes','purses','racehorses','repurchases','responses','roses', 'spouses', 'surmises', 'tortoises', 'treatises', 'vases', 'verses'];
 
 /* Words that do not have a distinct plural form (like 'atlas' etc.) */
 var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'breeches', 'britches', 'canvas', 'chaos', 'clippers', 'contretemps', 'corps', 'cosmos', 'crossroads', 'diabetes', 'ethos', 'gallows', 'gas', 'graffiti', 'headquarters', 'herpes', 'high-jinks', 'innings', 'jackanapes', 'lens', 'means', 'measles', 'mews', 'mumps', 'news', 'pathos', 'pincers', 'pliers', 'proceedings', 'rabies', 'rhinoceros', 'sassafras', 'scissors', 'series', 'shears', 'species', 'tuna'];
@@ -5334,7 +5332,8 @@ var SINGULAR_RULES = [
   NULL_PLURALS,
   RE("whizzes", 3),
   RE("^(buses|octopuses)$", 2),
-  RE("^(toes|wheezes)$", 1),
+  RE("(houses|cases)$", 1),
+  RE("^(toes|wheezes|oozes)$", 1),
   RE("(men|women)$", 2, "an"),
   RE("^[lm]ice$", 3, "ouse"),
   RE("^children", 3),
