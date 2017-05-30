@@ -1344,11 +1344,11 @@ return;
       equal("deer", RiTa.singularize("deer"));
       equal("fish", RiTa.singularize("fish"));
 
-      // equal("ooze", RiTa.singularize("oozes"));
-      // equal("enterprise", RiTa.singularize("enterprises"));
-      // equal("treatise", RiTa.singularize("treatises")); /->Known Issues
-      
-
+      equal("ooze", RiTa.singularize("oozes"));
+      equal("enterprise", RiTa.singularize("enterprises"));
+      equal("treatise", RiTa.singularize("treatises")); 
+      equal("house", RiTa.singularize("houses")); 
+      equal("chemise", RiTa.singularize("chemises")); 
     });
 
     test("testGetPastParticiple", function () {

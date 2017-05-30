@@ -1003,12 +1003,23 @@ RiLexicon.prototype = {
      if (NULL_PLURALS.applies(word)) return true;
     var stem = RiTa.stem(word, 'Pling');
     if (stem === word) return false;
-    var data = this.data[RiTa.singularize(word)];
+    var sing = RiTa.singularize(word);
+    var data = this.data[sing];
     if (data && data.length === 2) {
       var pos = data[1].split(SP);
       for (var i = 0; i < pos.length; i++) {
         if (pos[i] === 'nn')
           return true;
+      }
+    } else if (word.endsWith("ses") || word.endsWith("zes")) {
+      sing = word.substring(0, word.length - 1);
+      data = this.data[sing];
+      if (data && data.length === 2) {
+          var pos = data[1].split(SP);
+          for (var i = 0; i < pos.length; i++) {
+              if (pos[i] === 'nn')
+                  return true;
+          }
       }
     }
     return false;
@@ -4751,7 +4762,7 @@ RiTa.stemmers.Lancaster = (function() {
 var categorySP = ['acoustics', 'aesthetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dialectics', 'deer', 'dynamics', 'ethics', 'harmonics', 'heroics', 'mechanics', 'metrics', 'optics', 'people', 'physics', 'polemics', 'pyrotechnics', 'quadratics', 'quarters', 'statistics', 'tactics', 'tropics'];
 
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
-var categorySE_SES = ['nurses', 'cruises'];
+var categorySE_SES = ['abuses','blouses','bruises','cheeses','chemises','clauses','corpses','courses','cruises','curses','databases','defenses','dioceses','discourses','diseases','doses','eclipses','enterprises','expenses','fuses','glimpses','guises','horses','impulses','noises','noses','nurses','offenses','overdoses','phrases','pretenses','pulses','purposes','purses','racehorses','repurchases','responses','roses', 'spouses', 'surmises', 'tortoises', 'treatises', 'vases', 'verses'];
 
 /* Words that do not have a distinct plural form (like 'atlas' etc.) */
 var category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'breeches', 'britches', 'canvas', 'chaos', 'clippers', 'contretemps', 'corps', 'cosmos', 'crossroads', 'diabetes', 'ethos', 'gallows', 'gas', 'graffiti', 'headquarters', 'herpes', 'high-jinks', 'innings', 'jackanapes', 'lens', 'means', 'measles', 'mews', 'mumps', 'news', 'pathos', 'pincers', 'pliers', 'proceedings', 'rabies', 'rhinoceros', 'sassafras', 'scissors', 'series', 'shears', 'species', 'tuna'];
@@ -5332,7 +5343,8 @@ var SINGULAR_RULES = [
   NULL_PLURALS,
   RE("whizzes", 3),
   RE("^(buses|octopuses)$", 2),
-  RE("^(toes|wheezes)$", 1),
+  RE("(houses|cases)$", 1),
+  RE("^(toes|wheezes|oozes)$", 1),
   RE("(men|women)$", 2, "an"),
   RE("^[lm]ice$", 3, "ouse"),
   RE("^children", 3),
