@@ -58,8 +58,8 @@ gulp.task('npm.build', ['setup-npm'], function(done) {
   });
 });
 
-// do npm build, then publish the created .tgz file
-gulp.task('npm.publish', ['npm.build'], function(done) {
+// do npm publish on already created .tgz file
+gulp.task('npm.publish', [], function(done) {
   var tgz = 'rita-'+version+'.tgz';
   exec(npm + ' publish '+tgz, function (err, stdout, stderr) {
     log("Publishing "+tgz, stdout);
