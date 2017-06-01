@@ -32,7 +32,7 @@ function draw() {
   fill(56, 66, 90);
   textAlign(LEFT);
   textSize(36);
-  word && text(word, 80, 50);
+  text(word, 80, 50);
 
 
    //IPA
@@ -42,7 +42,7 @@ function draw() {
   // pos-tag
   textSize(14);
   textStyle(ITALIC);
-  pos && text(pos.toLowerCase(), 80, 105);
+  text(pos.toLowerCase(), 80, 105);
 
   for (var i = 0; i < bubbles.length; i++)
     bubbles[i].draw(i);
