@@ -32,7 +32,7 @@ function draw() {
   fill(56, 66, 90);
   textAlign(LEFT);
   textSize(36);
-  text(word, 80, 50);
+  word && text(word, 80, 50);
 
 
    //IPA
@@ -42,7 +42,7 @@ function draw() {
   // pos-tag
   textSize(14);
   textStyle(ITALIC);
-  text(pos.toLowerCase(), 80, 105);
+  pos && text(pos.toLowerCase(), 80, 105);
 
   for (var i = 0; i < bubbles.length; i++)
     bubbles[i].draw(i);
@@ -53,7 +53,7 @@ function selectWord() { // called every 4 sec by timer
   // random word with <= 12 letters
   do {
     word = lexicon.randomWord();
-  } while (word.length > maxWordLength);
+  } while (word && word.length > maxWordLength);
 
   // get various features
   sy = RiTa.getSyllables(word);

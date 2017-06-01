@@ -783,7 +783,7 @@ RiLexicon.prototype = {
       inputES = input + 'es',
       inputLen = input.length;
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       var entry = this.keys[i];
 
@@ -829,7 +829,7 @@ RiLexicon.prototype = {
 
     //console.log("TARGET "+targetPhonesArr);
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       entry = this.keys[i];
 
@@ -915,7 +915,7 @@ RiLexicon.prototype = {
     minLength = minLength || (minLength === 0) || 4;
 
     var result = [];
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (this.keys[i] === word || this.keys[i].length < minLength)
         continue;
@@ -930,7 +930,7 @@ RiLexicon.prototype = {
 
     var result = [];
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (this.keys[i] === word) continue;
       if (this.keys[i].indexOf(word) >= 0)
@@ -977,7 +977,7 @@ RiLexicon.prototype = {
         return this.keys;
     }
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (regex.test(this.keys[i])) {
 
@@ -1055,11 +1055,10 @@ RiLexicon.prototype = {
 
   rhymes: function(word) {
 
-
       var p = this._lastStressedPhoneToEnd(word),
         phones, results = [];
 
-      for (var i = 0; i < this.keys.length; i++) {
+      for (var i = 0; i < this.size(); i++) {
 
         if (this.keys[i] === word)
           continue;
@@ -1087,7 +1086,7 @@ RiLexicon.prototype = {
     var c2, results = [],
       c1 = this._firstPhoneme(this._firstStressedSyllable(word, useLTS));
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       c2 = this._firstPhoneme(
           this._firstStressedSyllable(this.keys[i], useLTS));
@@ -1180,8 +1179,12 @@ RiLexicon.prototype = {
   },
 
   size: function() {
-
-    return this.keys.length;
+    var s = this.keys.length;
+    if (RiTa.LEX_WARN && s === 0) {
+      warn(RiTa.LEX_WARN);
+      RiTa.LEX_WARN = 0; 
+    } 
+    return s;
   },
 
   _checkType: function(word, tagArray) {
@@ -1281,7 +1284,7 @@ RiLexicon.prototype = {
   /* Returns the raw (RiTa-format) dictionary entry for the given word   */
   _lookupRaw: function(word) {
 
-    word = word.toLowerCase();
+    word = word && word.toLowerCase();
     if (this.data && this.data[word])
       return this.data[word];
     //log("[RiTa] No lexicon entry for '" + word + "'");
@@ -1402,7 +1405,7 @@ RiLexicon.prototype = {
   randomWord: function() { // takes nothing, pos, syllableCount, or both
 
     var i, j, rdata, numSyls, pluralize = false,
-      ran = Math.floor(Math.random() * this.keys.length),
+      ran = Math.floor(Math.random() * this.size()),
       found = false, a = arguments, words = this.keys;
 
     if (typeof a[0] === "string") {
