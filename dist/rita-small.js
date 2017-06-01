@@ -152,7 +152,7 @@ var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
 
-  VERSION: '1.1.72',
+  VERSION: '1.2.01',
 
   /* For tokenization, Can't -> Can not, etc. */
   SPLIT_CONTRACTIONS: false,
@@ -931,7 +931,7 @@ RiLexicon.prototype = {
       inputES = input + 'es',
       inputLen = input.length;
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       var entry = this.keys[i];
 
@@ -977,7 +977,7 @@ RiLexicon.prototype = {
 
     //console.log("TARGET "+targetPhonesArr);
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       entry = this.keys[i];
 
@@ -1063,7 +1063,7 @@ RiLexicon.prototype = {
     minLength = minLength || (minLength === 0) || 4;
 
     var result = [];
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (this.keys[i] === word || this.keys[i].length < minLength)
         continue;
@@ -1078,7 +1078,7 @@ RiLexicon.prototype = {
 
     var result = [];
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (this.keys[i] === word) continue;
       if (this.keys[i].indexOf(word) >= 0)
@@ -1125,7 +1125,7 @@ RiLexicon.prototype = {
         return this.keys;
     }
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       if (regex.test(this.keys[i])) {
 
@@ -1203,11 +1203,10 @@ RiLexicon.prototype = {
 
   rhymes: function(word) {
 
-
       var p = this._lastStressedPhoneToEnd(word),
         phones, results = [];
 
-      for (var i = 0; i < this.keys.length; i++) {
+      for (var i = 0; i < this.size(); i++) {
 
         if (this.keys[i] === word)
           continue;
@@ -1235,7 +1234,7 @@ RiLexicon.prototype = {
     var c2, results = [],
       c1 = this._firstPhoneme(this._firstStressedSyllable(word, useLTS));
 
-    for (var i = 0; i < this.keys.length; i++) {
+    for (var i = 0; i < this.size(); i++) {
 
       c2 = this._firstPhoneme(
           this._firstStressedSyllable(this.keys[i], useLTS));
@@ -1328,8 +1327,12 @@ RiLexicon.prototype = {
   },
 
   size: function() {
-
-    return this.keys.length;
+    var s = this.keys.length;
+    if (RiTa.LEX_WARN && s === 0) {
+      warn(RiTa.LEX_WARN);
+      RiTa.LEX_WARN = 0; 
+    } 
+    return s;
   },
 
   _checkType: function(word, tagArray) {
@@ -1429,7 +1432,7 @@ RiLexicon.prototype = {
   /* Returns the raw (RiTa-format) dictionary entry for the given word   */
   _lookupRaw: function(word) {
 
-    word = word.toLowerCase();
+    word = word && word.toLowerCase();
     if (this.data && this.data[word])
       return this.data[word];
     //log("[RiTa] No lexicon entry for '" + word + "'");
@@ -1550,7 +1553,7 @@ RiLexicon.prototype = {
   randomWord: function() { // takes nothing, pos, syllableCount, or both
 
     var i, j, rdata, numSyls, pluralize = false,
-      ran = Math.floor(Math.random() * this.keys.length),
+      ran = Math.floor(Math.random() * this.size()),
       found = false, a = arguments, words = this.keys;
 
     if (typeof a[0] === "string") {
@@ -5493,7 +5496,7 @@ var ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/,
   ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
 
 var NULL_PLURALS = RE( // these don't change for plural/singular
-  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|" + "burmese|chinese|colossus|congolese|discus|emphasis|expertise|finess|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|finnan|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
+  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|" + "burmese|chinese|colossus|congolese|discus|emphasis|expertise|finess|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|finnan|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
 
 var SINGULAR_RULES = [
   NULL_PLURALS,
