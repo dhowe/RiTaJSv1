@@ -9,15 +9,14 @@ $(document).ready(function () {
   function findRhymes() {
 
     var word, tmp = '';
-    while (tmp.length < 3) {
-
+    do {
       word = lexicon.randomWord();
       tmp = lexicon.rhymes(word);
-    }
+    } while ( word && tmp.length < 3)
 
-    var rhymes = tmp.slice(0, Math.min(tmp.length, 13));
+    var rhymes = tmp && tmp.slice(0, Math.min(tmp.length, 13));
 
     $('#word').html(word);
-    $('#rhyme').html(rhymes.join("<br>"));
+    $('#rhyme').html(rhymes.length > 0 && rhymes.join("<br>"));
   }
 });
