@@ -14,9 +14,9 @@ $(document).ready(function () {
       tmp = lexicon.rhymes(word);
     } while ( word && tmp.length < 3)
 
-    var rhymes = tmp && tmp.slice(0, Math.min(tmp.length, 13));
+    var rhymes = tmp.slice(0, Math.min(tmp.length, 13));
 
     $('#word').html(word);
-    $('#rhyme').html(rhymes.length > 0 && rhymes.join("<br>"));
+    $('#rhyme').html(rhymes.join("<br>"));
   }
 });

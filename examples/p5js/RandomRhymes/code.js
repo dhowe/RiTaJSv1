@@ -19,12 +19,12 @@ function draw()
 
   textAlign(RIGHT);
   textSize(36);
-  word && text(word, 280, 40);
+  text(word, 280, 40);
 
   textAlign(LEFT);
   textSize(14);
   textLeading(17);
-  rhymes && text(rhymes, 30, 73);
+  text(rhymes, 30, 73);
 }
 
 function findRhymes() { // called by timer
