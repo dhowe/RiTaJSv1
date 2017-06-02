@@ -6,7 +6,7 @@
 
 #### [The RiTa website](http://rednoise.org/rita)
 
-RiTa.js is designed to an easy-to-use toolkit for experiments in natural language and generative literature, based on the [original RiTa](http://rednoise.org/rita) library for Java. RiTa.js works alone or in conjunction with p5.js, processing.js, node.js, bower, or browserify.  All RiTa and RiTa.js tools are free/libre/open-source according to the [GPL](http://www.gnu.org/licenses/gpl.txt).
+RiTa.js is designed to an easy-to-use toolkit for experiments in natural language and generative literature, based on the [original RiTa](http://rednoise.org/rita) library for Java. RiTa.js works alone or in conjunction with p5.js, processing.js, node/npm, or browserify.  All RiTa and RiTa.js tools are free/libre/open-source according to the [GPL](http://www.gnu.org/licenses/gpl.txt).
 
 
 #### About the project
@@ -102,34 +102,6 @@ Create create a file called 'test.html' with a single script tag as below, then 
 ```html
 <script src="bundle.js"></script>
 ```
-
-#### With [bower](http://bower.io/)
---------
-Install [bower](http://bower.io/) (if you haven't already)
-```
-$ sudo npm install -g bower
-```
-Choose a directory and do:
-
-```bash
-$ bower install rita
-```
-
-Now, create a file called 'test.html', add the following lines, save, and open in a browser:
-
-```html
-<html>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <script src="./bower_components/rita/dist/rita.min.js"></script>
-  <script>
-    window.onload = function() {
-      $('#content').text(RiTa.tokenize("The elephant took a bite!"));
-    };
-  </script>
-  <div id="content" width=200 height=200></div>
-<html>
-```
-
 
 #### With [processing.js](http://processingjs.org)
 --------
