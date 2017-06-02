@@ -69,7 +69,7 @@ gulp.task('npm.publish', [], function(done) {
 });
 
 // build everything, then do npm pack
-gulp.task('make.lib', [ 'build.full', 'bower-update' ], function(done) {
+gulp.task('make.lib', [ 'build.full' ], function(done) {
   gulp.start('npm.build');
 });
 
@@ -331,14 +331,6 @@ gulp.task('test-only', function (done) {
     });
 });
 
-gulp.task('bower-update', [], function() {
-
-  // update version # in bower.json
-  return gulp.src(['bower.tmpl'])
-    .pipe(replace('##version##', version))
-    .pipe(concat('bower.json'))
-    .pipe(gulp.dest('.'));
-});
 
 // Helper functions --------------------------------------
 
