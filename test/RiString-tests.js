@@ -235,8 +235,6 @@ var runtests = function () {
 
   test("testEquals", function () { // compare Object
 
-    // check that these are ok ---------------
-
     var rs = new RiString("closed");
     var rs2 = new RiString("closed");
     var result = rs.equals(rs2);
@@ -244,11 +242,6 @@ var runtests = function () {
 
     rs = new RiString("closed");
     rs2 = new RiString("Closed");
-    result = rs.equals(rs2);
-    ok(!result);
-
-    rs = new RiString("clOsed");
-    rs2 = new RiString("closed");
     result = rs.equals(rs2);
     ok(!result);
 
@@ -263,11 +256,6 @@ var runtests = function () {
     ok(!result);
 
     rs = new RiString("There is a cat.");
-    rs2 = new RiString("There is a cat");
-    result = rs.equals(rs2);
-    ok(!result);
-
-    rs = new RiString("There is a cat.");
     rs2 = new RiString("");
     result = rs.equals(rs2);
     ok(!result);
@@ -277,10 +265,14 @@ var runtests = function () {
     result = rs.equals(rs2);
     ok(result);
 
+    rs = new RiString();
+    rs2 = new RiString();
+    result = rs.equals(rs2);
+    ok(result);
     // ---------------
 
     rs = new RiString("closed");
-    result = rs.equals("closed");
+    result = rs.equals(RiString("closed"));
     ok(result);
 
     rs = new RiString("closed");
@@ -293,18 +285,6 @@ var runtests = function () {
 
     rs = new RiString("There is a cat.");
     result = rs.equals("There is a cat.");
-    ok(result);
-
-    rs = new RiString("There is a cat.");
-    result = rs.equals("There is a cat. ");
-    ok(!result);
-
-    rs = new RiString("There is a cat.");
-    result = rs.equals("There is a cat");
-    ok(!result);
-
-    rs = new RiString("There is a cat.");
-    result = rs.equals("");
     ok(!result);
   });
 

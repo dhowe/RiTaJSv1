@@ -1182,8 +1182,8 @@ RiLexicon.prototype = {
     var s = this.keys.length;
     if (RiTa.LEX_WARN && s === 0) {
       warn(RiTa.LEX_WARN);
-      RiTa.LEX_WARN = 0; 
-    } 
+      RiTa.LEX_WARN = 0;
+    }
     return s;
   },
 
@@ -1489,7 +1489,7 @@ var RiMarkov = makeClass();
 
 RiMarkov.MAX_GENERATION_ATTEMPTS = 1000;
 var SSRE = /"?[A-Z][a-z"',;`-]*/;
-SSDLM = 'D=l1m_';
+var SSDLM = 'D=l1m_';
 
 RiMarkov.prototype = {
 
@@ -1858,12 +1858,14 @@ RiMarkov.prototype = {
     }
 
     if (!this.allowDuplicates) {
+
       if (!this.isSentenceAware) {
         err('Invalid state: allowDuplicates must be' +
           ' true when not generating sentences');
       }
 
-      if (this.sentenceList.indexOf(sent) > -1) {
+      if (this.sentenceList.indexOf(sent) > -1) { // a duplicate
+
         if (++this.skippedDups == this.maxDuplicatesToSkip) {
           warn('Hit skip-maximum (RiMarkov.maxDuplicatesToSkip=' + this.maxDuplicatesToSkip +
             ') after skipping ' + this.maxDuplicatesToSkip + ', now allowing duplicates!');
@@ -2380,7 +2382,7 @@ RiString.prototype = {
 
   equals: function(arg) {
 
-    return (typeof arg === S) ? arg === this._text : arg.text() === this._text;
+    return is(arg.text, F) && arg.text() === this._text;
   },
 
   equalsIgnoreCase: function(arg) {
