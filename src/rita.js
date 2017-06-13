@@ -1769,7 +1769,7 @@ RiMarkov.prototype = {
   generateSentence: function() {
 
     return this.generateSentences(1)[0];
-  }
+  },
 
   generateSentences: function(num) {
 
