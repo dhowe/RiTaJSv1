@@ -1766,6 +1766,11 @@ RiMarkov.prototype = {
     return this;
   },
 
+  generateSentence: function() {
+
+    return this.generateSentences(1)[0];
+  }
+
   generateSentences: function(num) {
 
     if (!this.isSentenceAware) {
