@@ -1225,7 +1225,7 @@ return;
       equal("unwillingness", RiTa.pluralize("unwillingness"));
       equal("deer", RiTa.pluralize("deer"));
       equal("fish", RiTa.pluralize("fish"));
-
+      equal("moose", RiTa.pluralize("moose"));
     });
 
     test("testSingularize", function () {
