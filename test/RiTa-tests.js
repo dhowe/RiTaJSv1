@@ -1226,6 +1226,9 @@ return;
       equal("deer", RiTa.pluralize("deer"));
       equal("fish", RiTa.pluralize("fish"));
       equal("moose", RiTa.pluralize("moose"));
+
+      equal("aquatics", RiTa.pluralize("aquatics"));
+      equal("mechanics", RiTa.pluralize("mechanics"));
     });
 
     test("testSingularize", function () {
@@ -1350,6 +1353,10 @@ return;
       equal("treatise", RiTa.singularize("treatises"));
       equal("house", RiTa.singularize("houses"));
       equal("chemise", RiTa.singularize("chemises"));
+
+      equal("aquatics", RiTa.singularize("aquatics"));
+      equal("mechanics", RiTa.singularize("mechanics"));
+      equal("quarter", RiTa.singularize("quarters"));
 
     });
 
