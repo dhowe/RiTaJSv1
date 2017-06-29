@@ -639,7 +639,7 @@ var RiTa = {
 
     if (!is(text,S)) return text;
 
-    var s = '[�`~\"\/' + "\\'_\\-[\\]{}()*+!?%&.,\\\\^$|#@<>|+=;:]";
+    var s = '[�`~\"\/' + "\\'_\\-[\\]{}()*+!?%&.,\\\\^$|#@<>|+=;:\u2018\u2019\u201C\u201D]";
     var regex = new RegExp("^" + s + "+|" + s + "+$", 'g');
 
     return (text === E) ? E : text.replace(regex,E);
@@ -5348,7 +5348,7 @@ var QUESTION_STARTS =   [ "Was", "What", "When", "Where", "Which", "Why", "Who",
 
 var W_QUESTION_STARTS = [ "Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would" ];
 
-var PUNCTUATION_CLASS = /[�`~\"\/'_\-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]/g; // TODO: add smart-quotes
+var PUNCTUATION_CLASS = /[�`~\"\/'_\-[\]{}()*+!?%&.,\\^$|#@<>|+=;:\u2018\u2019\u201C\u201D]/g; // TODO: add smart-quotes
 
 var ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/,
   DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s"),
