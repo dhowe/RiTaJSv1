@@ -86,73 +86,6 @@ var RiTa = {
 
   // Start functions =================================
 
-  untokenize: function(arr, delim, adjustPunctuationSpacing) {
-
-    delim = delim || SP;
-    adjustPunctuationSpacing = adjustPunctuationSpacing || 1;
-
-    var dbug = 0;
-    var punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/;
-    var quotes = /^[\(""“”’‘`']+$/;
-
-    if (adjustPunctuationSpacing) {
-
-      var newStr = arr[0] || E;
-      var inMiddleOfSentence = false;
-      var quotationStarted;
-      var quotationJustFinished = false;
-
-      if (arr[0])
-        quotationStarted = quotes.test(arr[0]);
-      else
-        quotationStarted = false;
-
-      for (var i = 1; i < arr.length; i++) {
-
-        if (arr[i]) {
-
-          var thisPunct = punct.test(arr[i]);
-          var lastPunct = punct.test(arr[i - 1]);
-          var thisQuote = quotes.test(arr[i]);
-          var lastQuote = quotes.test(arr[i -1]);
-          var thisComma = arr[i].match(/,/);
-          var lastComma = arr[i - 1].match(/,/);
-
-          if (dbug) {
-            console.log(i+") CHECK: "+arr[i]+" "+arr[i-1]+ " "+thisPunct+" "+lastPunct + " " +thisQuote);
-          }
-
-          if (quotationStarted && thisQuote) {
-            // skip adding delim and mark qutation as ended
-            quotationJustFinished = true;
-            quotationStarted = false;
-          } else if (quotationJustFinished) {
-            newStr += delim;
-            quotationJustFinished = false;
-          } else if (lastQuote && thisComma) {
-            inMiddleOfSentence = true;
-          } else if (inMiddleOfSentence && lastComma) {
-            newStr += delim;
-            inMiddleofSentence = false;
-          } else if (i != arr.length - 1 && thisPunct && lastPunct) {
-            if (dbug) console.log(i + ") HIT1: " + arr[i]);
-            newStr += delim;
-          } else if (!thisPunct && !lastQuote) {
-            if (dbug) console.log(i+") HIT2: "+arr[i]+" "+arr[i-1]+ " "+thisPunct+" "+lastQuote);
-            newStr += delim;
-          } else {
-            if (dbug) console.log(i + ") MISS: " + arr[i]);
-          }
-          newStr += arr[i];
-        }
-      }
-      return newStr.trim();//.replace(//);
-    }
-
-    return arr.join(delim);
-    //var punct = /^[,\.\;\:\?\!\)"“”’‘`']+$/;
-  },
-
   random: function() {
     var currentRandom = Math.random();
     if (!arguments.length) return currentRandom;
@@ -301,8 +234,53 @@ var RiTa = {
     return trim(words).split(/\s+/);
   },
 
-  splitSentences: function(text, regex) {
+  untokenize: function(arr, delim) {
 
+    delim = delim || SP;
+
+    var thisPunct, lastPunct, thisQuote, lastQuote,
+      lastComma, punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/,
+      quotes = /^[\(""“”’‘`']+$/, squotes = /^[’‘`']+$/,
+      result = arr[0] || E, midSentence = false, thisComma,
+      quotationStarted = arr.length && quotes.test(arr[0]),
+      quotationFinished = false;
+
+    for (var i = 1; i < arr.length; i++) {
+
+      if (!arr[i]) continue;
+
+      thisComma = arr[i] === ',';
+      thisPunct = punct.test(arr[i]);
+      thisQuote = quotes.test(arr[i]);
+      lastComma = arr[i-1] === ',';
+      lastPunct = punct.test(arr[i - 1]);
+      lastQuote = quotes.test(arr[i -1]);
+      isLast = (i == arr.length - 1);
+
+      if (quotationStarted && thisQuote) {
+        // no-delim, mark quotation done
+        quotationFinished = true;
+        quotationStarted = false;
+      } else if (quotationFinished) {
+        result += delim;
+        quotationFinished = false;
+      } else if (lastQuote && thisComma) {
+        midSentence = true;
+      } else if (midSentence && lastComma) {
+        result += delim;
+        midSentence = false;
+      } else if ((!thisPunct && !lastQuote) || (!isLast && thisPunct && lastPunct)) {
+        result += delim;
+      }
+      result += arr[i]; // add to result
+      if (thisPunct && !lastPunct && !quotationStarted && squotes.test(arr[i])) {
+        result += delim; // ex: students' learning
+      }
+    }
+    return result.trim();
+  },
+
+  splitSentences: function(text, regex) {
     var arr = text.match(/(\S.+?[.!?])(?=\s+|$)/g);
     return (text.length && arr && arr.length) ? arr : [text];
   },
@@ -409,7 +387,6 @@ var RiTa = {
     return res;
   },
 
-  // TODO: update 'return' value in docs (for preload())
   loadStrings: function(url, callback, linebreakChars) {
 
     var loadStringsNode = function(url, callback) {
@@ -1779,18 +1756,12 @@ RiMarkov.prototype = {
     }
 
     var mn = this._getSentenceStart(),
-      s = mn.token + SP,
-      result = [],
-      tries = 0,
-      totalTries = 0,
-      wordsInSentence = 1;
+      s = mn.token + SP, result = [], tries = 0,
+      totalTries = 0, wordsInSentence = 1;
 
     while (result.length < num) {
 
-      if (wordsInSentence >= this.maxSentenceLength) {
-
-        //console.log("MarkovModel.generateSentences().reject:: too long!");
-
+      if (wordsInSentence >= this.maxSentenceLength) { // too long: restart
         mn = this._getSentenceStart();
         s = mn.token + SP;
         wordsInSentence = 1;
@@ -1823,6 +1794,7 @@ RiMarkov.prototype = {
             tries = 0;
           }
         }
+
         mn = this._getSentenceStart();
         s = mn.token + SP;
         wordsInSentence = 1;

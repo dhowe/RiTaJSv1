@@ -555,8 +555,12 @@ var runtests = function () {
     test("testTokenizeAndBack", function () {
 
       var testStrings = [
-        '(that\'s why this is our place).',
+        "We should consider the students' learning.",
+        "We should consider the students’ learning.",
         'The boy screamed, "Where is my apple?"',
+        '"Where is my apple," screamed the boy.',
+        '"Where is my apple?" screamed the boy.',
+        '(that\'s why this is our place).',
         'A simple sentence.',
         'The boy, dressed in red, ate an apple.',
         'The boy screamed, \'Where is my apple?\'',
@@ -568,8 +572,14 @@ var runtests = function () {
         "We didn't find the cat."
       ];
 
+      // var testStrings = [
+      //   //"We should consider the students' learning.",
+      //   //"We should consider the students’ learning.",
+      //   'The boy screamed, "Where is my apple?"',
+      // ]
       for (var i = 0; i < testStrings.length; i++) {
         var tokens = RiTa.tokenize(testStrings[i]);
+        //console.log(tokens);
         var output = RiTa.untokenize(tokens);
         equal(output, testStrings[i]);
       }
