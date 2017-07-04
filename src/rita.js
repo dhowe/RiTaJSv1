@@ -272,7 +272,9 @@ var RiTa = {
       } else if ((!thisPunct && !lastQuote) || (!isLast && thisPunct && lastPunct)) {
         result += delim;
       }
+
       result += arr[i]; // add to result
+
       if (thisPunct && !lastPunct && !quotationStarted && squotes.test(arr[i])) {
         result += delim; // ex: students' learning
       }
