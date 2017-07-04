@@ -2,7 +2,14 @@ var runtests = function () {
 
     RiTa.SILENT = 1;
     lex = RiLexicon();
-    
+
+    test("testUntokenize", function () {
+      var input = ["felt", "before", ".", "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\""];
+      var expected = "felt before. \"Oh, God\", he thought, \"";
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+    });
+
     test("testSingularize", function () {
       equal("ooze", RiTa.singularize("oozes"));
       equal("enterprise", RiTa.singularize("enterprises"));
@@ -13,7 +20,7 @@ var runtests = function () {
 
         ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
         ok(!lex.isRhyme("solo", "yoyo"));
-        ok(!lex.isRhyme("yoyo", "jojo")); 
+        ok(!lex.isRhyme("yoyo", "jojo"));
     });
 
 
@@ -49,7 +56,7 @@ var runtests = function () {
 
         equal("fix impl.");
     });
-    
+
     test("RiLexicon.rhymes", function () {
         var lex = RiLexicon();
          // Problem: no result
