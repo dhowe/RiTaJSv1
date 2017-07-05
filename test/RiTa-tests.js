@@ -329,8 +329,8 @@ var runtests = function () {
       equal(RiTa.stripPunctuation("Hel>lo"), "Hello");
       equal(RiTa.stripPunctuation("Hel^lo"), "Hello");
       equal(RiTa.stripPunctuation("Hel|lo"), "Hello");
-      equal(RiTa.stripPunctuation("Hel’‘lo"), "Hello");
-      equal(RiTa.stripPunctuation("Hel“”lo"), "Hello");
+     equal(RiTa.stripPunctuation("Hel\u2018\u2019lo"), "Hello");
+      equal(RiTa.stripPunctuation("Hel\u201C\u201Dlo"), "Hello");
 
       var res = RiTa.stripPunctuation("\"\\!@$%&}<>|+=-_\\/*{^He&^ll,o\!@$%&}<>|+=-_\\/*{^");
       equal(res, "Hello");
@@ -341,11 +341,11 @@ var runtests = function () {
 
       var res = RiTa.trimPunctuation("$%He&^ll,o,");
       equal(res, "He&^ll,o");
-
-      var res = RiTa.trimPunctuation("“Hello”");
+      
+      var res = RiTa.trimPunctuation("\u2018Hello\u2019");
       equal(res, "Hello");
 
-      var res = RiTa.trimPunctuation("‘Hello’");
+      var res = RiTa.trimPunctuation("\u201CHello\u201D");
       equal(res, "Hello");
 
       // fix these strange characters
