@@ -341,7 +341,7 @@ var runtests = function () {
 
       var res = RiTa.trimPunctuation("$%He&^ll,o,");
       equal(res, "He&^ll,o");
-      
+
       var res = RiTa.trimPunctuation("\u2018Hello\u2019");
       equal(res, "Hello");
 
@@ -1445,63 +1445,6 @@ return;
       equal(RiTa.getPresentParticiple(" study"), "studying");
       //tab space
       equal(RiTa.getPresentParticiple(""), "");
-    });
-
-    test("testUntokenize", function() {
-
-      equal(RiTa.untokenize([""]), "");
-
-      var expected = "The boy, dressed in red, ate an apple.";
-      var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate", "an", "apple", "."];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-
-      var expected = "The boy screamed, 'Where is my apple?'";
-      var input = ["The", "boy", "screamed", ",", "'Where", "is", "my", "apple", "?", "'"];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var outputs = ["A simple sentence.",
-        "that's why this is our place).",
-      ];
-
-      var inputs = [
-        ["A", "simple", "sentence", "."],
-        ["that's", "why", "this", "is", "our", "place", ")", "."],
-      ];
-
-      ok(inputs.length == outputs.length);
-
-      for (var i = 0; i < inputs.length; i++) {
-        var result = RiTa.untokenize(inputs[i]);
-        deepEqual(result, outputs[i]);
-      }
-
-      var expected = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
-      var input = ["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var input = ["why", "?", "Me", "?", "huh", "?", "!"];
-      var expected = "why? Me? huh?!";
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var input = ["123", "123", "1", "2", "3", "1", ",", "1", "1", ".", "1", "23", ".", "45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
-      var expected = "123 123 1 2 3 1, 1 1. 1 23. 45. 67 22/05/2012 12th May, 2012";
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      input = ["felt", "before", ".", "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\""];
-      expected = "felt before. \"Oh, God\", he thought, \"";
-      output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      input = ["She", "screamed", ":", "\"", "Oh", "God", "!", "\""];
-      expected = "She screamed: \"Oh God!\"";
-      output = RiTa.untokenize(input);
-      deepEqual(output, expected);
     });
 
     test("testConcordance", function () {
