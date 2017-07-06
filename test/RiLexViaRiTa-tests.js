@@ -17,7 +17,6 @@ var runtests = function() {
   });
 
   test("testAlliterations", function() {
-    console.log(typeof  RiTa.alliterations);
     var result = RiTa.alliterations("cat");
     ok(result.length > 2000);
     for(var i = 0; i < result.length; i++) {

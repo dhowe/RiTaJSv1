@@ -431,12 +431,6 @@ var runtests = function () {
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
 
-      var input = "The boy screamed, 'Where is my apple?'";
-      //'Where is one word here, same result as Processing (TODO: THIS IS INCORRECT IN BOTH)
-      var expected = ["The", "boy", "screamed", ",", "'Where", "is", "my", "apple", "?", "'"];
-      var output = RiTa.tokenize(input);
-      deepEqual(output, expected);
-
       var input = "why? Me?huh?!";
       var expected = ["why", "?", "Me", "?", "huh", "?", "!"];
       var output = RiTa.tokenize(input);
@@ -505,7 +499,7 @@ var runtests = function () {
       deepEqual(output, expected);
 
       var expected = "The boy screamed, 'Where is my apple?'";
-      var input = ["The", "boy", "screamed", ",", "'Where", "is", "my", "apple", "?", "'"];
+      var input = ["The", "boy", "screamed", ",", "'", "Where", "is", "my", "apple", "?", "'"];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
 
@@ -546,8 +540,23 @@ var runtests = function () {
       //console.log(expected,'\n',output);
       deepEqual(output, expected);
 
+      var expected = "The boy screamed, 'Where is my apple?'";
+      var input = ["The", "boy", "screamed", ",", "'", "Where", "is", "my", "apple", "?", "'"];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var input = ['She', 'screamed', ',', '"', 'Oh', 'God', '!', '"'];
+      var expected = 'She screamed, "Oh God!"';
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
       var input = ['She', 'screamed', ':', '"', 'Oh', 'God', '!', '"'];
       var expected = 'She screamed: "Oh God!"';
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var input = [ "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\"", "not", "rain", "!", "\""];
+      var expected = "\"Oh, God\", he thought, \"not rain!\"";
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
     });
@@ -555,15 +564,13 @@ var runtests = function () {
     test("testTokenizeAndBack", function () {
 
       var testStrings = [
-        "We should consider the students' learning.",
-        "We should consider the students’ learning.",
-        'The boy screamed, "Where is my apple?"',
+        // "The boy screamed, 'Where is my apple?'",
+        // 'The boy screamed, "Where is my apple?"',
         '"Where is my apple," screamed the boy.',
         '"Where is my apple?" screamed the boy.',
         '(that\'s why this is our place).',
         'A simple sentence.',
         'The boy, dressed in red, ate an apple.',
-        'The boy screamed, \'Where is my apple?\'',
         "Dr. Chan is talking slowly with Mr. Cheng, and they're friends.",
         "He can't didn't couldn't shouldn't wouldn't eat.",
         "Shouldn't he eat?",
@@ -572,11 +579,6 @@ var runtests = function () {
         "We didn't find the cat."
       ];
 
-      // var testStrings = [
-      //   //"We should consider the students' learning.",
-      //   //"We should consider the students’ learning.",
-      //   'The boy screamed, "Where is my apple?"',
-      // ]
       for (var i = 0; i < testStrings.length; i++) {
         var tokens = RiTa.tokenize(testStrings[i]);
         //console.log(tokens);

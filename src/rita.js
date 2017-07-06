@@ -242,8 +242,8 @@ var RiTa = {
       lastComma, punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/,
       quotes = /^[\(""“”’‘`']+$/, squotes = /^[’‘`']+$/,
       result = arr[0] || E, midSentence = false, thisComma,
-      quotationStarted = arr.length && quotes.test(arr[0]),
-      quotationFinished = false;
+      withinQuote = arr.length && quotes.test(arr[0]),
+      afterQuote = false, dbug = 0;
 
     for (var i = 1; i < arr.length; i++) {
 
@@ -257,26 +257,53 @@ var RiTa = {
       lastQuote = quotes.test(arr[i -1]);
       isLast = (i == arr.length - 1);
 
-      if (quotationStarted && thisQuote) {
-        // no-delim, mark quotation done
-        quotationFinished = true;
-        quotationStarted = false;
-      } else if (quotationFinished) {
+      //if (arr[i]==="'" && arr[i-1]==='?')
+      dbug&& console.log('before "'+arr[i]+'"',i, 'inquote? '+withinQuote);
+
+      if (thisQuote) {
+
+        if (withinQuote) {
+
+          // no-delim, mark quotation done
+          afterQuote = true;
+          withinQuote = false;
+        }
+        else {
+          dbug&&console.log('set withinQuote=1');
+          withinQuote = true;
+          afterQuote = false;
+
+          if (lastPunct) {
+            dbug&&console.log('hit0', arr[i], arr[i-1]);
+            result += delim;
+          }
+        }
+
+      } else if (afterQuote && !thisPunct) {
+
         result += delim;
-        quotationFinished = false;
+        dbug&&console.log('hit1', arr[i]);
+        afterQuote = false;
+
       } else if (lastQuote && thisComma) {
         midSentence = true;
+
       } else if (midSentence && lastComma) {
+
         result += delim;
+        dbug&&console.log('hit2', arr[i]);
         midSentence = false;
+
       } else if ((!thisPunct && !lastQuote) || (!isLast && thisPunct && lastPunct)) {
+
         result += delim;
       }
 
       result += arr[i]; // add to result
 
-      if (thisPunct && !lastPunct && !quotationStarted && squotes.test(arr[i])) {
-        result += delim; // ex: students' learning
+      if (thisPunct && !lastPunct && !withinQuote && squotes.test(arr[i])) {
+        dbug&&console.log('hitnew', arr[i]);
+        result += delim; // fix to #477
       }
     }
     return result.trim();

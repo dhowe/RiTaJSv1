@@ -4,10 +4,31 @@ var runtests = function () {
     lex = RiLexicon();
 
     test("testUntokenize", function () {
-      var input = ["felt", "before", ".", "\"", "Oh", ",", "God", "\"", ",", "he", "thought", ",", "\""];
-      var expected = "felt before. \"Oh, God\", he thought, \"";
+
+      var input = "The boy screamed, 'Where is my apple?'";
+      var expected = ["The", "boy", "screamed", ",", "'", "Where", "is", "my", "apple", "?", "'"];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+    });
+
+    test("testUntokenize", function () {
+      var expected = "We should consider the students' learning.";
+      var input = ["We", "should", "consider", "the", "students", "'", "learning" ];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
+    });
+
+    test("testTokenizeAndBack", function () {
+      var testStrings = [
+        "We should consider the students' learning.",
+        "We should consider the students’ learning.",
+      ];
+      for (var i = 0; i < testStrings.length; i++) {
+        var tokens = RiTa.tokenize(testStrings[i]);
+        //console.log(tokens);
+        var output = RiTa.untokenize(tokens);
+        equal(output, testStrings[i]);
+      }
     });
 
     test("testSingularize", function () {
