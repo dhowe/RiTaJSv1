@@ -212,7 +212,7 @@ var RiTa = {
     words = words.replace(/$/g, SP);
     words = words.replace(/^/g, SP);
     words = words.replace(/([^'])' /g, "$1 ' ");
-     words = words.replace(/([^’])’ /g, "$1 ’ ");
+    words = words.replace(/([^’])’ /g, "$1 ’ ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
     if (RiTa.SPLIT_CONTRACTIONS) {
@@ -245,7 +245,7 @@ var RiTa = {
       quotes = /^[\(""“”’‘`']+$/, squotes = /^[’‘`']+$/,
       result = arr[0] || E, midSentence = false, thisComma,
       withinQuote = arr.length && quotes.test(arr[0]),
-      afterQuote = false, dbug = 0;
+      afterQuote = false, isLast, dbug = 0;
 
     for (var i = 1; i < arr.length; i++) {
 

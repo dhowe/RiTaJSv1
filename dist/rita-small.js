@@ -234,73 +234,6 @@ var RiTa = {
 
   // Start functions =================================
 
-  untokenize: function(arr, delim, adjustPunctuationSpacing) {
-
-    delim = delim || SP;
-    adjustPunctuationSpacing = adjustPunctuationSpacing || 1;
-
-    var dbug = 0;
-    var punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/;
-    var quotes = /^[\(""“”’‘`']+$/;
-
-    if (adjustPunctuationSpacing) {
-
-      var newStr = arr[0] || E;
-      var inMiddleOfSentence = false;
-      var quotationStarted;
-      var quotationJustFinished = false;
-
-      if (arr[0])
-        quotationStarted = quotes.test(arr[0]);
-      else
-        quotationStarted = false;
-
-      for (var i = 1; i < arr.length; i++) {
-
-        if (arr[i]) {
-
-          var thisPunct = punct.test(arr[i]);
-          var lastPunct = punct.test(arr[i - 1]);
-          var thisQuote = quotes.test(arr[i]);
-          var lastQuote = quotes.test(arr[i -1]);
-          var thisComma = arr[i].match(/,/);
-          var lastComma = arr[i - 1].match(/,/);
-
-          if (dbug) {
-            console.log(i+") CHECK: "+arr[i]+" "+arr[i-1]+ " "+thisPunct+" "+lastPunct + " " +thisQuote);
-          }
-
-          if (quotationStarted && thisQuote) {
-            // skip adding delim and mark qutation as ended
-            quotationJustFinished = true;
-            quotationStarted = false;
-          } else if (quotationJustFinished) {
-            newStr += delim;
-            quotationJustFinished = false;
-          } else if (lastQuote && thisComma) {
-            inMiddleOfSentence = true;
-          } else if (inMiddleOfSentence && lastComma) {
-            newStr += delim;
-            inMiddleofSentence = false;
-          } else if (i != arr.length - 1 && thisPunct && lastPunct) {
-            if (dbug) console.log(i + ") HIT1: " + arr[i]);
-            newStr += delim;
-          } else if (!thisPunct && !lastQuote) {
-            if (dbug) console.log(i+") HIT2: "+arr[i]+" "+arr[i-1]+ " "+thisPunct+" "+lastQuote);
-            newStr += delim;
-          } else {
-            if (dbug) console.log(i + ") MISS: " + arr[i]);
-          }
-          newStr += arr[i];
-        }
-      }
-      return newStr.trim();//.replace(//);
-    }
-
-    return arr.join(delim);
-    //var punct = /^[,\.\;\:\?\!\)"“”’‘`']+$/;
-  },
-
   random: function() {
     var currentRandom = Math.random();
     if (!arguments.length) return currentRandom;
@@ -421,24 +354,26 @@ var RiTa = {
     words = words.replace(/\\.\\.\\./g, " ... ");
     words = words.replace(/\\s+/g, SP);
     words = words.replace(/,([^0-9])/g, " , $1");
-    words = words.replace(/([^.])([.])([\])}>\"']*)\\s*$/g, "$1 $2$3 ");
+    words = words.replace(/([^.])([.])([\])}>\"'’]*)\\s*$/g, "$1 $2$3 ");
     words = words.replace(/([\[\](){}<>])/g, " $1 ");
     words = words.replace(/--/g, " -- ");
     words = words.replace(/$/g, SP);
     words = words.replace(/^/g, SP);
     words = words.replace(/([^'])' /g, "$1 ' ");
+    words = words.replace(/([^’])’ /g, "$1 ’ ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
     if (RiTa.SPLIT_CONTRACTIONS) {
 
-      words = words.replace(/([Cc])an't/g, "$1an not");
-      words = words.replace(/([Dd])idn't/g, "$1id not");
-      words = words.replace(/([CcWw])ouldn't/g, "$1ould not");
-      words = words.replace(/([Ss])houldn't/g, "$1hould not");
-      words = words.replace(/ ([Ii])t's/g, " $1t is");
-      words = words.replace(/n't /g, " not ");
-      words = words.replace(/'ve /g, " have ");
-      words = words.replace(/'re /g, " are ");
+      words = words.replace(/([Cc])an['’]t/g, "$1an not");
+      words = words.replace(/([Dd])idn['’]t/g, "$1id not");
+      words = words.replace(/([CcWw])ouldn['’]t/g, "$1ould not");
+      words = words.replace(/([Ss])houldn['’]t/g, "$1hould not");
+      words = words.replace(/ ([Ii])t['’]s/g, " $1t is");
+      words = words.replace(/n['’]t /g, " not ");
+      words = words.replace(/['’]ve /g, " have ");
+      words = words.replace(/['’]re /g, " are ");
+
     }
 
     // "Nicole I. Kidman" gets tokenized as "Nicole I . Kidman"
@@ -449,8 +384,82 @@ var RiTa = {
     return trim(words).split(/\s+/);
   },
 
-  splitSentences: function(text, regex) {
+  untokenize: function(arr, delim) {
 
+    delim = delim || SP;
+
+    var thisPunct, lastPunct, thisQuote, lastQuote,
+      lastComma, punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/,
+      quotes = /^[\(""“”’‘`']+$/, squotes = /^[’‘`']+$/,
+      result = arr[0] || E, midSentence = false, thisComma,
+      withinQuote = arr.length && quotes.test(arr[0]),
+      afterQuote = false, isLast, dbug = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+
+      if (!arr[i]) continue;
+
+      thisComma = arr[i] === ',';
+      thisPunct = punct.test(arr[i]);
+      thisQuote = quotes.test(arr[i]);
+      lastComma = arr[i-1] === ',';
+      lastPunct = punct.test(arr[i - 1]);
+      lastQuote = quotes.test(arr[i -1]);
+      isLast = (i == arr.length - 1);
+
+      //if (arr[i]==="'" && arr[i-1]==='?')
+      dbug&& console.log('before "'+arr[i]+'"',i, 'inquote? '+withinQuote);
+
+      if (thisQuote) {
+
+        if (withinQuote) {
+
+          // no-delim, mark quotation done
+          afterQuote = true;
+          withinQuote = false;
+        }
+        else {
+          dbug&&console.log('set withinQuote=1');
+          withinQuote = true;
+          afterQuote = false;
+
+          if (lastPunct) {
+            dbug&&console.log('hit0', arr[i], arr[i-1]);
+            result += delim;
+          }
+        }
+
+      } else if (afterQuote && !thisPunct) {
+
+        result += delim;
+        dbug&&console.log('hit1', arr[i]);
+        afterQuote = false;
+
+      } else if (lastQuote && thisComma) {
+        midSentence = true;
+
+      } else if (midSentence && lastComma) {
+
+        result += delim;
+        dbug&&console.log('hit2', arr[i]);
+        midSentence = false;
+
+      } else if ((!thisPunct && !lastQuote) || (!isLast && thisPunct && lastPunct)) {
+
+        result += delim;
+      }
+
+      result += arr[i]; // add to result
+
+      if (thisPunct && !lastPunct && !withinQuote && squotes.test(arr[i])) {
+        dbug&&console.log('hitnew', arr[i]);
+        result += delim; // fix to #477
+      }
+    }
+    return result.trim();
+  },
+
+  splitSentences: function(text, regex) {
     var arr = text.match(/(\S.+?[.!?])(?=\s+|$)/g);
     return (text.length && arr && arr.length) ? arr : [text];
   },
@@ -557,7 +566,6 @@ var RiTa = {
     return res;
   },
 
-  // TODO: update 'return' value in docs (for preload())
   loadStrings: function(url, callback, linebreakChars) {
 
     var loadStringsNode = function(url, callback) {
@@ -787,7 +795,7 @@ var RiTa = {
 
     if (!is(text,S)) return text;
 
-    var s = '[�`~\"\/' + "\\'_\\-[\\]{}()*+!?%&.,\\\\^$|#@<>|+=;:]";
+    var s = '[�`~\"\/' + "\\'_\\-[\\]{}()*+!?%&.,\\\\^$|#@<>|+=;:\u2018\u2019\u201C\u201D]";
     var regex = new RegExp("^" + s + "+|" + s + "+$", 'g');
 
     return (text === E) ? E : text.replace(regex,E);
@@ -1330,8 +1338,8 @@ RiLexicon.prototype = {
     var s = this.keys.length;
     if (RiTa.LEX_WARN && s === 0) {
       warn(RiTa.LEX_WARN);
-      RiTa.LEX_WARN = 0; 
-    } 
+      RiTa.LEX_WARN = 0;
+    }
     return s;
   },
 
@@ -1637,7 +1645,7 @@ var RiMarkov = makeClass();
 
 RiMarkov.MAX_GENERATION_ATTEMPTS = 1000;
 var SSRE = /"?[A-Z][a-z"',;`-]*/;
-SSDLM = 'D=l1m_';
+var SSDLM = 'D=l1m_';
 
 RiMarkov.prototype = {
 
@@ -1914,6 +1922,11 @@ RiMarkov.prototype = {
     return this;
   },
 
+  generateSentence: function() {
+
+    return this.generateSentences(1)[0];
+  },
+
   generateSentences: function(num) {
 
     if (!this.isSentenceAware) {
@@ -1922,18 +1935,12 @@ RiMarkov.prototype = {
     }
 
     var mn = this._getSentenceStart(),
-      s = mn.token + SP,
-      result = [],
-      tries = 0,
-      totalTries = 0,
-      wordsInSentence = 1;
+      s = mn.token + SP, result = [], tries = 0,
+      totalTries = 0, wordsInSentence = 1;
 
     while (result.length < num) {
 
-      if (wordsInSentence >= this.maxSentenceLength) {
-
-        //console.log("MarkovModel.generateSentences().reject:: too long!");
-
+      if (wordsInSentence >= this.maxSentenceLength) { // too long: restart
         mn = this._getSentenceStart();
         s = mn.token + SP;
         wordsInSentence = 1;
@@ -1966,6 +1973,7 @@ RiMarkov.prototype = {
             tries = 0;
           }
         }
+
         mn = this._getSentenceStart();
         s = mn.token + SP;
         wordsInSentence = 1;
@@ -2006,12 +2014,14 @@ RiMarkov.prototype = {
     }
 
     if (!this.allowDuplicates) {
+
       if (!this.isSentenceAware) {
         err('Invalid state: allowDuplicates must be' +
           ' true when not generating sentences');
       }
 
-      if (this.sentenceList.indexOf(sent) > -1) {
+      if (this.sentenceList.indexOf(sent) > -1) { // a duplicate
+
         if (++this.skippedDups == this.maxDuplicatesToSkip) {
           warn('Hit skip-maximum (RiMarkov.maxDuplicatesToSkip=' + this.maxDuplicatesToSkip +
             ') after skipping ' + this.maxDuplicatesToSkip + ', now allowing duplicates!');
@@ -2528,7 +2538,7 @@ RiString.prototype = {
 
   equals: function(arg) {
 
-    return (typeof arg === S) ? arg === this._text : arg.text() === this._text;
+    return is(arg.text, F) && arg.text() === this._text;
   },
 
   equalsIgnoreCase: function(arg) {
@@ -5489,14 +5499,16 @@ var QUESTION_STARTS =   [ "Was", "What", "When", "Where", "Which", "Why", "Who",
 
 var W_QUESTION_STARTS = [ "Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would" ];
 
-var PUNCTUATION_CLASS = /[�`~\"\/'_\-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]/g; // TODO: add smart-quotes
+var PUNCTUATION_CLASS = /[�`~\"\/'_\-[\]{}()*+!?%&.,\\^$|#@<>|+=;:\u2018\u2019\u201C\u201D]/g; // TODO: add smart-quotes
 
 var ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/,
   DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s"),
   ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
 
 var NULL_PLURALS = RE( // these don't change for plural/singular
-  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|" + "burmese|chinese|colossus|congolese|discus|emphasis|expertise|finess|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|finnan|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
+  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|moose|" + "burmese|chinese|colossus|congolese|discus|emphasis|expertise|finess|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|finnan|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "acoustics|aesthetics|aquatics|basics|ceramics|classics|cosmetics|dialectics|dynamics|ethics|harmonics|heroics|mechanics|metrics|optics|physics|polemics|pyrotechnics|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
+
+
 
 var SINGULAR_RULES = [
   NULL_PLURALS,
