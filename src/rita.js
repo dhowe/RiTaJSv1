@@ -206,24 +206,26 @@ var RiTa = {
     words = words.replace(/\\.\\.\\./g, " ... ");
     words = words.replace(/\\s+/g, SP);
     words = words.replace(/,([^0-9])/g, " , $1");
-    words = words.replace(/([^.])([.])([\])}>\"']*)\\s*$/g, "$1 $2$3 ");
+    words = words.replace(/([^.])([.])([\])}>\"'’]*)\\s*$/g, "$1 $2$3 ");
     words = words.replace(/([\[\](){}<>])/g, " $1 ");
     words = words.replace(/--/g, " -- ");
     words = words.replace(/$/g, SP);
     words = words.replace(/^/g, SP);
     words = words.replace(/([^'])' /g, "$1 ' ");
+     words = words.replace(/([^’])’ /g, "$1 ’ ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
     if (RiTa.SPLIT_CONTRACTIONS) {
 
-      words = words.replace(/([Cc])an't/g, "$1an not");
-      words = words.replace(/([Dd])idn't/g, "$1id not");
-      words = words.replace(/([CcWw])ouldn't/g, "$1ould not");
-      words = words.replace(/([Ss])houldn't/g, "$1hould not");
-      words = words.replace(/ ([Ii])t's/g, " $1t is");
-      words = words.replace(/n't /g, " not ");
-      words = words.replace(/'ve /g, " have ");
-      words = words.replace(/'re /g, " are ");
+      words = words.replace(/([Cc])an['’]t/g, "$1an not");
+      words = words.replace(/([Dd])idn['’]t/g, "$1id not");
+      words = words.replace(/([CcWw])ouldn['’]t/g, "$1ould not");
+      words = words.replace(/([Ss])houldn['’]t/g, "$1hould not");
+      words = words.replace(/ ([Ii])t['’]s/g, " $1t is");
+      words = words.replace(/n['’]t /g, " not ");
+      words = words.replace(/['’]ve /g, " have ");
+      words = words.replace(/['’]re /g, " are ");
+
     }
 
     // "Nicole I. Kidman" gets tokenized as "Nicole I . Kidman"

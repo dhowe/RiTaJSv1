@@ -16,16 +16,21 @@ var runtests = function () {
       var input = ["We", "should", "consider", "the", "students", "'", "learning" ];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
+
+      var expected = "We should consider the students\u2019 learning.";
+      var input = ["We", "should", "consider", "the", "students", "\u2019", "learning" ];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
     });
 
     test("testTokenizeAndBack", function () {
       var testStrings = [
         "We should consider the students' learning.",
-        "We should consider the students’ learning.",
+        "We should consider the students\u2019 learning.",
       ];
       for (var i = 0; i < testStrings.length; i++) {
         var tokens = RiTa.tokenize(testStrings[i]);
-        //console.log(tokens);
+        // console.log(tokens);
         var output = RiTa.untokenize(tokens);
         equal(output, testStrings[i]);
       }
