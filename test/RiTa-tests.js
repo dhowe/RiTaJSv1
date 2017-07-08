@@ -420,6 +420,11 @@ var runtests = function () {
 
     test("testTokenize", function () {
 
+      var input = "The student said 'learning is fun'";
+      var expected = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+
       var input = '"Oh God," he thought.';
       var expected = ['"', 'Oh', 'God', ',', '"', 'he', 'thought', '.'];
       var output = RiTa.tokenize(input);
@@ -506,26 +511,25 @@ var runtests = function () {
       var expected = ["The", "boy", "screamed", ",", "\u2018", "Where", "is", "my", "apple", "?", "\u2019"];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
+    });
+
+    test("testUntokenize", function () {
 
       var expected = "We should consider the students' learning";
       var input = ["We", "should", "consider", "the", "students", "'", "learning" ];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
 
-      var expected = "We should consider the students\u2019 learning";
-      var input = ["We", "should", "consider", "the", "students", "\u2019", "learning" ];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-    });
-
-    test("testUntokenize", function () {
-
       equal(RiTa.untokenize([""]), "");
 
       var expected = "The boy, dressed in red, ate an apple.";
       var input = ["The", "boy", ",", "dressed", "in", "red", ",", "ate",
         "an", "apple", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var expected = "We should consider the students\u2019 learning";
+      var input = ["We", "should", "consider", "the", "students", "\u2019", "learning" ];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
 
@@ -595,6 +599,7 @@ var runtests = function () {
     test("testTokenizeAndBack", function () {
 
       var testStrings = [
+        // "The student said 'learning is fun'", -> known-issues
         "The boy screamed, 'Where is my apple?'",
         'The boy screamed, "Where is my apple?"',
         "We should consider the students' learning.",
