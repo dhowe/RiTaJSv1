@@ -1463,7 +1463,7 @@ RiLexicon.prototype = {
             }
           }
 
-          warn("No words with pos=" + a[0] + " found");
+          //warn("No words with pos=" + a[0] + " found");
 
         } else {
 
