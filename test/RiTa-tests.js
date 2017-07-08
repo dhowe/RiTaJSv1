@@ -595,8 +595,8 @@ var runtests = function () {
     test("testTokenizeAndBack", function () {
 
       var testStrings = [
-        // "The boy screamed, 'Where is my apple?'",
-        // 'The boy screamed, "Where is my apple?"',
+        "The boy screamed, 'Where is my apple?'",
+        'The boy screamed, "Where is my apple?"',
         "We should consider the students' learning.",
         "We should consider the students\u2019 learning.",
         '"Where is my apple," screamed the boy.',
