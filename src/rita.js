@@ -202,7 +202,7 @@ var RiTa = {
 
     words = trim(words);
 
-    words = words.replace(/([\\?!\"\\.,;:@#$%&])/g, " $1 ");
+    words = words.replace(/([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ");
     words = words.replace(/\\.\\.\\./g, " ... ");
     words = words.replace(/\\s+/g, SP);
     words = words.replace(/,([^0-9])/g, " , $1");
@@ -211,8 +211,9 @@ var RiTa = {
     words = words.replace(/--/g, " -- ");
     words = words.replace(/$/g, SP);
     words = words.replace(/^/g, SP);
-    words = words.replace(/([^'])' /g, "$1 ' ");
+    words = words.replace(/([^'])' | '/g, "$1 ' ");
     words = words.replace(/([^’])’ /g, "$1 ’ ");
+    words = words.replace(/ \u2018/g, " \u2018 ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
     if (RiTa.SPLIT_CONTRACTIONS) {
@@ -241,8 +242,9 @@ var RiTa = {
     delim = delim || SP;
 
     var thisPunct, lastPunct, thisQuote, lastQuote,
-      lastComma, punct = /^[,\.\;\:\?\!\)""“”’‘`']+$/,
-      quotes = /^[\(""“”’‘`']+$/, squotes = /^[’‘`']+$/,
+      lastComma, punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
+      quotes = /^[\(""“”\u2019‘`']+$/, squotes = /^[\u2019‘`']+$/,
+      apostrophes = /^[\u2019']+$/,
       result = arr[0] || E, midSentence = false, thisComma,
       withinQuote = arr.length && quotes.test(arr[0]),
       afterQuote = false, isLast, dbug = 0;
@@ -257,10 +259,11 @@ var RiTa = {
       lastComma = arr[i-1] === ',';
       lastPunct = punct.test(arr[i - 1]);
       lastQuote = quotes.test(arr[i -1]);
+      lastEndWithS = arr[i-1].charAt(arr[i-1].length-1) === 's';
       isLast = (i == arr.length - 1);
 
       //if (arr[i]==="'" && arr[i-1]==='?')
-      dbug&& console.log('before "'+arr[i]+'"',i, 'inquote? '+withinQuote);
+      dbug&& console.log('before "'+arr[i]+'"',i, 'inquote? '+withinQuote,'thisPunct?',thisPunct,'thisQuote',thisQuote);
 
       if (thisQuote) {
 
@@ -270,7 +273,7 @@ var RiTa = {
           afterQuote = true;
           withinQuote = false;
         }
-        else {
+        else if (!(apostrophes.test(arr[i]) && lastEndWithS)) {
           dbug&&console.log('set withinQuote=1');
           withinQuote = true;
           afterQuote = false;
@@ -302,7 +305,6 @@ var RiTa = {
       }
 
       result += arr[i]; // add to result
-
       if (thisPunct && !lastPunct && !withinQuote && squotes.test(arr[i])) {
         dbug&&console.log('hitnew', arr[i]);
         result += delim; // fix to #477
