@@ -3,45 +3,6 @@ var runtests = function () {
     RiTa.SILENT = 1;
     lex = RiLexicon();
 
-    test("testUntokenize", function () {
-
-      var input = "The boy screamed, 'Where is my apple?'";
-      var expected = ["The", "boy", "screamed", ",", "'", "Where", "is", "my", "apple", "?", "'"];
-      var output = RiTa.tokenize(input);
-      deepEqual(output, expected);
-    });
-
-    test("testUntokenize", function () {
-      var expected = "We should consider the students' learning.";
-      var input = ["We", "should", "consider", "the", "students", "'", "learning" ];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-
-      var expected = "We should consider the students\u2019 learning.";
-      var input = ["We", "should", "consider", "the", "students", "\u2019", "learning" ];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-    });
-
-    test("testTokenizeAndBack", function () {
-      var testStrings = [
-        "We should consider the students' learning.",
-        "We should consider the students\u2019 learning.",
-      ];
-      for (var i = 0; i < testStrings.length; i++) {
-        var tokens = RiTa.tokenize(testStrings[i]);
-        // console.log(tokens);
-        var output = RiTa.untokenize(tokens);
-        equal(output, testStrings[i]);
-      }
-    });
-
-    test("testSingularize", function () {
-      equal("ooze", RiTa.singularize("oozes"));
-      equal("enterprise", RiTa.singularize("enterprises"));
-      equal("treatise", RiTa.singularize("treatises")); //->Known Issues
-    });
-
     test("testIsRhymeStringString", function() {
 
         ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space

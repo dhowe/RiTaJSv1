@@ -486,6 +486,37 @@ var runtests = function () {
       deepEqual(RiTa.tokenize(txt6), ["We", "did", "not", "find", "the", "cat", "."]);
       RiTa.SPLIT_CONTRACTIONS = false;
 
+      var input = 'The boy screamed, "Where is my apple?"';
+      var expected = ["The", "boy", "screamed", ",", "\"", "Where", "is", "my", "apple", "?", "\""];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+
+
+      var input = 'The boy screamed, \u201CWhere is my apple?\u201D';
+      var expected = ["The", "boy", "screamed", ",", "\u201C", "Where", "is", "my", "apple", "?", "\u201D"];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+
+      var input = "The boy screamed, 'Where is my apple?'";
+      var expected = ["The", "boy", "screamed", ",", "'", "Where", "is", "my", "apple", "?", "'"];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+
+      var input = "The boy screamed, \u2018Where is my apple?\u2019";
+      var expected = ["The", "boy", "screamed", ",", "\u2018", "Where", "is", "my", "apple", "?", "\u2019"];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+
+      var expected = "We should consider the students' learning";
+      var input = ["We", "should", "consider", "the", "students", "'", "learning" ];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
+      var expected = "We should consider the students\u2019 learning";
+      var input = ["We", "should", "consider", "the", "students", "\u2019", "learning" ];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+
     });
 
     test("testUntokenize", function () {
@@ -566,6 +597,8 @@ var runtests = function () {
       var testStrings = [
         // "The boy screamed, 'Where is my apple?'",
         // 'The boy screamed, "Where is my apple?"',
+        "We should consider the students' learning.",
+        "We should consider the students\u2019 learning.",
         '"Where is my apple," screamed the boy.',
         '"Where is my apple?" screamed the boy.',
         '(that\'s why this is our place).',
@@ -947,7 +980,7 @@ return;
       deepEqual(result, 3);
 
       var result = RiTa.getWordCount("The boy screamed, 'Where is my apple?'");
-      deepEqual(result, 10);
+      deepEqual(result, 11);
 
       var result = RiTa.getWordCount("one two three.");
       deepEqual(result, 4);
@@ -962,7 +995,7 @@ return;
       deepEqual(result, 6);
 
       var result = RiTa.getWordCount("\'Yes, it was a dog that ate the baby\', he said.");
-      deepEqual(result, 15);
+      deepEqual(result, 16);
     });
 
     /*test("testPosToWordNet", function() {
