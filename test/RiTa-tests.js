@@ -594,12 +594,17 @@ var runtests = function () {
       var expected = "\"Oh, God\", he thought, \"not rain!\"";
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
+
+      var expected = "The student said 'learning is fun'";
+      var input = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
     });
 
     test("testTokenizeAndBack", function () {
 
       var testStrings = [
-        // "The student said 'learning is fun'", -> known-issues
+        "The student said 'learning is fun'", 
         "The boy screamed, 'Where is my apple?'",
         'The boy screamed, "Where is my apple?"',
         "We should consider the students' learning.",

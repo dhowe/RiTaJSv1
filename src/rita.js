@@ -212,7 +212,6 @@ var RiTa = {
     words = words.replace(/$/g, SP);
     words = words.replace(/^/g, SP);
     words = words.replace(/([^'])' | '/g, "$1 ' ");
-    words = words.replace(/([^’])’ /g, "$1 ’ ");
     words = words.replace(/ \u2018/g, " \u2018 ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
@@ -277,11 +276,10 @@ var RiTa = {
           dbug&&console.log('set withinQuote=1');
           withinQuote = true;
           afterQuote = false;
-
-          if (lastPunct) {
-            dbug&&console.log('hit0', arr[i], arr[i-1]);
+          // if (lastPunct) {
+            // dbug&&console.log('hit0', arr[i], arr[i-1]);
             result += delim;
-          }
+          // }
         }
 
       } else if (afterQuote && !thisPunct) {

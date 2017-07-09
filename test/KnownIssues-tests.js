@@ -3,28 +3,6 @@ var runtests = function () {
     RiTa.SILENT = 1;
     lex = RiLexicon();
 
-    test("testUntokenize", function () {
-
-      var expected = "The student said 'learning is fun'";
-      var input = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
-      var output = RiTa.untokenize(input);
-      deepEqual(output, expected);
-    });
-
-    test("testTokenizeAndBack", function () {
-
-      var testStrings = [
-        "The student said 'learning is fun'",
-      ];
-
-      for (var i = 0; i < testStrings.length; i++) {
-        var tokens = RiTa.tokenize(testStrings[i]);
-        //console.log(tokens);
-        var output = RiTa.untokenize(tokens);
-        equal(output, testStrings[i]);
-      }
-    });
-
     test("testIsRhymeStringString", function() {
 
         ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
