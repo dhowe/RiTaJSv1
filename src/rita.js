@@ -240,13 +240,13 @@ var RiTa = {
 
     delim = delim || SP;
 
-    var thisPunct, lastPunct, thisQuote, lastQuote,
-      lastComma, punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
+    var thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
+      lastComma, punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/, dbug = 0,
       quotes = /^[\(""“”\u2019‘`']+$/, squotes = /^[\u2019‘`']+$/,
-      apostrophes = /^[\u2019']+$/,
-      result = arr[0] || E, midSentence = false, thisComma,
+      apostrophes = /^[\u2019']+$/, afterQuote = false,
       withinQuote = arr.length && quotes.test(arr[0]),
-      afterQuote = false, isLast, dbug = 0;
+      result = arr[0] || E, midSentence = false;
+
 
     for (var i = 1; i < arr.length; i++) {
 
@@ -289,6 +289,7 @@ var RiTa = {
         afterQuote = false;
 
       } else if (lastQuote && thisComma) {
+
         midSentence = true;
 
       } else if (midSentence && lastComma) {
@@ -303,11 +304,14 @@ var RiTa = {
       }
 
       result += arr[i]; // add to result
+
       if (thisPunct && !lastPunct && !withinQuote && squotes.test(arr[i])) {
-        dbug&&console.log('hitnew', arr[i]);
+
+        dbug && console.log('hitnew', arr[i]);
         result += delim; // fix to #477
       }
     }
+
     return result.trim();
   },
 
@@ -1495,7 +1499,7 @@ RiLexicon.prototype = {
 
 var RiMarkov = makeClass();
 
-RiMarkov.MAX_GENERATION_ATTEMPTS = 1000;
+RiMarkov.MAX_GENERATION_ATTEMPTS = 5000;
 var SSRE = /"?[A-Z][a-z"',;`-]*/;
 var SSDLM = 'D=l1m_';
 
@@ -1508,8 +1512,9 @@ RiMarkov.prototype = {
     ok(a[0], N);
 
     this.N = a[0];
+    this.rawText = '';
     this.pathTrace = [];
-    this.sentenceList = [];
+    //this.sentenceList = [];
     this.sentenceStarts = [];
     this.minSentenceLength = 6;
     this.maxSentenceLength = 35;
@@ -1517,6 +1522,7 @@ RiMarkov.prototype = {
     this.root = new TextNode(null, 'ROOT');
     this.isSentenceAware = (a.length > 1 && !a[1]) ? false : true;
     this.allowDuplicates = (a.length > 2 && !a[2]) ? false : true;
+    //this.maxMatchingSequence = this.N + 1;
     this.printIgnoredText = false;
   },
 
@@ -1573,7 +1579,8 @@ RiMarkov.prototype = {
 
       if (pre.length + post.length > this.N) {
 
-        err('Sum of pre.length && post.length must be < N, was ' + (pre.length + post.length));
+        err('Sum of pre.length && post.length must be < N, was '
+          + (pre.length + post.length));
       }
 
       tn = this._findNode(pre);
@@ -1593,13 +1600,13 @@ RiMarkov.prototype = {
 
         if (this._findNode(atest)) result.push(node.token);
       }
+
       return result;
+
     } else { // fill the end
 
       var hash = this.getProbabilities(pre);
-      var keys = okeys(hash);
-      return keys.sort(function(a, b) {
-
+      return okeys(hash).sort(function(a, b) {
         return hash[b] - hash[a];
       });
     }
@@ -1610,8 +1617,7 @@ RiMarkov.prototype = {
     minLength = minLength || 1;
     maxLength = maxLength || Number.MAX_VALUE;
 
-    var mn, tokens, tries = 0,
-      maxTries = 999;
+    var mn, tokens, tries = 0, maxTries = 999;
 
     OUT: while (++tries < maxTries) {
 
@@ -1645,13 +1651,11 @@ RiMarkov.prototype = {
 
   generateTokens: function(targetNumber) {
 
-    var tries = 0,
-      maxTries = 500,
-      tokens = [];
+    var mn, tries = 0, maxTries = 500, tokens = [], res = [];
 
     OUT: while (++tries < maxTries) {
 
-      var mn = this.root.selectChild(null, true);
+      mn = this.root.selectChild(null, true);
       if (!mn || !mn.token) continue OUT;
       tokens.push(mn);
 
@@ -1675,9 +1679,8 @@ RiMarkov.prototype = {
       this._onGenerationIncomplete(tries, tokens.length);
     }
 
-    var res = [];
     for (var i = 0; i < tokens.length; i++) {
-      res[i] = tokens[i].token;
+      res.push(tokens[i].token);
     }
 
     return res;
@@ -1730,24 +1733,20 @@ RiMarkov.prototype = {
 
     ok(text, S);
 
-    multiplier = multiplier || 1;
+    this.rawText += text;
 
-    if (multiplier < 1 || multiplier != Math.floor(multiplier)) // TODO: really?
-      err('Multiplier must be an positive integer, found: ' + multiplier);
+    multiplier = Math.round(multiplier || 1);
 
     var result = !this.isSentenceAware ?
       this.loadTokens(RiTa.tokenize(text, regex), multiplier) :
-      this._loadSentences(RiTa.splitSentences(text), multiplier);
+      this._loadSentences(text, multiplier);
 
     return result;
   },
 
   loadTokens: function(tokens, multiplier) {
 
-    multiplier = multiplier || 1;
-
-    if (multiplier < 1 || multiplier != Math.floor(multiplier))
-      err('multiplier must be an positive integer, found: ' + multiplier);
+    multiplier = Math.round(multiplier || 1);
 
     this.root.count += tokens.length; // here?
 
@@ -1755,8 +1754,10 @@ RiMarkov.prototype = {
       toAdd = [];
 
       for (var j = 0; j < this.N; j++) {
-        if ((k + j) < tokens.length) toAdd[j] = (tokens[k + j]) ? tokens[k + j] : null;
-        else toAdd[j] = null;
+        if ((k + j) < tokens.length)
+          toAdd[j] = (tokens[k + j]) ? tokens[k + j] : null;
+        else
+          toAdd[j] = null;
       }
 
       // hack to deal with multiplier...
@@ -1872,16 +1873,17 @@ RiMarkov.prototype = {
           ' true when not generating sentences');
       }
 
-      if (this.sentenceList.indexOf(sent) > -1) { // a duplicate
+      if (this.rawText.indexOf(sent) > -1) {
 
-        if (++this.skippedDups == this.maxDuplicatesToSkip) {
-          warn('Hit skip-maximum (RiMarkov.maxDuplicatesToSkip=' + this.maxDuplicatesToSkip +
-            ') after skipping ' + this.maxDuplicatesToSkip + ', now allowing duplicates!');
+        if (++this.skippedDups >= RiMarkov.MAX_GENERATION_ATTEMPTS/2) {
+          warn('Hit duplicate skip-maximum (maxDuplicatesToSkip=' +
+            this.maxDuplicatesToSkip + '), now allowing duplicates!');
           this.allowDuplicates = true;
+          this.skippedDups = 0;
         }
 
         if (this.printIgnoredText)
-          log('Ignoring duplicate: ' + sent);
+          console.log('Ignoring duplicate: ' + sent);
 
         return false;
       }
@@ -1970,61 +1972,50 @@ RiMarkov.prototype = {
   },
 
   // Loads a sentence[] into the model; each element must be a single sentence
-  _loadSentences: function(sentences, multiplier) {
+  _loadSentences: function(text, multiplier) {
 
-    ok(sentences, A);
+    var i, j, toAdd, tokens, allWords = [],
+      sentences = RiTa.splitSentences(text),
+      mult = Math.round(multiplier || 1);
 
-    multiplier = multiplier || 1;
-    multiplier = Math.min(multiplier, 1);
-
-    // log("_loadSentences("+sentences.length+", multiplier="+multiplier+" "+this.allowDuplicates+")");
-
-    var i, j, tokens, sentence, allWords = [];
-
-    // do the cleaning/splitting first ---------------------
-
+    // Clean sentences and add valid starters
     for (i = 0; i < sentences.length; i++) {
 
-      sentence = this._clean(sentences[i]);
-
-      // do we need this?
-      if (!this.allowDuplicates) this.sentenceList.push(sentence);
-
-      tokens = RiTa.tokenize(sentence);
+      tokens = RiTa.tokenize(this._clean(sentences[i]));
 
       if (!this._validSentenceStart(tokens[0])) {
 
-        if (this.printIgnoredText)
+        if (this.printIgnoredText) {
           warn("Skipping (bad sentence start): " + tokens);
+        }
         continue;
       }
 
       //log("Added sentence start] " + tokens);
 
-      allWords.push(SSDLM + tokens[0]); // bad hack for sentence-starts
+      allWords.push(SSDLM + tokens[0]); // hack for sentence-starts
 
-      for (j = 1; j < tokens.length; j++)
+      for (j = 1; j < tokens.length; j++) {
         allWords.push(tokens[j]);
+      }
     }
 
-    // ------------------------------------------------
-
-    var toAdd, words = allWords, nFactor = this.N;
-
-    for (i = 0; i < words.length; i++) {
-
+    // Add word sequences to the model
+    for (i = 0; i < allWords.length; i++) {
       toAdd = [];
-      for (j = 0; j < nFactor; j++) {
-        if ((i + j) < words.length)
-          toAdd[j] = words[i + j];
+      for (j = 0; j < this.N; j++) {
+        if ((i + j) < allWords.length) {
+          toAdd[j] = allWords[i + j];
+        }
       }
 
       // hack to deal with multiplier...
-      for (j = 0; j < multiplier; j++)
+      for (j = 0; j < mult; j++) {
         this._addSentenceSequence(toAdd);
+      }
     }
 
-    this.root.count += words.length;
+    this.root.count += allWords.length;
 
     return this;
   },
@@ -2045,26 +2036,25 @@ RiMarkov.prototype = {
 
     for (var i = 0; i < toAdd.length; i++) {
 
-      if (!toAdd[i]) continue;
+      if (!toAdd[i] || !node.token) continue;
 
-      if (node.token) {
+      var add = toAdd[i];
 
-        var add = toAdd[i];
+      if (startsWith(add, SSDLM)) {
 
-        if (startsWith(add, SSDLM)) {
+        add = add.substring(SSDLM.length);
 
-          add = add.substring(SSDLM.length);
-          var parent = node;
+        var parent = node;
+        node = node.addChild(add, 1);
+        node.isSentenceStart = true;
 
-          node = node.addChild(add, 1);
-          node.isSentenceStart = true;
+        if (parent.isRoot()) {
+          this.sentenceStarts.push(node.token);
+        }
 
-          if (parent.isRoot()) {
-            this.sentenceStarts.push(node.token);
-          }
+      } else {
 
-        } else
-          node = node.addChild(add, 1);
+        node = node.addChild(add, 1);
       }
     }
   },

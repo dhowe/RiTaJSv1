@@ -7,7 +7,7 @@ var runtests = function() {
 		teardown : function() { }
 	});
 
-	var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.", SP = ' ', E = ' ';
+	var sample = "One reason people lie is to achieve personal power. One reason people run is to achieve flight. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.", SP = ' ', E = ' ';
 
 	var sample2 = "One reason people lie is to achieve personal power. " + "Achieving personal power is helpful for one who pretends to " + "be more confident than he really is. For example, one of my " + "friends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
 
@@ -178,6 +178,19 @@ var runtests = function() {
 		}
 	});
 
+	test("testAllowDuplicates", function() {
+
+		var rm = new RiMarkov(4, true, false);
+		//RiMarkov.MAX_GENERATION_ATTEMPTS = 100;
+		rm.printIgnoredText = true;
+		rm.loadText(sample);
+		for (var i = 0; i < 10; i++) {
+			var sent = rm.generateSentence();
+			console.log(i+") "+ sent);
+			equal(sample.indexOf(sent), -1);
+		}
+	});
+
 	test("testGenerateTokens(b)", function() {
 
 		var rm = new RiMarkov(4);
@@ -200,14 +213,6 @@ var runtests = function() {
 	});
 
 	test("testLoadText(sentences)", function() {
-
-		var rm = new RiMarkov(4, true, false);
-		var sents = rm.loadText(sample).sentenceList;
-		ok(sents && sents.length);
-
-		var rm = new RiMarkov(4, false, false);
-		var sents = rm.loadText(sample).sentenceList;
-		ok(!sents.length);
 
 		//ok(!"need more tests","need more tests"); // TODO
 		//
@@ -356,41 +361,30 @@ var runtests = function() {
 		var rm = new RiMarkov(3);
 		rm.loadTokens(RiTa.tokenize(sample));
 
-		var checks = ["reason", "people", "personal", "the", "is"];
-		var expec = [{
-			people : 1.0
-		}, {
-			lie : 1.0
-		}, {
-			power : 1.0
-		}, {
-			time : 0.5,
-			party : 0.5
-		}, {
-			to : 0.33333334,
-			'.' : 0.33333334,
-			helpful : 0.33333334
-		}];
-
-		var keys = Object.keys(expec);
+		var checks = ["reason", "people", "personal", "the", "is", "XXX"];
+		var expected = [{
+				people : 1.0
+			}, {
+				lie : 0.5,
+				run: 0.5
+			}, {
+				power : 1.0
+			}, {
+				time : 0.5,
+				party : 0.5
+			}, {
+				to : 0.5,
+				'.' : 0.25,
+				helpful : 0.25
+		}, {}];
 
 		for (var i = 0; i < checks.length; i++) {
 
 			var res = rm.getProbabilities(checks[i]);
-			//console.log(checks[i]+":");
-
-			equal(Object.keys(res).length, Object.keys(expec[i]).length);
-
-			var answer = [];
-			for (var key in res) {
-				answer.push(key);
-				//console.log("  "+key+" -> "+res[key]);
-			}
-			deepEqual(Object.keys(res), answer);
+			//console.log(checks[i]+":",res, expected[i]);
+			deepEqual(res, expected[i]);
 		}
 
-		var res = rm.getProbabilities("XXX");
-		deepEqual(res, {});
 	});
 
 	test("testGetProbabilities[array]", function() {
@@ -473,7 +467,7 @@ var runtests = function() {
 
 		var rm = new RiMarkov(3);
 		rm.loadTokens(RiTa.tokenize(sample));
-		equal(rm.getProbability("power"), 0.017045454545454544);
+		equal(rm.getProbability("power"), 	0.016216216216216217);
 	});
 
 	test("testGetProbability[array]", function() {
