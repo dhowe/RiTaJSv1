@@ -1518,7 +1518,6 @@ RiMarkov.prototype = {
     this.sentenceStarts = [];
     this.minSentenceLength = 6;
     this.maxSentenceLength = 35;
-    this.maxDuplicatesToSkip = 10000;
     this.root = new TextNode(null, 'ROOT');
     this.isSentenceAware = (a.length > 1 && !a[1]) ? false : true;
     this.allowDuplicates = (a.length > 2 && !a[2]) ? false : true;
@@ -1875,9 +1874,8 @@ RiMarkov.prototype = {
 
       if (this.rawText.indexOf(sent) > -1) {
 
-        if (++this.skippedDups >= RiMarkov.MAX_GENERATION_ATTEMPTS/2) {
-          warn('Hit duplicate skip-maximum (maxDuplicatesToSkip=' +
-            this.maxDuplicatesToSkip + '), now allowing duplicates!');
+        if (++this.skippedDups >= RiMarkov.MAX_GENERATION_ATTEMPTS) {
+          // TODO: NEVER CALLED, add warning here?
           this.allowDuplicates = true;
           this.skippedDups = 0;
         }
