@@ -184,11 +184,11 @@ var runtests = function() {
 
 		var rm = new RiMarkov(4, true, false);
 		//RiMarkov.MAX_GENERATION_ATTEMPTS = 100;
-		rm.printIgnoredText = true;
+		//rm.printIgnoredText = true;
 		rm.loadText(sample4);
 		for (var i = 0; i < 10; i++) {
 			var sent = rm.generateSentence();
-			console.log(i+") "+ sent);
+			//console.log(i+") "+ sent);
 			equal(sample4.indexOf(sent), -1);
 		}
 	});

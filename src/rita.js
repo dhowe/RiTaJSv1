@@ -1726,7 +1726,7 @@ RiMarkov.prototype = {
     });
   },
 
-  loadText: function(text, multiplier, regex) {
+  loadText: function(text, multiplier, regex, progress) {
 
     //log("loadText: "+text.length + " "+this.isSentenceAware);
 
@@ -1738,7 +1738,7 @@ RiMarkov.prototype = {
 
     var result = !this.isSentenceAware ?
       this.loadTokens(RiTa.tokenize(text, regex), multiplier) :
-      this._loadSentences(text, multiplier);
+      this._loadSentences(text, multiplier, progress);
 
     return result;
   },
@@ -1970,7 +1970,7 @@ RiMarkov.prototype = {
   },
 
   // Loads a sentence[] into the model; each element must be a single sentence
-  _loadSentences: function(text, multiplier) {
+  _loadSentences: function(text, multiplier, progress) {
 
     var i, j, toAdd, tokens, allWords = [],
       sentences = RiTa.splitSentences(text),
@@ -2011,7 +2011,12 @@ RiMarkov.prototype = {
       for (j = 0; j < mult; j++) {
         this._addSentenceSequence(toAdd);
       }
+
+      if (progress && (!(i % 10000))) {
+        printProgress('Building model: ', parseInt(((i/allWords.length)*1000))/10);
+      }
     }
+    progress && printProgress('Building model: ', 100, 0);
 
     this.root.count += allWords.length;
 

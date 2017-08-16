@@ -15,6 +15,14 @@ function makeClass() { // from: Resig, TODO: make work with strict
   };
 }
 
+function printProgress(msg, prog, lb) {
+  if (process && process.stdout) {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(msg + prog + '%' + (lb?'\n':''));
+  }
+}
+
 function is(obj, type) {
   return get(obj) === type;
 }
