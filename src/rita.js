@@ -316,8 +316,29 @@ var RiTa = {
   },
 
   splitSentences: function(text, regex) {
-    var arr = text.match(/(\S.+?[.!?])(?=\s+|$)/g);
-    return (text.length && arr && arr.length) ? arr : [text];
+
+    var abbrs = this.ABBREVIATIONS, delim = '___', re = new RegExp(delim, 'g');
+
+    function unescapeAbbrevs(arr) {
+      for (var i = 0; i < arr.length; i++) {
+        arr[i] = arr[i].replace(re, ".");
+      }
+      return arr;
+    }
+
+    function escapeAbbrevs(text) {
+      for (var i = 0; i < abbrs.length; i++) {
+        var abv = abbrs[i], idx = text.indexOf(abv);
+        while (idx > -1) {
+          text = text.replace(abv, abv.replace('.', delim));
+          idx = text.indexOf(abv);
+        }
+      }
+      return text;
+    }
+
+    var arr = escapeAbbrevs(text).match(/(\S.+?[.!?])(?=\s+|$)/g);
+    return (text.length && arr && arr.length) ? unescapeAbbrevs(arr) : [text];
   },
 
   isAbbreviation: function(input, caseSensitive) {
