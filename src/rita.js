@@ -316,8 +316,17 @@ var RiTa = {
   },
 
   splitSentences: function(text, regex) {
-    var arr = text.match(/(\S.+?[.!?])(?=\s+|$)/g);
-    return (text.length && arr && arr.length) ? arr : [text];
+    var misterless = text.replace(/(Mr|Mrs|Ms|Dr|Prof)\./g, "$1☁☃");
+    var arr = misterless.match(/(\S.+?[.!?])(?=\s+|$)/g);
+    if (arr) {
+      var finishedArray = arr.map(function (item) {
+        return item.replace(/☁☃/g, ".");
+      });
+      return finishedArray;
+    }
+    else {
+      return [text];
+    }
   },
 
   isAbbreviation: function(input, caseSensitive) {

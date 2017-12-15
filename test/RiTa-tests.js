@@ -288,6 +288,11 @@ var runtests = function () {
       var expected = ["\'Yes, it was a dog that ate the baby\', he said."];
       deepEqual(output, expected);
 
+      var input = "The baby belonged to Mr. and Mrs. Stevens. They will be very sad.";
+      var output = RiTa.splitSentences(input);
+      var expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
+      deepEqual(output, expected);
+
       deepEqual(RiTa.splitSentences(""), [""]);
     });
 
