@@ -1435,6 +1435,14 @@ RiLexicon.prototype = {
     return result;
   },
 
+  _isNNWithoutNNS: function(w, pos) {
+     if (w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0) {
+        // console.log(w);
+        return true;
+     }  
+      else return false;
+  },
+
   randomWord: function() { // takes nothing, pos, syllableCount, or both
 
     var i, j, rdata, numSyls, pluralize = false,
@@ -1462,13 +1470,15 @@ RiLexicon.prototype = {
 
       case 2: // a[0]=pos  a[1]=syllableCount
 
-
         for (i = 0; i < words.length; i++) {
           j = (ran + i) % words.length;
           rdata = this.data[words[j]];
           numSyls = rdata[0].split(SP).length;
           if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-            return pluralize ? RiTa.pluralize(words[j]) : words[j];
+            if (!pluralize) return words[j];
+            else if (!this._isNNWithoutNNS(words[j], rdata[1])) {
+                return RiTa.pluralize(words[j]);
+            }
           }
         }
 
@@ -1482,7 +1492,10 @@ RiLexicon.prototype = {
             j = (ran + i) % words.length;
             rdata = this.data[words[j]];
             if (a[0] === rdata[1].split(SP)[0]) {
-              return pluralize ? RiTa.pluralize(words[j]) : words[j];
+                if (!pluralize) return words[j];
+                else if (!this._isNNWithoutNNS(words[j], rdata[1])) {
+                return RiTa.pluralize(words[j]);
+            }
             }
           }
 
