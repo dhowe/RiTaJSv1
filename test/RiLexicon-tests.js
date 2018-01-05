@@ -180,13 +180,22 @@ var runtests = function() {
     result = lex.randomWord("nns", 5);
     ok(result.length > 0, "randomWord nns: " + result);
 
-    for (var j = 0; j < 20; j++) {
-      // tag
-      result = lex.randomWord("nns");
-      ok(lex._isPlural(result), "randomWord nns: " + result);
-    }
-
   });
+
+  test("testRandomNNS", function() {
+      for (var i = 0; i < 20; i++) {
+        var result = lex.randomWord("nns");
+        // if (!lex._isPlural(result)) console.log(result);
+        ok(lex._isPlural(result), "randomWord nns: " + result);
+
+        //No nn & vbg
+        //No -ness, -ism
+        ok(pos.indexOf("vbg") < 0, "randomWord nns: " + result);
+        ok(!result.endsWith("ness"), "randomWord nns: " + result);
+        ok(!result.endsWith("isms"), "randomWord nns: " + result);
+      }
+  });
+
 
   test("testRandomWord(2)", function() {
 
@@ -225,6 +234,16 @@ var runtests = function() {
 
     // TODO: more tests with both count and pos
   });
+
+  // double check that we don't always get the same word
+  test("testRandomWord(5)", function() {
+     var pos = ["nn", "jj", "jjr", "nns", "n", "v"];
+     for (var j = 0; j < pos.length; j++) {
+         var result = lex.randomWord(pos[j]);
+         var result2 = lex.randomWord(pos[j]);
+         equal(true, result != result2);
+     }
+   });
 
   test("testWords", function() {
 
@@ -720,7 +739,7 @@ var runtests = function() {
     ok(result.length > answer.length); // more
 
     result = lex.similarBySound("cat");
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "cant", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     deepEqual(result, answer);
 
     result = lex.similarBySound("cat", 2);
