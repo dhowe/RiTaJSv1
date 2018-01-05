@@ -382,7 +382,7 @@ var runtests = function() {
 		for (var i = 0; i < checks.length; i++) {
 
 			var res = rm.getProbabilities(checks[i]);
-			console.log(checks[i]+":",res, expected[i]);
+			//console.log(checks[i]+":",res, expected[i]);
 			deepEqual(res, expected[i]);
 		}
 
