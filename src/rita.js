@@ -1241,13 +1241,13 @@ RiLexicon.prototype = {
 
   _getSyllables: function(word) {
 
-    // TODO: use feature cache?
     if (!strOk(word)) return E;
 
     var wordArr = RiTa.tokenize(word), raw = [];
-    for (var i = 0; i < wordArr.length; i++)
+    for (var i = 0; i < wordArr.length; i++) {
       raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
-    // console.log("[RiTa] syllables" + " " + word + " " + raw);
+    }
+
     return RiTa.untokenize(raw).replace(/1/g, E).trim();
   },
 
@@ -1390,7 +1390,6 @@ RiLexicon.prototype = {
 
     if (!strOk(word)) return E; // return null?
 
-
     var raw = this._lastStressedPhoneToEnd(word, useLTS);
     if (!strOk(raw)) return E; // return null?
 
@@ -1406,8 +1405,9 @@ RiLexicon.prototype = {
         break;
       }
     }
-  word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
-   return lastSyllable.substring(idx);
+    //word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
+
+    return lastSyllable.substring(idx);
   },
 
   _lastStressedPhoneToEnd: function(word, useLTS) {
@@ -1435,15 +1435,11 @@ RiLexicon.prototype = {
     return result;
   },
 
-  _isNNWithoutNNS: function(w, pos) {
-     if (w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0) {
-        // console.log(w);
-        return true;
-     }  
-      else return false;
-  },
-
   randomWord: function() { // takes nothing, pos, syllableCount, or both
+
+    var isNNWithoutNNS = function(w, pos) {
+       return pos.indexOf("vbg") > 0 || w.endsWith("ness") || w.endsWith("ism");
+    };
 
     var i, j, rdata, numSyls, pluralize = false,
       ran = Math.floor(Math.random() * this.size()),
@@ -1455,15 +1451,11 @@ RiLexicon.prototype = {
 
         pluralize = (a[0] === "nns");
 
-        if (a[0] === "v")
-            a[0] = "vb";
-        if (a[0] === "r")
-            a[0] = "rb";
-        if (a[0] === "a")
-            a[0] = "jj";
-        if (a[0] === "n" || a[0] === "nns") {
-            a[0] = "nn";
-        }
+        if (a[0] === "n" || a[0] === "nns") a[0] = "nn";
+        else if (a[0] === "v") a[0] = "vb";
+        else if (a[0] === "r") a[0] = "rb";
+        else if (a[0] === "a") a[0] = "jj";
+
     }
 
     switch (a.length) {
@@ -1476,13 +1468,11 @@ RiLexicon.prototype = {
           numSyls = rdata[0].split(SP).length;
           if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
             if (!pluralize) return words[j];
-            else if (!this._isNNWithoutNNS(words[j], rdata[1])) {
+            else if (!isNNWithoutNNS(words[j], rdata[1])) {
                 return RiTa.pluralize(words[j]);
             }
           }
         }
-
-        //warn("No words with pos=" + a[0] + " found");
 
       case 1:
 
@@ -1493,13 +1483,11 @@ RiLexicon.prototype = {
             rdata = this.data[words[j]];
             if (a[0] === rdata[1].split(SP)[0]) {
                 if (!pluralize) return words[j];
-                else if (!this._isNNWithoutNNS(words[j], rdata[1])) {
+                else if (!isNNWithoutNNS(words[j], rdata[1])) {
                 return RiTa.pluralize(words[j]);
             }
             }
           }
-
-          //warn("No words with pos=" + a[0] + " found");
 
         } else {
 
@@ -1548,14 +1536,12 @@ RiMarkov.prototype = {
     this.N = a[0];
     this.rawText = '';
     this.pathTrace = [];
-    //this.sentenceList = [];
     this.sentenceStarts = [];
     this.minSentenceLength = 6;
     this.maxSentenceLength = 35;
     this.root = new TextNode(null, 'ROOT');
     this.isSentenceAware = (a.length > 1 && !a[1]) ? false : true;
     this.allowDuplicates = (a.length > 2 && !a[2]) ? false : true;
-    //this.maxMatchingSequence = this.N + 1;
     this.printIgnoredText = false;
   },
 
@@ -1762,8 +1748,6 @@ RiMarkov.prototype = {
 
   loadText: function(text, multiplier, regex, progress) {
 
-    //log("loadText: "+text.length + " "+this.isSentenceAware);
-
     ok(text, S);
 
     this.rawText += text;
@@ -1854,7 +1838,6 @@ RiMarkov.prototype = {
             if (result.indexOf(candidate) < 0)
               result.push(candidate);
 
-            //log(result.length+" RESULTS SO FAR");
             totalTries += tries;
             tries = 0;
           }
@@ -1976,9 +1959,7 @@ RiMarkov.prototype = {
         if (current.isRoot() && (this.isSentenceAware && !nodes[i].isSentenceStart)) {
           continue;
         }
-        if (selector < pTotal) {
-          return nodes[i];
-        }
+        if (selector < pTotal) return nodes[i];
       }
 
       attempts++;
@@ -2090,7 +2071,6 @@ RiMarkov.prototype = {
         }
 
       } else {
-
         node = node.addChild(add, 1);
       }
     }
@@ -2121,8 +2101,8 @@ RiMarkov.prototype = {
 
     if (!node) return null;
 
-    var idx = 0; // found at least one good node
-    var nodes = [];
+    // found at least one good node
+    var nodes = [], idx = 0;
     nodes[idx++] = node;
     for (var i = firstLookupIdx; i < path.length; i++) {
       node = node.lookup(path[i]);
@@ -2189,7 +2169,7 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
     return ret.join(SP);
   };
 
-  var dbug, None, internuclei = [], syllables = [], // returned data structure.
+  var dbug, None, internuclei = [], syllables = [], // returned data structure
     sylls = ((typeof(input) == 'string') ? input.split('-') : input);
 
   for (var i = 0; i < sylls.length; i++) {
@@ -2204,10 +2184,10 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
 
     if (inArray(RiString._phones.vowels, phoneme)) {
 
-      // Split the consonants seen since the last nucleus into coda and onset.
+      // Split the consonants seen since the last nucleus into coda and onset
       var coda = None, onset = None;
 
-      // Make the largest onset we can. The 'split' variable marks the break point.
+      // Make the largest onset we can. The 'split' variable marks the break point
       for (var split = 0; split < internuclei.length + 1; split++) {
 
         coda = internuclei.slice(0, split);
@@ -2219,7 +2199,7 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
         // If we are looking at a valid onset, or if we're at the start of the word
         // (in which case an invalid onset is better than a coda that doesn't follow
         // a nucleus), or if we've gone through all of the onsets and we didn't find
-        // any that are valid, then split the nonvowels we've seen at this location.
+        // any that are valid, then split the nonvowels we've seen at this location
         var bool = inArray(RiString._phones.onsets, onset.join(" "));
         if (bool || syllables.length === 0 || onset.length === 0) {
           if (dbug) log('  break ' + phoneme);
@@ -2228,7 +2208,7 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
       }
 
       // Tack the coda onto the coda of the last syllable.
-      // Can't do it if this is the first syllable.
+      // Can't do it if this is the first syllable
       if (syllables.length > 0) {
         extend(syllables[syllables.length - 1][3], coda);
         if (dbug) log('  tack: ' + coda + ' -> len=' +
@@ -2236,11 +2216,11 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
           syllables[syllables.length - 1][3] + "]");
       }
 
-      // Make a new syllable out of the onset and nucleus.
+      // Make a new syllable out of the onset and nucleus
       var toPush = [[stress], onset, [phoneme], []];
       syllables.push(toPush);
 
-      // At this point we've processed the internuclei list.
+      // At this point we've processed the internuclei list
       internuclei = [];
     }
     else if (!inArray(RiString._phones.consonants, phoneme) && phoneme != " ") {
@@ -2251,8 +2231,8 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
     }
   }
 
-  // Done looping through phonemes. We may have consonants left at the end.
-  // We may have even not found a nucleus.
+  // Done looping through phonemes. We may have consonants left at the end
+  // We may have even not found a nucleus
   if (internuclei.length > 0) {
     if (syllables.length === 0) {
       syllables.push([[None], internuclei, [],[]]);
@@ -2286,8 +2266,7 @@ RiString.prototype = {
 
     text = text || '';
 
-    // convenience fields, in case we use this object for rendering
-    this.x = 0;
+    this.x = 0; // 3 for convenience, in case we're rendering
     this.y = 0;
     this.z = 0;
 
@@ -2585,19 +2564,13 @@ RiString.prototype = {
     if (pattern && (replacement || replacement === '')) {
 
       if (!is(pattern, S) && pattern.source) {
-
         pattern.ignoreCase && (flags += 'i');
         pattern.multiline && (flags += 'm');
         pattern.sticky && (flags += 'y');
-
         pattern = pattern.source;
       } else {
-
         pattern = escapeRegExp(pattern);
       }
-
-      //console.log("RE: /"+pattern+"/"+flags);
-
       this._text = this._text.replace(new RegExp(pattern, flags), replacement);
     }
 
@@ -2615,12 +2588,8 @@ RiString.prototype = {
 
     if (wordIdx < 0) wordIdx += words.length;
 
-    // log("insertWord("+ newWord+', '+wordIdx+") -> words["+wordIdx+"] = " + words[wordIdx]);
-
     if (newWord && newWord.length >= 0 && wordIdx >= 0 && wordIdx < words.length) {
-
       words[wordIdx] = newWord + SP + words[wordIdx];
-
       this.text(RiTa.untokenize(words));
     }
 
@@ -2634,16 +2603,12 @@ RiString.prototype = {
 
   replaceWord: function(wordIdx, newWord) {
 
-    //log("replaceWord: "+wordIdx+", '"+newWord+"'");
-
     var words = this.words(); //  tokenize
 
     if (wordIdx < 0) wordIdx += words.length;
 
     if ((newWord || newWord === E) && wordIdx >= 0 && wordIdx < words.length) {
-
       words[wordIdx] = newWord;
-
       this.text(RiTa.untokenize(words));
     }
 
@@ -2655,8 +2620,7 @@ RiString.prototype = {
     var parts = this._text.split(separator, limit);
     var rs = [];
     for (var i = 0; i < parts.length; i++) {
-      if (parts[i])
-        rs.push(new RiString(parts[i]));
+      if (parts[i]) rs.push(new RiString(parts[i]));
     }
     return rs;
   },
@@ -2755,23 +2719,16 @@ RiGrammar.prototype = {
       if (typeof YAML != 'undefined') { // found a yaml-parser, so try it first
 
         try {
-          //console.log('trying YAML');
           grammar = YAML.parse(grammar);
-
         } catch (e) {
-
           warn('YAML parsing failed, trying JSON');
         }
       }
 
       if (!is(grammar, O)) { // we failed with our yaml-parser, so try JSON
         try {
-
-          //console.log('trying JSON');
           grammar = JSON.parse(grammar);
-
         } catch (e) {
-
           var ex = e;
         }
       }
@@ -2838,16 +2795,13 @@ RiGrammar.prototype = {
       }
 
       if (this.hasRule(name)) {
-
         if (dbug) log("rule exists");
         var temp = this._rules[name];
         temp[rule] = prob;
       } else {
-
         var temp2 = {};
         temp2[rule] = prob;
         this._rules[name] = temp2;
-
         if (dbug) log("added rule: " + name);
       }
     }
@@ -2952,7 +2906,6 @@ RiGrammar.prototype = {
     for (name in gr._rules) {
 
       if (name === symbol) {
-
         var obj = {};
         obj[literal] = 1.0;
         gr._rules[name] = obj;
