@@ -1356,6 +1356,8 @@ return;
       equal(RiTa.singularize("oxen"), "ox");
       equal(RiTa.singularize("solos"), "solo");
       equal(RiTa.singularize("music"), "music");
+      equal(RiTa.singularize("money"), "money");
+      equal(RiTa.singularize("beef"), "beef");
 
       equal(RiTa.singularize("tobacco"), "tobacco");
       equal(RiTa.singularize("cargo"), "cargo");
