@@ -740,7 +740,7 @@ var runtests = function() {
     ok(result.length > answer.length); // more
 
     result = lex.similarBySound("cat");
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t","cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     deepEqual(result, answer);
 
     result = lex.similarBySound("cat", 2);
