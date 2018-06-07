@@ -292,6 +292,28 @@ var runtests = function () {
       var output = RiTa.splitSentences(input);
       var expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
       deepEqual(output, expected);
+      
+      // More quotation marks
+      var input = "\"The baby belonged to Mr. and Mrs. Stevens. They will be very sad.\"";
+      var output = RiTa.splitSentences(input);
+      var expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
+      deepEqual(output, expected);
+
+      var input = "“The baby belonged to Mr. and Mrs. Stevens. They will be very sad.”";
+      var output = RiTa.splitSentences(input);
+      var expected = ["“The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.”"];
+      deepEqual(output, expected);
+
+      var input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
+      var output = RiTa.splitSentences(input);
+      var expected = ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
+      deepEqual(output, expected);
+
+     
+      var input = " I had a visit from my \"friend\" the tax man.";
+      var output = RiTa.splitSentences(input);
+      var expected = ["I had a visit from my \"friend\" the tax man."];
+      deepEqual(output, expected);
 
       deepEqual(RiTa.splitSentences(""), [""]);
     });
@@ -1360,6 +1382,8 @@ return;
       equal(RiTa.singularize("oxen"), "ox");
       equal(RiTa.singularize("solos"), "solo");
       equal(RiTa.singularize("music"), "music");
+      equal(RiTa.singularize("money"), "money");
+      equal(RiTa.singularize("beef"), "beef");
 
       equal(RiTa.singularize("tobacco"), "tobacco");
       equal(RiTa.singularize("cargo"), "cargo");
