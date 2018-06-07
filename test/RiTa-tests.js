@@ -772,6 +772,10 @@ var runtests = function () {
       var answer = "f-l-aw-er-z";
       equal(result, answer);
 
+      var result = RiTa.getPhonemes("quiche");
+      var answer = "k-iy-sh";
+      equal(result, answer);
+
       var result = RiTa.getPhonemes("mice");
       var answer = "m-ay-s";
       equal(result, answer);
