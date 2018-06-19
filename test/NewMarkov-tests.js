@@ -49,7 +49,6 @@ if (0) {
           //return;
         }
       }
-
     }
   });
 }
@@ -58,6 +57,26 @@ test("testConstructor", function () {
 
   ok(RiMarkov(4));
   ok(new RiMarkov(3));
+});
+
+test("testLoadSentences", function () {
+
+  // WORKING HERE
+  var rm = new RiMarkov(4);
+  var sents = RiTa.splitSentences(sample)
+  rm.loadSentences(sents);
+  ok(1);
+
+  Object.keys(rm.starts.children).forEach(function(k){
+    var node = rm.starts.children[k];
+    console.log(node.token+" ("+node.count+")");
+  });
+
+  for (var i = 0; i < 10; i++) {
+    var s = rm._getSentenceStartNode();
+    console.log(i+", "+s);
+  }
+
 });
 
 test("testGenerateTokens", function () {

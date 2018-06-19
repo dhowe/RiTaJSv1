@@ -1,65 +1,165 @@
 const BN = '\n',
+  SSDLM = 'D=l1m_',
   MAX_GENERATION_ATTEMPTS = 10;
 
 var Markov = makeClass();
 
 Markov.prototype = {
 
-  _chooseChild: function (parent, path) {
-    //console.log("_chooseChild: " + parent.token);
+    init: function (n) {
 
-    var mlms = this.maxLengthMatchingSequence;
+      this.N = n;
+      this.root = new Node(null, 'ROOT');
+      this.starts = new Node(null, 'STARTS');
+      this.maxLengthMatchingSequence = 0;
+    },
 
-    // bail if we don't have maxLengthMatchingSequence
-    if (mlms < this.N || path.length <= mlms) return parent.select();
+    loadSentences: function (sentences) {
 
-    console.log('\nSo far: ', this._nodesToTokens(path));
-    console.log('           "' + parent.token + '" has '+parent.childNodes().length +
-      ' option(s): [' + nodeStr(parent.childNodes()) + "] ");
-    console.log();
+      var seq, allWords = [];
 
-    var start = nodeStr(path, true);
-    console.log("start: "+start);
+      // collect all the words, marking sentence starts
+      for (var i = 0; i < sentences.length; i++) {
+        var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
+        console.log(i + ") " + sentences[i]);
 
-    var child, nodes = path.splice(-(this.N - 1)),
-      excludes = [];
-
-    console.log('path: ', nodeStr(path) +" :: ", nodeStr(nodes));
-
-    while (!child) {
-
-      console.log('select: ', excludes, nodes.length);
-      var candidate = parent.select(excludes);
-
-      if (!candidate) {
-        console.log('FAIL with excludes = [', excludes + '] str="'+start+'"');
-        return false // if no candidates left, return false;
+        var tokens = RiTa.tokenize(sentence);
+        for (var j = 0; j < tokens.length; j++) {
+          allWords.push(j == 0 ? SSDLM + tokens[j] : tokens[j]);
+        }
       }
 
-      //var check = nodes.slice(0).push(candidate)
-      check = this._nodesToTokens(nodes.splice(0));
-      check.push(candidate.token);
+      // create all sequences of length N
+      for (i = 0; i < allWords.length; i++) {
+        seq = [];
+        for (j = 0; j < this.N; j++) {
+          if ((i + j) < allWords.length) {
+            seq[j] = allWords[i + j];
+          }
+        }
 
-      console.log('isSubArray?', check);
-
-      if (isSubArray(check, this.input)) {
-        console.log("Yes, excluding '"+candidate.token+"'");
-        excludes.push(candidate.token);
-        continue; // try again
+        this._addSentenceSequence(seq);
       }
 
-      console.log('No, done: ', candidate.token);
-      child = candidate; // found a good one
+      console.log("Loaded " + sentences.length + " sentences");
+    },
+
+    _addSentenceSequence: function (toAdd) {
+
+      var node = this.root;
+
+      for (var i = 0; i < toAdd.length; i++) {
+
+        if (!toAdd[i] || !node.token) continue;
+
+        if (toAdd[i].startsWith(SSDLM)) {
+
+          toAdd[i] = toAdd[i].substring(SSDLM.length);
+
+          if (node == this.root) this.starts.addChild(toAdd[i]);
+        }
+        node = node.addChild(toAdd[i]);
+      }
+    },
+
+    _isSentenceStart: function (node) {
+      return this.starts.indexOf(node) > -1;
+    },
+
+    _flatten: function (nodes) {
+      var tokens = nodes.map(function (obj) {
+        return obj.token;
+      });
+      return RiTa.untokenize(tokens);
+    },
+
+    _validateSentence: function (nodes) {
+
+      var sent = this._flatten(nodes);
+
+      if (sent[0] !== sent[0].toUpperCase()) {
+        console.log("Skipping: bad first char in '" + sent + "'");
+        return false;
+      }
+
+      if (!sent.match(/[!?.]$/)) {
+        console.log("Skipping: bad last char in '" + sent + "'");
+        return false;
+      }
+
+      return sent;
+    },
+
+    _onGenerationIncomplete: function (tries, successes) {
+
+      warn('\nRiMarkov failed to complete after ' + tries +
+        ' tries and ' + successes + ' successful generations.' +
+        ' You may need to add more text to the model...' + BN);
+    },
+
+    generateSentences: function (num, minTokens, maxTokens) {
+
+      minTokens = minTokens || 5;
+      maxTokens = maxTokens || 35;
+
+      if (this.starts.childCount() < 1) {
+        console.error('generateSentences() can only be called when the ' +
+          'model was created with sentences, otherwise use generateTokens()');
+      }
+
+      var node, sent, result = [];
+
+      while (result.length < num) {
+
+        // choose a sentence start, according to probability
+        sent = sent || [node = this.starts.select()];
+
+        var next = null;
+
+        // we're at a non-leaf node
+        if (node.childCount() > 0) {
+
+          next = node.select();
+        }
+
+        // we're at a leaf node
+        else {
+
+          next = null; // NEXT: do tracepath
+        }
+
+        // do we have a candidate for the next start?
+        if (this._isSentenceStart(next) && sent.length > minTokens) {
+
+            var candidate = this._validateSentence(nodes);
+            if (candidate) {
+              if (result.indexOf(candidate) > -1) {
+                console.log("Skipping: duplicate sentence: '" + sent + "'");
+              }
+              result.push(candidate);
+              sent = [];
+            }
+          }
+        }
+
+        sent.push(next);
+
+        if (sent.length > maxTokens) {
+          console.log("FAIL(maxlen): " + this._flatten(sent));
+          if (++tries >= maxTries) {
+            _onGenerationIncomplete(tries, results.length);
+            break; // give-up (&& result = null; ?)
+          }
+          sent = null;
+        }
+      }
     }
 
-    return child;
+    return result;
   },
 
-  init: function (n) {
-
-    this.N = n;
-    this.root = new Node(null, 'ROOT');
-    this.maxLengthMatchingSequence = 0;
+  generateSentence: function () {
+    return this.generateSentences(1)[0];
   },
 
   loadTokens: function (tokens) {
@@ -91,8 +191,7 @@ Markov.prototype = {
         if (nodes.length == num) {
           return this._nodesToTokens(nodes);
         }
-      }
-      else {
+      } else {
         //console.warn(tries, 'Failed with: ', nodeStr(nodes));
         nodes = [node = this.root.select()];
         tries++;
@@ -100,7 +199,7 @@ Markov.prototype = {
     }
 
     console.error('\n\nFailed after ' + tries + ' tries');
-      //, with '+ nodes.length + ' tokens: \'', nodeStr(nodes)+"'");
+    //, with '+ nodes.length + ' tokens: \'', nodeStr(nodes)+"'");
   },
 
   generateUntil: function (regex, minLength, maxLength) {
@@ -273,6 +372,59 @@ Markov.prototype = {
 
       return nodes[nodes.length - 1];
     }
+  },
+
+  // LATER
+  _chooseChild: function (parent, path) {
+    //console.log("_chooseChild: " + parent.token);
+
+    var mlms = this.maxLengthMatchingSequence;
+
+    // bail if we don't have maxLengthMatchingSequence
+    if (mlms < this.N || path.length <= mlms) return parent.select();
+
+    // WORKING here
+
+    console.log('\nSo far: ', this._nodesToTokens(path));
+    console.log('           "' + parent.token + '" has ' + parent.childNodes().length +
+      ' option(s): [' + nodeStr(parent.childNodes()) + "] ");
+    console.log();
+
+    var start = nodeStr(path, true);
+    console.log("start: " + start);
+
+    var child, nodes = path.splice(-(this.N - 1)),
+      excludes = [];
+
+    console.log('path: ', nodeStr(path) + " :: ", nodeStr(nodes));
+
+    while (!child) {
+
+      console.log('select: ', excludes, nodes.length);
+      var candidate = parent.select(excludes);
+
+      if (!candidate) {
+        console.log('FAIL with excludes = [', excludes + '] str="' + start + '"');
+        return false // if no candidates left, return false;
+      }
+
+      //var check = nodes.slice(0).push(candidate)
+      check = this._nodesToTokens(nodes.splice(0));
+      check.push(candidate.token);
+
+      console.log('isSubArray?', check);
+
+      if (isSubArray(check, this.input)) {
+        console.log("Yes, excluding '" + candidate.token + "'");
+        excludes.push(candidate.token);
+        continue; // try again
+      }
+
+      console.log('No, done: ', candidate.token);
+      child = candidate; // found a good one
+    }
+
+    return child;
   }
 }
 
@@ -281,6 +433,7 @@ Markov.prototype = {
 function Node(parent, word) {
 
   this.children = {};
+  this.isStart = false;
   this.parent = parent;
   this.token = word;
   this.count = 0;
@@ -296,16 +449,18 @@ function Node(parent, word) {
    * @param  {String[]} excludes - tokens which may not be selected
    * @return selected Node or undefined
    */
-  this.select = function (excludes) {
+  this.select = function (filter) {
 
     var selector, sum = 1,
       pTotal = 0,
       nodes = this.childNodes();
 
-    if (excludes && excludes.length) {
+    if (filter) {
+
+      if (!isFunction(filter)) throw Error("Invalid filter function", filter);
 
       for (var i = nodes.length - 1; i >= 0; i--) {
-        if (excludes.indexOf(nodes[i].token) > -1) {
+        if (!filter(nodes[i])) {
           //console.log('removing: '+nodes[i].token);
           nodes.splice(i, 1);
         }
@@ -324,10 +479,10 @@ function Node(parent, word) {
         return nodes[i];
     }
 
-    console.log('no hit for select() with excludes = '+excludes);
+    console.log('no hit for select() with excludes = ' + excludes);
   }
 
-  this.childNodes = function () {
+  this.childNodes = function () { // remove ?
     var res = [];
     for (var k in this.children) {
       res.push(this.children[k]);
@@ -335,15 +490,18 @@ function Node(parent, word) {
     return res;
   }
 
+  // increments child node and returns it
   this.addChild = function (word, count) {
 
     count = count || 1;
     var node = this.children[word];
     if (!node) {
+
       node = new Node(this, word);
       this.children[word] = node;
     }
-    node.count++;
+    node.count += count;
+
     return node;
   }
 
@@ -463,12 +621,9 @@ function nodeStr(nodes, format) {
 // --------------------------------------------------------------
 if (0) {
 
-  var RiTa = require('./node_modules/rita/lib/rita');
-  var RiMarkov = Markov;
-
   var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
-  var rm = new RiMarkov(4);
+  var rm = new Markov(4);
   //rm.maxLengthMatchingSequence = 5;
   rm.loadTokens(RiTa.tokenize(sample));
   //rm.print();
@@ -492,6 +647,10 @@ function isSubArray(find, arr) {
   }
   return false;
 }
+
+function isFunction(obj) {
+  return !!(obj && obj.constructor && obj.call && obj.apply);
+};
 
 // exports.isSubArray = isSubArray;
 // exports.RiMarkov = Markov;
