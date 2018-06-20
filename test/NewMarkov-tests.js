@@ -59,6 +59,20 @@ test("testConstructor", function () {
   ok(new RiMarkov(3));
 });
 
+test("testGetSentenceStart", function () {
+
+  // WORKING HERE
+  var rm = new RiMarkov(4);
+  var sents = RiTa.splitSentences(sample)
+  rm.loadSentences(sents);
+  var start = rm._getSentenceStart();
+  //console.log(start);
+  ok(rm.starts.children[start.token]);
+  ok(rm._isSentenceStart(start));
+});
+
+
+
 test("testLoadSentences", function () {
 
   // WORKING HERE
@@ -67,17 +81,12 @@ test("testLoadSentences", function () {
   rm.loadSentences(sents);
   ok(1);
 
-  Object.keys(rm.starts.children).forEach(function(k){
-    var node = rm.starts.children[k];
-    console.log(node.token+" ("+node.count+")");
-  });
-
-  for (var i = 0; i < 10; i++) {
-    var s = rm._getSentenceStartNode();
-    console.log(i+", "+s);
-  }
-
+  var s = rm.generateSentence();
+  console.log(s);
+  ok(s);
 });
+
+
 
 test("testGenerateTokens", function () {
 

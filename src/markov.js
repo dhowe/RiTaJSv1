@@ -6,153 +6,178 @@ var Markov = makeClass();
 
 Markov.prototype = {
 
-    init: function (n) {
+  init: function (n) {
 
-      this.N = n;
-      this.root = new Node(null, 'ROOT');
-      this.starts = new Node(null, 'STARTS');
-      this.maxLengthMatchingSequence = 0;
-    },
+    this.N = n;
+    this.root = new Node(null, 'ROOT');
+    this.starts = new Node(null, 'STARTS');
+    this.maxLengthMatchingSequence = 0;
+  },
 
-    loadSentences: function (sentences) {
+  loadSentences: function (sentences) {
 
-      var seq, allWords = [];
+    var seq, allWords = [];
 
-      // collect all the words, marking sentence starts
-      for (var i = 0; i < sentences.length; i++) {
-        var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
-        console.log(i + ") " + sentences[i]);
+    // collect all the words, marking sentence starts
+    for (var i = 0; i < sentences.length; i++) {
+      var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
+      //console.log(i + ") " + sentences[i]);
 
-        var tokens = RiTa.tokenize(sentence);
-        for (var j = 0; j < tokens.length; j++) {
-          allWords.push(j == 0 ? SSDLM + tokens[j] : tokens[j]);
+      var tokens = RiTa.tokenize(sentence);
+      for (var j = 0; j < tokens.length; j++) {
+        allWords.push(j == 0 ? SSDLM + tokens[j] : tokens[j]);
+      }
+    }
+
+    // create all sequences of length N
+    for (i = 0; i < allWords.length; i++) {
+      seq = [];
+      for (j = 0; j < this.N; j++) {
+        if ((i + j) < allWords.length) {
+          seq[j] = allWords[i + j];
         }
       }
 
-      // create all sequences of length N
-      for (i = 0; i < allWords.length; i++) {
-        seq = [];
-        for (j = 0; j < this.N; j++) {
-          if ((i + j) < allWords.length) {
-            seq[j] = allWords[i + j];
-          }
+      this._addSentenceSequence(seq);
+    }
+
+    console.log("Loaded " + sentences.length + " sentences");
+  },
+
+  _addSentenceSequence: function (toAdd) {
+
+    var node = this.root;
+
+    for (var i = 0; i < toAdd.length; i++) {
+
+      if (!toAdd[i] || !node.token) continue;
+
+      if (toAdd[i].startsWith(SSDLM)) {
+
+        toAdd[i] = toAdd[i].substring(SSDLM.length);
+
+        if (node == this.root) this.starts.addChild(toAdd[i]);
+      }
+      node = node.addChild(toAdd[i]);
+    }
+  },
+
+  _getSentenceStart: function () {
+    var node = this.starts.select();
+    return this.root.children[node.token];
+  },
+
+  _isSentenceStart: function (node) {
+    return this.starts.children[node.token] ? true : false;
+  },
+
+  _flatten: function (nodes) {
+    var tokens = nodes.map(function (obj) {
+      return obj.token;
+    });
+    return RiTa.untokenize(tokens);
+  },
+
+  _validateSentence: function (nodes) {
+
+    var sent = this._flatten(nodes);
+
+    if (sent[0] !== sent[0].toUpperCase()) {
+      console.log("Skipping: bad first char in '" + sent + "'");
+      return false;
+    }
+
+    if (!sent.match(/[!?.]$/)) {
+      console.log("Skipping: bad last char in '" + sent + "'");
+      return false;
+    }
+
+    return sent;
+  },
+
+  _onGenerationIncomplete: function (tries, successes) {
+
+    console.warn('\nRiMarkov failed to complete after ' + tries +
+      ' tries and ' + successes + ' successful generations.' +
+      ' You may need to add more text to the model...' + BN);
+  },
+
+  generateSentences: function (num, minTokens, maxTokens) {
+
+    minTokens = minTokens || 5;
+    maxTokens = maxTokens || 35;
+
+    if (this.starts.childCount() < 1) {
+      console.error('generateSentences() can only be called when the ' +
+        'model was created with sentences, otherwise use generateTokens()');
+    }
+
+    var node, sent, tries = 0,
+      result = [];
+    var l = 0;
+
+    while (result.length < num) {
+
+      // choose a sentence start, according to probability
+      sent = sent || [node = this._getSentenceStart()];
+
+      if (sent.length === 1) console.log(l + ") START: " + node);
+
+      var next = null;
+
+      // we're at a leaf node
+      if (node.childCount() < 1) {
+        //console.log(l+") LEAF: "+node);
+        var path = [];
+        for (var i = 0; i < this.N - 1; i++) {
+          path.unshift(node);
+          node = node.parent;
+          if (!node) err("Invalid state1", node);
         }
+        if (path.length !== this.N - 1) throw Error("Invalid state2");
 
-        this._addSentenceSequence(seq);
-      }
+        //console.log(this._flatten(path));
 
-      console.log("Loaded " + sentences.length + " sentences");
-    },
-
-    _addSentenceSequence: function (toAdd) {
-
-      var node = this.root;
-
-      for (var i = 0; i < toAdd.length; i++) {
-
-        if (!toAdd[i] || !node.token) continue;
-
-        if (toAdd[i].startsWith(SSDLM)) {
-
-          toAdd[i] = toAdd[i].substring(SSDLM.length);
-
-          if (node == this.root) this.starts.addChild(toAdd[i]);
+        node = this.root;
+        for (var i = 0; i < path.length; i++) {
+          node = node.children[path[i].token];
+          if (!node) throw Error("Invalid state3");
+          //console.log(i+") "+node);
         }
-        node = node.addChild(toAdd[i]);
-      }
-    },
-
-    _isSentenceStart: function (node) {
-      return this.starts.indexOf(node) > -1;
-    },
-
-    _flatten: function (nodes) {
-      var tokens = nodes.map(function (obj) {
-        return obj.token;
-      });
-      return RiTa.untokenize(tokens);
-    },
-
-    _validateSentence: function (nodes) {
-
-      var sent = this._flatten(nodes);
-
-      if (sent[0] !== sent[0].toUpperCase()) {
-        console.log("Skipping: bad first char in '" + sent + "'");
-        return false;
       }
 
-      if (!sent.match(/[!?.]$/)) {
-        console.log("Skipping: bad last char in '" + sent + "'");
-        return false;
-      }
+      // select the next child, according to probability
+      node = node.select();
+      console.log(l + ") NODE: " + node, this._isSentenceStart(node));
 
-      return sent;
-    },
+      // do we have a candidate for the next start?
+      if (this._isSentenceStart(node)) {
 
-    _onGenerationIncomplete: function (tries, successes) {
-
-      warn('\nRiMarkov failed to complete after ' + tries +
-        ' tries and ' + successes + ' successful generations.' +
-        ' You may need to add more text to the model...' + BN);
-    },
-
-    generateSentences: function (num, minTokens, maxTokens) {
-
-      minTokens = minTokens || 5;
-      maxTokens = maxTokens || 35;
-
-      if (this.starts.childCount() < 1) {
-        console.error('generateSentences() can only be called when the ' +
-          'model was created with sentences, otherwise use generateTokens()');
-      }
-
-      var node, sent, result = [];
-
-      while (result.length < num) {
-
-        // choose a sentence start, according to probability
-        sent = sent || [node = this.starts.select()];
-
-        var next = null;
-
-        // we're at a non-leaf node
-        if (node.childCount() > 0) {
-
-          next = node.select();
-        }
-
-        // we're at a leaf node
-        else {
-
-          next = null; // NEXT: do tracepath
-        }
-
-        // do we have a candidate for the next start?
-        if (this._isSentenceStart(next) && sent.length > minTokens) {
-
-            var candidate = this._validateSentence(nodes);
-            if (candidate) {
-              if (result.indexOf(candidate) > -1) {
-                console.log("Skipping: duplicate sentence: '" + sent + "'");
-              }
-              result.push(candidate);
-              sent = [];
+        console.log(l + ") CHECK: " + node);
+        if (sent.length > minTokens) {
+          var candidate = this._validateSentence(sent);
+          if (candidate) {
+            if (result.indexOf(candidate) > -1) {
+              console.log("Skipping: duplicate sentence: '" + sent + "'");
             }
+            result.push(candidate);
           }
         }
-
-        sent.push(next);
-
-        if (sent.length > maxTokens) {
-          console.log("FAIL(maxlen): " + this._flatten(sent));
-          if (++tries >= maxTries) {
-            _onGenerationIncomplete(tries, results.length);
-            break; // give-up (&& result = null; ?)
-          }
-          sent = null;
-        }
+        sent = [];
+        continue;
       }
+
+      sent.push(node);
+
+      if (sent.length > maxTokens) {
+        console.log("FAIL(maxlen): " + this._flatten(sent));
+        if (++tries >= MAX_GENERATION_ATTEMPTS) {
+          this._onGenerationIncomplete(tries, result.length);
+          break; // give-up (&& result = null; ?)
+        }
+        sent = null;
+      }
+      l++;
     }
 
     return result;
@@ -479,7 +504,7 @@ function Node(parent, word) {
         return nodes[i];
     }
 
-    console.log('no hit for select() with excludes = ' + excludes);
+    console.log('no hit for select() with filter: ' + filter, nodes);
   }
 
   this.childNodes = function () { // remove ?
@@ -518,8 +543,8 @@ function Node(parent, word) {
   }
 
   this.toString = function () {
-    return '[ ' + this.token + ' (' + this.count +
-      '/' + this.probability().toFixed(3) + '%)]';
+    return this.token + '(' + this.count +
+      '/' + this.probability().toFixed(3) + '%)';
   }
 
   this.stringify = function (theNode, str, depth, sort) {
@@ -646,6 +671,13 @@ function isSubArray(find, arr) {
     }
   }
   return false;
+}
+
+function err() {
+  var msg = "[RiTa] " + arguments[0];
+  for (var i = 1; i < arguments.length; i++)
+    msg += '\n' + arguments[i];
+  throw Error(msg);
 }
 
 function isFunction(obj) {
