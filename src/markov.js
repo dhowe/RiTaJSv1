@@ -40,8 +40,7 @@ Markov.prototype = {
 
       this._addSentenceSequence(seq);
     }
-
-    console.log("Loaded " + sentences.length + " sentences");
+    //console.log("Loaded " + sentences.length + " sentences");
   },
 
   _addSentenceSequence: function (toAdd) {
@@ -59,12 +58,12 @@ Markov.prototype = {
 
   _getSentenceStart: function () {
     var node = this.starts.select();
-    return this.root.children[node.token];
+    return this.root.child(node);
   },
 
   _isSentenceStart: function (node) {
     if (!node) return false;
-    return this.starts.children[node.token] ? true : false;
+    return this.starts.child(node) ? true : false;
   },
 
   _flatten: function (nodes) {
@@ -86,7 +85,8 @@ Markov.prototype = {
     }
 
     if (!sent.match(/[!?.]$/)) {
-      console.log("Skipping: bad last char='" + sent[sent.length - 1] + "' in '" + sent + "'");
+      //console.log("Skipping: bad last char='"
+      //+ sent[sent.length - 1] + "' in '" + sent + "'");
       return false;
     }
 
@@ -112,8 +112,7 @@ Markov.prototype = {
     minTokens = minTokens || 5;
     maxTokens = maxTokens || 35;
 
-    //return;
-    if (!this.starts.childCount()) {
+    if (this.starts.isLeaf()) {
       console.error('generateSentences() can only be called when the ' +
         'model was created with sentences, otherwise use generateTokens()');
     }
@@ -121,71 +120,53 @@ Markov.prototype = {
     var node, sent, tries = 0,
       result = [];
 
-    var l = 0; // tmp
-
-    while (result.length < num && l < 100) {
+    while (result.length < num) {
 
       // choose a sentence start, according to probability
-      sent = (sent && sent.length) ? sent : [node = this._getSentenceStart()];
-
-      if (!node) throw Error("Invalid state0");
+      sent = sent || [node = this._getSentenceStart()];
 
       if (node.isLeaf()) {
 
         node = this._search(sent);
-        //node = node.leafTraversal(this.root, this.N);
 
         // we ended up at a another leaf // TODO: remove
-        if (node.isLeaf()) {
-          console.log(l + ") FAILED LEAF-TRAV: " + node);
+        if (!node || node.isLeaf()) {
           if (sent.length > minTokens) {
             if (!this._validateSentence(result, sent)) {
               tries++;
-              console.log("Give up on try #" + tries, node, this._flatten(sent));
             }
-            sent = [];
-            continue;
           }
-        }
-      }
-
-      if (!node) throw Error("Invalid state4");
-
-      if (node.isLeaf()) throw Error("Invalid state5: " + node);
-
-      // select the next child, according to probability
-      node = node.select();
-      //console.log(l + ") NODE: " + node, this._isSentenceStart(node));
-
-
-      // do we have a candidate for the next start?
-      if (this._isSentenceStart(node)) {
-
-        var tok = node.token;
-        //console.log(l + ") CHECK: " + node);
-        if (sent.length > minTokens && !this._validateSentence(result, sent)) {
-            tries++;
-        }
-        else {
-          sent = [];
+          sent = null;
           continue;
         }
       }
 
+      // select the next child, according to probability
+      node = node.select();
+
+      // do we have a candidate for the next start?
+      if (sent.length > minTokens && this._isSentenceStart(node)) {
+        // its a sentence, or we restart and try again
+        if (!this._validateSentence(result, sent)) {
+          tries++;
+        }
+        sent = null;
+        continue;
+      }
+
+      // add new node to the sentence
       sent.push(node);
 
-      var k = this._flatten(sent);
-
+      // check if we've exceeded max-length
       if (sent.length > maxTokens) {
-        console.log("FAIL(maxlen): " + this._flatten(sent));
+
+        //console.log("FAIL(maxlen): " + this._flatten(sent));
         if (++tries >= MAX_GENERATION_ATTEMPTS) {
           this._onGenerationIncomplete(tries, result.length);
           break; // give-up (&& result = null; ?)
         }
         sent = null;
       }
-
-      l++;
     }
 
     return result;
@@ -216,10 +197,9 @@ Markov.prototype = {
     while (tries < MAX_GENERATION_ATTEMPTS) {
 
       parent = this._search(tokens);
+      //node = this._chooseChild(parent, nodes); // TODO: for mlms
 
-      //node = this._chooseChild(parent, nodes);
-
-      if (parent.isLeaf()) { // try again
+      if (!parent || parent.isLeaf()) { // try again
         tokens = [node = this.root.select()];
         tries++;
         continue;
@@ -235,7 +215,7 @@ Markov.prototype = {
         }
 
       } else {
-        //console.warn(tries, 'Failed with: ', nodeStr(nodes));
+        throw Error('****Failed with: '+nodeStr(nodes)); // shouldn't happen
         tokens = [node = this.root.select()];
         tries++;
       }
@@ -250,30 +230,29 @@ Markov.prototype = {
     minLength = minLength || 1;
     maxLength = maxLength || Number.MAX_VALUE;
 
-    var mn, tokens, tries = 0;
+    var tries = 0;
 
-    while (++tries < MAX_GENERATION_ATTEMPTS) {
+    OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
 
       // generate the min number of tokens
-      tokens = this.generateTokens(minLength);
+      var tokens = this.generateTokens(minLength);
 
       // keep adding one and checking until we pass the max
       while (tokens.length < maxLength) {
 
-        mn = this._nextOnPath(tokens); // TODO: change to this._search(tokens)
+        var mn = this._search(tokens);
 
-        if (mn && mn.token) {
-          tokens.push(mn.token);
+        if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
-          // check against our regex
-          if (mn.token.search(regex) > -1) {
-            return tokens;
-          }
-        }
+        mn = mn.select();
+
+        tokens.push(mn.token);
+
+        // check against our regex
+        if (mn.token.search(regex) > -1) return tokens;
       }
     }
 
-    // uh-oh, we failed
     throw Error(BN + "RiMarkov failed to complete after " + tries + " attempts." +
       "You may need to add more text to your model..." + BN);
   },
@@ -341,7 +320,7 @@ Markov.prototype = {
 
     if (data && data.length) {
       var tn = (typeof data === 'string') ?
-        this.root.find(data) : this._findNode(data);
+        this.root.child(data) : this._findNode(data);
       if (tn) return tn.probability();
     }
 
@@ -371,47 +350,27 @@ Markov.prototype = {
    */
   _search: function (path) {
 
-    var token, node = this.root;
-
-    if (path) {
-      var tpath = path.slice(0);
-      tpath = tpath.splice(-(this.N - 1)); // TODO: opt
-      for (var i = 0; i < tpath.length; i++) {
-        if (node) {
-          token = tpath[i].token || tpath[i];
-          node = node.children[token];
-        }
-        else break;
-
-      }
-    }
-    // if (node && node.childNodes().length)
-    return node;
-  },
-
-  /* Follow path down the tree, then probabilistically select the next node */
-  _nextOnPath: function (path) {
-
+    if (!path || !path.length) return this.root;
     var idx = Math.max(0, path.length - (this.N - 1)),
-      node = this.root.find(path[idx++]);
+      node = this.root.child(path[idx++]);
 
     for (var i = idx; i < path.length; i++) {
-      if (node) node = node.find(path[i]);
+      if (node) node = node.child(path[i]);
     }
 
-    if (node) return node.select();
+    if (node) return node;
   },
 
   _findNode: function (path) {
 
     var numNodes = Math.min(path.length, this.N - 1),
       firstIdx = Math.max(0, path.length - (this.N - 1)),
-      node = this.root.find(path[firstIdx++]);
+      node = this.root.child(path[firstIdx++]);
 
     if (node) {
       var nodes = [node];
       for (var i = firstIdx; i < path.length; i++) {
-        node = node.find(path[i]);
+        node = node.child(path[i]);
         if (!node) return;
         nodes.push(node);
       }
@@ -485,7 +444,7 @@ function Node(parent, word) {
   this.count = 0;
 
   // find a (direct) child with matching token, given a word or node
-  this.find = function (word) {
+  this.child = function (word) {
     //if (word && word.token) word = word.token; // if a node
     return this.children[word && word.token ? word.token : word];
   }
@@ -494,39 +453,27 @@ function Node(parent, word) {
     return this.childCount() < 1;
   }
 
-  // this.leafTraversal = function (root, n) {
-  //
-  //   var node = this;
-  //
-  //   console.log("LEAF: " + node);
-  //
-  //   var path = [];
-  //   for (var i = 0; i < n - 1; i++) {
-  //     path.unshift(node);
-  //     node = node.parent;
-  //     if (!node) err("Invalid state1", node);
-  //   }
-  //
-  //   if (path.length !== n - 1) throw Error("Invalid state2" + path);
-  //
-  //   //console.log(this._flatten(path));
-  //
-  //   node = root;
-  //   for (var i = 0; i < path.length; i++) {
-  //     node = node.children[path[i].token];
-  //     if (!node) throw Error("Invalid state3");
-  //     console.log(i + ") " + node);
-  //   }
-  //
-  //   return node;
-  // }
-
   /**
    * Choose a (direct) child according to probability
    * @param  {String[]} excludes - tokens which may not be selected
    * @return selected Node or undefined
    */
   this.select = function (filter) {
+
+    function applyFilter(filter, nodes) {
+      if (isFunction(filter)) {
+        for (var i = nodes.length - 1; i >= 0; i--) {
+          if (!filter(nodes[i].token)) nodes.splice(i, 1);
+        }
+      } else if (Array.isArray(filter)) {
+        for (var i = nodes.length - 1; i >= 0; i--) {
+          if (filter.indexOf(nodes[i].token) > -1) nodes.splice(i, 1);
+        }
+      } else {
+        throw Error("Invalid filter: " + filter);
+      }
+      return nodes;
+    }
 
     var selector, sum = 1,
       nodes = this.childNodes(),
@@ -537,24 +484,7 @@ function Node(parent, word) {
 
     if (filter) {
 
-      if (isFunction(filter)) {
-        for (var i = nodes.length - 1; i >= 0; i--) {
-          if (!filter(nodes[i].token)) {
-            //console.log('removing: '+nodes[i].token);
-            nodes.splice(i, 1);
-          }
-        }
-      }
-      else if (Array.isArray(filter)) {
-        for (var i = nodes.length - 1; i >= 0; i--) {
-          if (filter.indexOf(nodes[i].token) > -1) {
-            nodes.splice(i, 1);
-          }
-        }
-      }
-      else {
-        throw Error("Invalid filter: "+filter);
-      }
+      nodes = applyFilter(filter, nodes);
 
       if (!nodes.length) return; // nothing left after filtering
 
@@ -571,8 +501,8 @@ function Node(parent, word) {
         return nodes[i];
     }
 
-    throw Error(this + '\nno hit for select() with filter: ' + filter
-      + "\nnodes(" + nodes.length + ") -> " + nodes);
+    throw Error(this + '\nno hit for select() with filter: ' + filter +
+      "\nnodes(" + nodes.length + ") -> " + nodes);
   }
 
   this.childNodes = function () { // remove ?
