@@ -47,15 +47,10 @@ Markov.prototype = {
   _addSentenceSequence: function (toAdd) {
 
     var node = this.root;
-
     for (var i = 0; i < toAdd.length; i++) {
-
       if (!toAdd[i] || !node.token) continue;
-
       if (toAdd[i].startsWith(SSDLM)) {
-
         toAdd[i] = toAdd[i].substring(SSDLM.length);
-
         if (node == this.root) this.starts.addChild(toAdd[i]);
       }
       node = node.addChild(toAdd[i]);
@@ -68,19 +63,22 @@ Markov.prototype = {
   },
 
   _isSentenceStart: function (node) {
+    if (!node) return false;
     return this.starts.children[node.token] ? true : false;
   },
 
   _flatten: function (nodes) {
-    var tokens = nodes.map(function (obj) {
-      return obj.token;
-    });
-    return RiTa.untokenize(tokens);
+    return RiTa.untokenize(this._nodesToTokens(nodes));
   },
 
-  _validateSentence: function (nodes) {
+  _validateSentence: function (result, nodes) {
 
     var sent = this._flatten(nodes);
+
+    if (!sent || !sent.length) {
+      console.log("Bad validate arg: ", nodes);
+      return false;
+    }
 
     if (sent[0] !== sent[0].toUpperCase()) {
       console.log("Skipping: bad first char in '" + sent + "'");
@@ -88,11 +86,18 @@ Markov.prototype = {
     }
 
     if (!sent.match(/[!?.]$/)) {
-      console.log("Skipping: bad last char in '" + sent + "'");
+      console.log("Skipping: bad last char='" + sent[sent.length - 1] + "' in '" + sent + "'");
       return false;
     }
 
-    return sent;
+    //     if (result.indexOf(candidate) > -1) {
+    //       console.log("Skipping: duplicate sentence: '" + sent + "'");
+    //       return false;
+    //     }
+
+    result.push(sent);
+
+    return true;
   },
 
   _onGenerationIncomplete: function (tries, successes) {
@@ -107,67 +112,69 @@ Markov.prototype = {
     minTokens = minTokens || 5;
     maxTokens = maxTokens || 35;
 
-    if (this.starts.childCount() < 1) {
+    //return;
+    if (!this.starts.childCount()) {
       console.error('generateSentences() can only be called when the ' +
         'model was created with sentences, otherwise use generateTokens()');
     }
 
     var node, sent, tries = 0,
       result = [];
-    var l = 0;
 
-    while (result.length < num) {
+    var l = 0; // tmp
+
+    while (result.length < num && l < 100) {
 
       // choose a sentence start, according to probability
-      sent = sent || [node = this._getSentenceStart()];
+      sent = (sent && sent.length) ? sent : [node = this._getSentenceStart()];
 
-      if (sent.length === 1) console.log(l + ") START: " + node);
+      if (!node) throw Error("Invalid state0");
 
-      var next = null;
+      if (node.isLeaf()) {
 
-      // we're at a leaf node
-      if (node.childCount() < 1) {
-        //console.log(l+") LEAF: "+node);
-        var path = [];
-        for (var i = 0; i < this.N - 1; i++) {
-          path.unshift(node);
-          node = node.parent;
-          if (!node) err("Invalid state1", node);
-        }
-        if (path.length !== this.N - 1) throw Error("Invalid state2");
+        node = this._search(sent);
+        //node = node.leafTraversal(this.root, this.N);
 
-        //console.log(this._flatten(path));
-
-        node = this.root;
-        for (var i = 0; i < path.length; i++) {
-          node = node.children[path[i].token];
-          if (!node) throw Error("Invalid state3");
-          //console.log(i+") "+node);
+        // we ended up at a another leaf // TODO: remove
+        if (node.isLeaf()) {
+          console.log(l + ") FAILED LEAF-TRAV: " + node);
+          if (sent.length > minTokens) {
+            if (!this._validateSentence(result, sent)) {
+              tries++;
+              console.log("Give up on try #" + tries, node, this._flatten(sent));
+            }
+            sent = [];
+            continue;
+          }
         }
       }
 
+      if (!node) throw Error("Invalid state4");
+
+      if (node.isLeaf()) throw Error("Invalid state5: " + node);
+
       // select the next child, according to probability
       node = node.select();
-      console.log(l + ") NODE: " + node, this._isSentenceStart(node));
+      //console.log(l + ") NODE: " + node, this._isSentenceStart(node));
+
 
       // do we have a candidate for the next start?
       if (this._isSentenceStart(node)) {
 
-        console.log(l + ") CHECK: " + node);
-        if (sent.length > minTokens) {
-          var candidate = this._validateSentence(sent);
-          if (candidate) {
-            if (result.indexOf(candidate) > -1) {
-              console.log("Skipping: duplicate sentence: '" + sent + "'");
-            }
-            result.push(candidate);
-          }
+        var tok = node.token;
+        //console.log(l + ") CHECK: " + node);
+        if (sent.length > minTokens && !this._validateSentence(result, sent)) {
+            tries++;
         }
-        sent = [];
-        continue;
+        else {
+          sent = [];
+          continue;
+        }
       }
 
       sent.push(node);
+
+      var k = this._flatten(sent);
 
       if (sent.length > maxTokens) {
         console.log("FAIL(maxlen): " + this._flatten(sent));
@@ -177,6 +184,7 @@ Markov.prototype = {
         }
         sent = null;
       }
+
       l++;
     }
 
@@ -203,22 +211,32 @@ Markov.prototype = {
   generateTokens: function (num) {
 
     var node, parent, tries = 0;
-    var nodes = [node = this.root.select()];
+    var tokens = [node = this.root.select()];
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
 
-      parent = this._search(nodes);
-      node = this._chooseChild(parent, nodes);
+      parent = this._search(tokens);
+
+      //node = this._chooseChild(parent, nodes);
+
+      if (parent.isLeaf()) { // try again
+        tokens = [node = this.root.select()];
+        tries++;
+        continue;
+      }
+
+      node = parent.select();
 
       if (node) {
-        nodes.push(node);
+        tokens.push(node);
 
-        if (nodes.length == num) {
-          return this._nodesToTokens(nodes);
+        if (tokens.length == num) {
+          return this._nodesToTokens(tokens);
         }
+
       } else {
         //console.warn(tries, 'Failed with: ', nodeStr(nodes));
-        nodes = [node = this.root.select()];
+        tokens = [node = this.root.select()];
         tries++;
       }
     }
@@ -354,6 +372,7 @@ Markov.prototype = {
   _search: function (path) {
 
     var token, node = this.root;
+
     if (path) {
       var tpath = path.slice(0);
       tpath = tpath.splice(-(this.N - 1)); // TODO: opt
@@ -362,6 +381,8 @@ Markov.prototype = {
           token = tpath[i].token || tpath[i];
           node = node.children[token];
         }
+        else break;
+
       }
     }
     // if (node && node.childNodes().length)
@@ -469,6 +490,37 @@ function Node(parent, word) {
     return this.children[word && word.token ? word.token : word];
   }
 
+  this.isLeaf = function () {
+    return this.childCount() < 1;
+  }
+
+  // this.leafTraversal = function (root, n) {
+  //
+  //   var node = this;
+  //
+  //   console.log("LEAF: " + node);
+  //
+  //   var path = [];
+  //   for (var i = 0; i < n - 1; i++) {
+  //     path.unshift(node);
+  //     node = node.parent;
+  //     if (!node) err("Invalid state1", node);
+  //   }
+  //
+  //   if (path.length !== n - 1) throw Error("Invalid state2" + path);
+  //
+  //   //console.log(this._flatten(path));
+  //
+  //   node = root;
+  //   for (var i = 0; i < path.length; i++) {
+  //     node = node.children[path[i].token];
+  //     if (!node) throw Error("Invalid state3");
+  //     console.log(i + ") " + node);
+  //   }
+  //
+  //   return node;
+  // }
+
   /**
    * Choose a (direct) child according to probability
    * @param  {String[]} excludes - tokens which may not be selected
@@ -477,19 +529,34 @@ function Node(parent, word) {
   this.select = function (filter) {
 
     var selector, sum = 1,
-      pTotal = 0,
-      nodes = this.childNodes();
+      nodes = this.childNodes(),
+      pTotal = 0;
+
+    if (!nodes || !nodes.length)
+      throw Error("Invalid arg to select(no children) " + this);
 
     if (filter) {
 
-      if (!isFunction(filter)) throw Error("Invalid filter function", filter);
-
-      for (var i = nodes.length - 1; i >= 0; i--) {
-        if (!filter(nodes[i])) {
-          //console.log('removing: '+nodes[i].token);
-          nodes.splice(i, 1);
+      if (isFunction(filter)) {
+        for (var i = nodes.length - 1; i >= 0; i--) {
+          if (!filter(nodes[i].token)) {
+            //console.log('removing: '+nodes[i].token);
+            nodes.splice(i, 1);
+          }
         }
       }
+      else if (Array.isArray(filter)) {
+        for (var i = nodes.length - 1; i >= 0; i--) {
+          if (filter.indexOf(nodes[i].token) > -1) {
+            nodes.splice(i, 1);
+          }
+        }
+      }
+      else {
+        throw Error("Invalid filter: "+filter);
+      }
+
+      if (!nodes.length) return; // nothing left after filtering
 
       sum = nodes.reduce(function (total, n) {
         return total + n.probability();
@@ -504,7 +571,8 @@ function Node(parent, word) {
         return nodes[i];
     }
 
-    console.log('no hit for select() with filter: ' + filter, nodes);
+    throw Error(this + '\nno hit for select() with filter: ' + filter
+      + "\nnodes(" + nodes.length + ") -> " + nodes);
   }
 
   this.childNodes = function () { // remove ?
@@ -539,12 +607,12 @@ function Node(parent, word) {
   }
 
   this.probability = function () {
-    return this.count / this.parent.childCount();
+    return this.parent ? this.count / this.parent.childCount() : -1;
   }
 
   this.toString = function () {
-    return this.token + '(' + this.count +
-      '/' + this.probability().toFixed(3) + '%)';
+    return this.parent ? this.token + '(' + this.count +
+      '/' + this.probability().toFixed(3) + '%)' : 'Root'
   }
 
   this.stringify = function (theNode, str, depth, sort) {
@@ -594,7 +662,7 @@ function Node(parent, word) {
           (node.probability().toFixed(3)) + "] {";
       }
 
-      if (this.childCount()) {
+      if (!this.childCount()) {
         str = this.stringify(node, str, depth + 1, sort);
       } else {
         str += "}";

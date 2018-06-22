@@ -1,4 +1,3 @@
-
 var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
 var sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
@@ -59,9 +58,21 @@ test("testConstructor", function () {
   ok(new RiMarkov(3));
 });
 
-test("testGetSentenceStart", function () {
+test("testLoadSentences", function () {
 
   // WORKING HERE
+  var rm = new RiMarkov(4);
+  var sents = RiTa.splitSentences(sample)
+  rm.loadSentences(sents);
+  ok(rm.starts.childCount());
+
+  var s = rm.generateSentence();
+  console.log(s);
+  ok(s);
+});
+
+test("testGetSentenceStart", function () {
+
   var rm = new RiMarkov(4);
   var sents = RiTa.splitSentences(sample)
   rm.loadSentences(sents);
@@ -71,22 +82,30 @@ test("testGetSentenceStart", function () {
   ok(rm._isSentenceStart(start));
 });
 
-
-
-test("testLoadSentences", function () {
-
-  // WORKING HERE
+test("testGenerateSentence", function () {
   var rm = new RiMarkov(4);
-  var sents = RiTa.splitSentences(sample)
-  rm.loadSentences(sents);
-  ok(1);
-
-  var s = rm.generateSentence();
-  console.log(s);
-  ok(s);
+  rm.loadSentences(RiTa.splitSentences(sample));
+  for (var i = 0; i < 10; i++) {
+    var s = rm.generateSentence();
+    //console.log(i+") "+s);
+    ok(s);
+    ok(s[0]===s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+    ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
+  }
 });
 
+test("testGenerateSentences", function () {
+  var rm = new RiMarkov(4);
+  rm.loadSentences(RiTa.splitSentences(sample));
 
+  var sents = rm.generateSentences(20);
+  for (var i = 0; i < sents.length; i++) {
+    var s = sents[i];
+    ok(s);
+    ok(s[0]===s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+    ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
+  }
+});
 
 test("testGenerateTokens", function () {
 
@@ -352,7 +371,7 @@ test("testSearch", function () {
   ok(rm._search().token === 'ROOT');
   ok(rm._search([]).token === 'ROOT');
 
-  res = rm._search('The'.split(' '));
+  res = rm._search(['The']);
   ok(res && res.token === 'The' && res.childNodes().length === 1);
 
   res = rm._search('The dog'.split(' '));
@@ -367,8 +386,6 @@ test("testSearch", function () {
   var tokens = 'The dog ate the cat'.split(' ');
   res = rm._search(tokens);
   ok(res && res.token === 'cat' && res.childNodes().length === 0);
-
-  deepEqual(tokens, 'The dog ate the cat'.split(' '));
 
   // ---------------------------------------------------------------------
 
@@ -450,6 +467,7 @@ test("Node.select", function () {
   equal(rm.root.children['myself'].select([]).token, '.');
   equal(rm.root.children['myself'].select(['test']).token, '.');
   equal(rm.root.children['myself'].select(['.']), undefined);
+  equal(rm.root.children['myself'].select(['his', '.']), undefined);
 
   // 'that' -> 'his' || 'I'
   equal(rm.root.children['that'].select(['I']).token, 'his');
@@ -459,6 +477,18 @@ test("Node.select", function () {
   ok(res === 'I' || res === 'his');
   res = rm.root.children['that'].select(['test']).token;
   ok(res === 'I' || res === 'his');
+
+  equal(rm.root.children['myself'].select(function () {
+    return true;
+  }).token, '.');
+
+  equal(rm.root.children['myself'].select(function (t) {
+    return t !== 'test';
+  }).token, '.');
+
+  equal(rm.root.children['myself'].select(function (t) {
+    return ['his', '.'].indexOf(t) < 0;
+  }), undefined);
 
 });
 
