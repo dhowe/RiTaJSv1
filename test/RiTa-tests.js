@@ -299,10 +299,22 @@ var runtests = function () {
       var expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
       deepEqual(output, expected);
 
-      // var input = "“The baby belonged to Mr. and Mrs. Stevens. They will be very sad.”";
-      // var output = RiTa.splitSentences(input);
-      // var expected = ["“The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.”"];
-      // deepEqual(output, expected);
+      var input = "\u201CThe baby belonged to Mr. and Mrs. Stevens. They will be very sad.\u201D";
+      var output = RiTa.splitSentences(input);
+      var expected = ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
+      deepEqual(output, expected);
+
+      //https://github.com/dhowe/RiTa/issues/498
+      var input = "\"My dear Mr. Bennet. Netherfield Park is let at last.\"";
+      var output = RiTa.splitSentences(input);
+      var expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
+      deepEqual(output, expected);
+ 
+      var input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
+      var output = RiTa.splitSentences(input);
+      var expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
+      deepEqual(output, expected);
+      /*******************************************/
 
       var input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
       var output = RiTa.splitSentences(input);

@@ -337,7 +337,7 @@ var RiTa = {
       return text;
     }
 
-    var arr = escapeAbbrevs(text).match(/(\S.+?[.!?]["”]?)(?=\s+|$)/g);
+    var arr = escapeAbbrevs(text).match(/(\S.+?[.!?]["”\u201D]?)(?=\s+|$)/g);
     return (text.length && arr && arr.length) ? unescapeAbbrevs(arr) : [text];
   },
 

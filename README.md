@@ -165,7 +165,7 @@ Please! We are looking for more coders to help out... Just press *Fork* at the t
     ```bash
     $ gulp build
     ```
-5. Run all tests (in phantomJS) with gulp.
+5. Run the tests with gulp.
 
     ```bash
     $ gulp test
