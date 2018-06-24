@@ -175,7 +175,6 @@ var runtests = function() {
 		rm.loadTokens(RiTa.tokenize(sample));
 		for (var i = 0; i < 10; i++) {
 			var arr = rm.generateTokens(5);
-			var res = RiTa.untokenize(arr);
 			equal(arr.length, 5);
 		}
 	});
@@ -199,6 +198,21 @@ var runtests = function() {
 		rm.loadTokens(RiTa.tokenize(sample));
 		for (var i = 0; i < 10; i++) {
 			var arr = rm.generateTokens(4);
+			for (var j = 0; j < arr.length; j++) {
+				ok(arr[j] && arr[j].length);
+			}
+			var res = RiTa.untokenize(arr);
+			ok(sample.indexOf(res) > -1, res);
+		}
+	});
+
+	test("testGenerateTokens(num, string)", function() {
+
+		var rm = new RiMarkov(4);
+		rm.loadTokens(RiTa.tokenize(sample));
+		for (var i = 0; i < 10; i++) {
+			var arr = rm.generateTokens(4, "people");
+			ok(arr[0].startsWith("people"));
 			for (var j = 0; j < arr.length; j++) {
 				ok(arr[j] && arr[j].length);
 			}

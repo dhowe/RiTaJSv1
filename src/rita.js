@@ -1445,7 +1445,7 @@ RiLexicon.prototype = {
      if (w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0) {
         // console.log(w);
         return true;
-     }  
+     }
       else return false;
     }
 
@@ -1682,14 +1682,24 @@ RiMarkov.prototype = {
 
   },
 
-  generateTokens: function(targetNumber) {
+  generateTokens: function(targetNumber, start) {
 
     var mn, tries = 0, maxTries = 500, tokens = [], res = [];
 
     OUT: while (++tries < maxTries) {
 
-      mn = this.root.selectChild(null, true);
-      if (!mn || !mn.token) continue OUT;
+      if (start && start.length) { // start with supplied token if we have one
+        mn = this.root.lookup(start);
+        if (!mn) throw Error("Model does not contain: "+start);
+      }
+      else {
+        mn = this.root.selectChild(null, true);
+      }
+
+      if (!mn || !mn.token) { // should never happen
+        tokens = [];
+        continue OUT;
+      }
       tokens.push(mn);
 
       while (tokens.length < targetNumber) {
