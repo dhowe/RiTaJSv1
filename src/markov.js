@@ -1,3 +1,5 @@
+// TODO: add mlsm arg to generateTokens, generateSentences, add start arg to generateTokens
+// TODO: allow for real-time weighting ala memo
 const BN = '\n',
   SSDLM = 'D=l1m_',
   MAX_GENERATION_ATTEMPTS = 10;
