@@ -219,6 +219,18 @@ var runtests = function() {
 			var res = RiTa.untokenize(arr);
 			ok(sample.indexOf(res) > -1, res);
 		}
+
+		var rm = new RiMarkov(4, false, false);
+		rm.loadTokens(RiTa.tokenize("Let us consider the farmer who makes his straw hat his sweetheart; or the old woman who makes a floor lamp her son; or the young woman who has set herself the task of scraping her shadow off a wall. Let us consider the old woman who wore smoked cows’ tongues for shoes and walked a meadow gathering cow chips in her apron; or a mirror grown dark with age that was given to a blind man who spent his nights looking into it, which saddened his mother, that her son should be so lost in vanity. Let us consider the man who fried roses for his dinner, whose kitchen smelled like a burning rose garden; or the man who disguised himself as a moth and ate his overcoat, and for dessert served himself a chilled fedora...."));
+		for (var i = 0; i < 10; i++) {
+			var arr = rm.generateTokens(6, "the");
+			ok(arr[0].startsWith("the"));
+			for (var j = 0; j < arr.length; j++) {
+				ok(arr[j] && arr[j].length);
+			}
+			var res = RiTa.untokenize(arr);
+			console.log(i,res);
+		}
 	});
 
 	test("testGetSentenceStarts()", function() {

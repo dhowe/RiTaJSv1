@@ -3,7 +3,7 @@
 
 var runtests = function() {
 
-    var allowLocalWebServer = false;
+    var allowLocalWebServer = true;
 
     RiTa.SILENT = 1;
 
@@ -394,7 +394,7 @@ var runtests = function() {
         }, 50);
     });
 
-    // SOME TESTS ON THE LOCAL WEBSERVER -- ignore unless allowRemote=true
+    // SOME TESTS ON THE LOCAL WEBSERVER -- ignore unless allowLocalWebServer set at top
     if (allowLocalWebServer) {
 
       var serverPath = "http://localhost/ritajs/test/html/data/";
@@ -451,6 +451,9 @@ var runtests = function() {
               if (rm.ready()) {
                 //console.log("RiMarkov.loadFromUrl: "+rm.size());
                 ok(rm.size());
+                var s = rm.generateSentence();
+                //console.log("RiMarkov.loadFromUrl: "+s);
+                ok(s);
 
                 // TODO: 2 more better tests here
                 clearInterval(id);
