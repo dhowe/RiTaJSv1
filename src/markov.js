@@ -1,7 +1,7 @@
 // TODO: add mlsm arg to generateTokens, generateSentences, add start arg to generateTokens
 // TODO: allow for real-time weighting ala memo
 const BN = '\n',
-  SSDLM = 'D=l1m_',
+  SSDLM = '<s/>',
   MAX_GENERATION_ATTEMPTS = 10;
 
 var Markov = makeClass();
@@ -12,8 +12,13 @@ Markov.prototype = {
 
     this.N = n;
     this.root = new Node(null, 'ROOT');
-    this.starts = new Node(null, 'STARTS');
+    //this.starts = new Node(null, 'STARTS');
     this.maxLengthMatchingSequence = 0;
+  },
+
+  size: function () {
+
+    return this.root.childCount();
   },
 
   loadSentences: function (sentences) {
@@ -23,12 +28,10 @@ Markov.prototype = {
     // collect all the words, marking sentence starts
     for (var i = 0; i < sentences.length; i++) {
       var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
-      //console.log(i + ") " + sentences[i]);
-
       var tokens = RiTa.tokenize(sentence);
-      for (var j = 0; j < tokens.length; j++) {
-        allWords.push(j == 0 ? SSDLM + tokens[j] : tokens[j]);
-      }
+      allWords.push(SSDLM);
+      //allWords.push(...tokens); ES6
+      Array.prototype.push.apply(allWords, tokens);
     }
 
     // create all sequences of length N
@@ -39,85 +42,15 @@ Markov.prototype = {
           seq[j] = allWords[i + j];
         }
       }
-
       this._addSentenceSequence(seq);
     }
     //console.log("Loaded " + sentences.length + " sentences");
   },
 
-  _addSentenceSequence: function (toAdd) {
-
-    var node = this.root;
-    for (var i = 0; i < toAdd.length; i++) {
-      if (!toAdd[i] || !node.token) continue;
-      if (toAdd[i].startsWith(SSDLM)) {
-        toAdd[i] = toAdd[i].substring(SSDLM.length);
-        if (node == this.root) this.starts.addChild(toAdd[i]);
-      }
-      node = node.addChild(toAdd[i]);
-    }
-  },
-
-  _getSentenceStart: function () {
-    var node = this.starts.select();
-    return this.root.child(node);
-  },
-
-  _isSentenceStart: function (node) {
-    if (!node) return false;
-    return this.starts.child(node) ? true : false;
-  },
-
-  _flatten: function (nodes) {
-    return RiTa.untokenize(this._nodesToTokens(nodes));
-  },
-
-  _validateSentence: function (result, nodes) {
-
-    var sent = this._flatten(nodes);
-
-    if (!sent || !sent.length) {
-      console.log("Bad validate arg: ", nodes);
-      return false;
-    }
-
-    if (sent[0] !== sent[0].toUpperCase()) {
-      console.log("Skipping: bad first char in '" + sent + "'");
-      return false;
-    }
-
-    if (!sent.match(/[!?.]$/)) {
-      //console.log("Skipping: bad last char='"
-      //+ sent[sent.length - 1] + "' in '" + sent + "'");
-      return false;
-    }
-
-    //     if (result.indexOf(candidate) > -1) {
-    //       console.log("Skipping: duplicate sentence: '" + sent + "'");
-    //       return false;
-    //     }
-
-    result.push(sent);
-
-    return true;
-  },
-
-  _onGenerationIncomplete: function (tries, successes) {
-
-    console.warn('\nRiMarkov failed to complete after ' + tries +
-      ' tries and ' + successes + ' successful generations.' +
-      ' You may need to add more text to the model...' + BN);
-  },
-
-  generateSentences: function (num, minTokens, maxTokens) {
+  generateSentences: function (num, minTokens, maxTokens) { // add-arg: start
 
     minTokens = minTokens || 5;
     maxTokens = maxTokens || 35;
-
-    if (this.starts.isLeaf()) {
-      console.error('generateSentences() can only be called when the ' +
-        'model was created with sentences, otherwise use generateTokens()');
-    }
 
     var node, sent, tries = 0,
       result = [];
@@ -131,8 +64,9 @@ Markov.prototype = {
 
         node = this._search(sent);
 
-        // we ended up at a another leaf // TODO: remove
+        // we ended up at a another leaf
         if (!node || node.isLeaf()) {
+
           if (sent.length > minTokens) {
             if (!this._validateSentence(result, sent)) {
               tries++;
@@ -147,11 +81,16 @@ Markov.prototype = {
       node = node.select();
 
       // do we have a candidate for the next start?
-      if (sent.length > minTokens && this._isSentenceStart(node)) {
-        // its a sentence, or we restart and try again
-        if (!this._validateSentence(result, sent)) {
-          tries++;
+      if (node.token === SSDLM) {
+
+        if (sent.length > minTokens) {
+
+          // its a sentence, or we restart and try again
+          if (!this._validateSentence(result, sent)) {
+            tries++;
+          }
         }
+
         sent = null;
         continue;
       }
@@ -174,7 +113,8 @@ Markov.prototype = {
     return result;
   },
 
-  generateSentence: function () {
+  generateSentence: function () { // add-arg: start
+
     return this.generateSentences(1)[0];
   },
 
@@ -191,7 +131,7 @@ Markov.prototype = {
     return this;
   },
 
-  generateTokens: function (num) {
+  generateTokens: function (num) { // add-arg: start
 
     var node, parent, tries = 0;
     var tokens = [node = this.root.select()];
@@ -217,7 +157,7 @@ Markov.prototype = {
         }
 
       } else {
-        throw Error('****Failed with: '+nodeStr(nodes)); // shouldn't happen
+        throw Error('****Failed with: ' + nodeStr(nodes)); // shouldn't happen
         tokens = [node = this.root.select()];
         tries++;
       }
@@ -227,7 +167,7 @@ Markov.prototype = {
     //, with '+ nodes.length + ' tokens: \'', nodeStr(nodes)+"'");
   },
 
-  generateUntil: function (regex, minLength, maxLength) {
+  generateUntil: function (regex, minLength, maxLength) { // add-arg: start
 
     minLength = minLength || 1;
     maxLength = maxLength || Number.MAX_VALUE;
@@ -298,7 +238,6 @@ Markov.prototype = {
 
   getProbabilities: function (path) {
 
-    //if (typeof path === 'string') path = [path];
     path = (typeof path === 'string') ? [path] : path;
 
     if (path.length > this.N) {
@@ -335,7 +274,60 @@ Markov.prototype = {
     return this;
   },
 
-  /////////////////////////////// end API //////////////////////////////////
+  ////////////////////////////// end API ////////////////////////////////
+
+  _addSentenceSequence: function (toAdd) {
+
+    var node = this.root;
+    for (var i = 0; i < toAdd.length; i++) {
+      toAdd[i] && (node = node.addChild(toAdd[i]));
+    }
+  },
+
+  _getSentenceStart: function () {
+    return this.root.child(SSDLM).select();
+  },
+
+  _flatten: function (nodes) {
+    return RiTa.untokenize(this._nodesToTokens(nodes));
+  },
+
+  _validateSentence: function (result, nodes) {
+
+    var sent = this._flatten(nodes);
+
+    if (!sent || !sent.length) {
+      console.log("Bad validate arg: ", nodes);
+      return false;
+    }
+
+    if (sent[0] !== sent[0].toUpperCase()) {
+      console.log("Skipping: bad first char in '" + sent + "'");
+      return false;
+    }
+
+    if (!sent.match(/[!?.]$/)) {
+      //console.log("Skipping: bad last char='"
+      //+ sent[sent.length - 1] + "' in '" + sent + "'");
+      return false;
+    }
+
+    //     if (result.indexOf(candidate) > -1) {
+    //       console.log("Skipping: duplicate sentence: '" + sent + "'");
+    //       return false;
+    //     }
+
+    result.push(sent);
+
+    return true;
+  },
+
+  _onGenerationIncomplete: function (tries, successes) {
+
+    console.warn('\nRiMarkov failed to complete after ' + tries +
+      ' tries and ' + successes + ' successful generations.' +
+      ' You may need to add more text to the model...' + BN);
+  },
 
   _nodesToTokens(nodes) {
     //console.log('_nodesToTokens', nodes);
@@ -353,6 +345,7 @@ Markov.prototype = {
   _search: function (path) {
 
     if (!path || !path.length) return this.root;
+
     var idx = Math.max(0, path.length - (this.N - 1)),
       node = this.root.child(path[idx++]);
 

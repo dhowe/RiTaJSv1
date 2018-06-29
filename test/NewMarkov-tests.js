@@ -1,3 +1,38 @@
+/* API
+  generateSentence()
+  generateSentences()
+  generateTokens()
+  generateUntil()
+  getCompletions()
+  getProbabilities()
+  getProbability()
+  loadFrom()
+  loadText()
+  loadTokens()
+  print()
+  ready()
+  size()
+*/
+
+/* New API
+  RiMarkov()
+  generateSentence() x
+  generateSentences() x
+  generateTokens() x
+  generateUntil() x
+
+  getCompletions()
+  getProbabilities()
+  getProbability()
+
+  loadSentences()
+  loadTokens()
+
+  print()
+  ready()
+  size()
+*/
+
 var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
 var sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
@@ -7,76 +42,11 @@ var sample3 = "One reason people lie is to achieve personal' power. Achieving pe
 var sample4 = "One reason people lie is to achieve personal power. One reason people run is to achieve flight. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
 var samples = [sample, sample2, sample3, sample4];
-if (0) {
 
-  test("testMaxMatchingSequence", function () {
-
-    var rm = new RiMarkov(4);
-    rm.maxLengthMatchingSequence = 5;
-    rm.loadTokens(RiTa.tokenize(sample));
-
-    for (var i = 0; i < 1; i++) {
-
-      var toks = rm.generateTokens(7);
-      if (!toks || !toks.length) {
-        ok("failed!");
-        return;
-      }
-      var win = toks.length - rm.N + 1;
-      //console.log(i+') '+RiTa.untokenize(toks));
-      // console.log('');
-
-      // All sequences of 4 must be in text
-      for (var j = 0; j < win; j++) {
-        var part = toks.slice(j, j + rm.N);
-        //console.log(i+'.'+j+') ',part);
-        var res = RiTa.untokenize(part);
-        //console.log(i+'.'+j+') '+res);
-        ok(sample.indexOf(res) > -1);
-      }
-
-      if (0) {
-        // No sequences of 5 can be in text
-        var win = rm.maxLengthMatchingSequence - rm.N + 1;
-        //console.log(win);
-        for (var j = 0; j < win; j++) {
-          var part = toks.slice(j, j + rm.maxLengthMatchingSequence);
-          equal(part.length, rm.maxLengthMatchingSequence);
-          var res = RiTa.untokenize(part);
-          //console.log(j+':', res, sample.indexOf(res));
-          ok(sample.indexOf(res) < 0);
-          //return;
-        }
-      }
-    }
-  });
-}
-
-test("testConstructor", function () {
+test("testRiMarkov", function () {
 
   ok(RiMarkov(4));
   ok(new RiMarkov(3));
-});
-
-test("testLoadSentences", function () {
-
-  // WORKING HERE
-  var rm = new RiMarkov(4);
-  var sents = RiTa.splitSentences(sample)
-  rm.loadSentences(sents);
-  ok(rm.starts.childCount());
-  //ok(rm.generateSentence());
-});
-
-test("testGetSentenceStart", function () {
-
-  var rm = new RiMarkov(4);
-  var sents = RiTa.splitSentences(sample)
-  rm.loadSentences(sents);
-  var start = rm._getSentenceStart();
-  //console.log(start);
-  ok(rm.starts.children[start.token]);
-  ok(rm._isSentenceStart(start));
 });
 
 test("testGenerateSentence", function () {
@@ -85,7 +55,7 @@ test("testGenerateSentence", function () {
   for (var i = 0; i < 10; i++) {
     var s = rm.generateSentence();
     //console.log(i+") "+s);
-    ok(s && s[0]===s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+    ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
     ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
   }
 });
@@ -97,7 +67,7 @@ test("testGenerateSentences", function () {
   var sents = rm.generateSentences(20);
   for (var i = 0; i < sents.length; i++) {
     var s = sents[i];
-    ok(s && s[0]===s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+    ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
     ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
   }
 });
@@ -146,7 +116,7 @@ test("testGenerateUntil", function () {
   }
 });
 
-test("testGetCompletionsA", function () { //TODO:
+test("testGetCompletions", function () { //TODO:
 
   var rm = new RiMarkov(4);
   rm.loadTokens(RiTa.tokenize(sample));
@@ -171,9 +141,8 @@ test("testGetCompletionsA", function () { //TODO:
 
   var res = rm.getCompletions("XXX");
   deepEqual(res, []);
-});
 
-test("testGetCompletionsB", function () { //TODO:
+  ///////////////////// ///////////////////// /////////////////////
 
   var rm = new RiMarkov(4);
   rm.loadTokens(RiTa.tokenize(sample2));
@@ -325,6 +294,19 @@ test("testGetProbability[array]", function () {
   equal(rm.getProbability([]), 0);
 });
 
+test("testLoadSentences", function () {
+
+  // WORKING HERE
+  var rm = new RiMarkov(4);
+  var sents = RiTa.splitSentences(sample)
+  rm.loadSentences(sents);
+  var start = rm._getSentenceStart();
+  console.log(start);
+  ok(start);
+  //ok(rm.starts.childCount());
+  //ok(rm.generateSentence());
+});
+
 test("testLoadTokens", function () { //TODO: revise tests
 
   var words = 'The dog ate the cat'.split(' ');
@@ -357,6 +339,29 @@ test("testLoadTokens", function () { //TODO: revise tests
   rm2.loadTokens(RiTa.tokenize(sample));
   notEqual(rm2.getProbability("One"), rm.getProbability("one"));
 });
+
+test("testPrint", function () {ok(1);});
+test("testReady", function () {ok(1);});
+
+test("testSize", function () {
+
+  var tokens = RiTa.tokenize(sample);
+  var sents = RiTa.splitSentences(sample);
+
+  var rm = new RiMarkov(3);
+  rm.loadTokens(tokens);
+  equal(rm.size(), tokens.length);
+
+  // var rm = new RiMarkov(3, true);
+  // rm.loadText(sample);
+  // equal(rm.size(), tokens.length);
+
+  // var rm = new RiMarkov(3, false);
+  // rm.loadText(sample);
+  // equal(rm.size(), tokens.length);
+});
+
+////////////////////  Non-api tests  //////////////////
 
 test("testSearch", function () {
 
@@ -430,6 +435,64 @@ test("testSearch", function () {
 
   res = rm._search('power is helpful'.split(' '));
   ok(res && res.token === 'helpful' && res.childNodes().length === 1);
+});
+
+test("testGetSentenceStart", function () {
+
+  var rm = new RiMarkov(4);
+  var sents = RiTa.splitSentences(sample)
+  rm.loadSentences(sents);
+  var start = rm._getSentenceStart();
+  for (var i = 0; i < 10; i++) {
+    ok(start.parent === rm.root.child('<s/>'));
+  };
+});
+
+test("testMaxMatchingSequence", function () {
+
+  //////////////////
+  ok(1);
+  return;
+  //////////////////
+
+  var rm = new RiMarkov(4);
+  rm.maxLengthMatchingSequence = 5;
+  rm.loadTokens(RiTa.tokenize(sample));
+
+  for (var i = 0; i < 1; i++) {
+
+    var toks = rm.generateTokens(7);
+    if (!toks || !toks.length) {
+      ok("failed!");
+      return;
+    }
+    var win = toks.length - rm.N + 1;
+    //console.log(i+') '+RiTa.untokenize(toks));
+    // console.log('');
+
+    // All sequences of 4 must be in text
+    for (var j = 0; j < win; j++) {
+      var part = toks.slice(j, j + rm.N);
+      //console.log(i+'.'+j+') ',part);
+      var res = RiTa.untokenize(part);
+      //console.log(i+'.'+j+') '+res);
+      ok(sample.indexOf(res) > -1);
+    }
+
+    if (0) {
+      // No sequences of 5 can be in text
+      var win = rm.maxLengthMatchingSequence - rm.N + 1;
+      //console.log(win);
+      for (var j = 0; j < win; j++) {
+        var part = toks.slice(j, j + rm.maxLengthMatchingSequence);
+        equal(part.length, rm.maxLengthMatchingSequence);
+        var res = RiTa.untokenize(part);
+        //console.log(j+':', res, sample.indexOf(res));
+        ok(sample.indexOf(res) < 0);
+        //return;
+      }
+    }
+  }
 });
 
 // ----------- Node tests -----------------
