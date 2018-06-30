@@ -1,8 +1,8 @@
 // TODO: add mlsm arg to generateTokens, generateSentences, add start arg to generateTokens
 // TODO: allow for real-time weighting ala memo
-const BN = '\n',
-  SSDLM = '<s/>',
-  MAX_GENERATION_ATTEMPTS = 10;
+const BN = '\n';
+const SSDLM = '<s/>';
+const MAX_GENERATION_ATTEMPTS = 100;
 
 var Markov = makeClass();
 
@@ -23,26 +23,27 @@ Markov.prototype = {
 
   loadSentences: function (sentences) {
 
-    var seq, allWords = [];
+    var tokens = [];
 
     // collect all the words, marking sentence starts
     for (var i = 0; i < sentences.length; i++) {
       var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
-      var tokens = RiTa.tokenize(sentence);
-      allWords.push(SSDLM);
-      //allWords.push(...tokens); ES6
-      Array.prototype.push.apply(allWords, tokens);
+      var words = RiTa.tokenize(sentence);
+      tokens.push(SSDLM);
+      //tokens.push(...tokens); ES6
+      Array.prototype.push.apply(tokens, words);
     }
 
     // create all sequences of length N
-    for (i = 0; i < allWords.length; i++) {
-      seq = [];
-      for (j = 0; j < this.N; j++) {
-        if ((i + j) < allWords.length) {
-          seq[j] = allWords[i + j];
-        }
+    for (var i = 0; i < tokens.length; i++) {
+      //this._addSentenceSequence(tokens.slice(i, i + this.N));
+
+      var toAdd = tokens.slice(i, i + this.N);
+
+      var node = this.root;
+      for (var j = 0; j < toAdd.length; j++) {
+        node = node.addChild(toAdd[j]);
       }
-      this._addSentenceSequence(seq);
     }
     //console.log("Loaded " + sentences.length + " sentences");
   },
@@ -58,7 +59,7 @@ Markov.prototype = {
     while (result.length < num) {
 
       // choose a sentence start, according to probability
-      sent = sent || [node = this._getSentenceStart()];
+      sent = sent || [node = this.root.child(SSDLM).select()];
 
       if (node.isLeaf()) {
 
@@ -103,7 +104,9 @@ Markov.prototype = {
 
         //console.log("FAIL(maxlen): " + this._flatten(sent));
         if (++tries >= MAX_GENERATION_ATTEMPTS) {
-          this._onGenerationIncomplete(tries, result.length);
+          warn('\nRiMarkov failed to complete after ' + tries +
+            ' tries and ' + result.length + ' successful generations.' +
+            ' You may need to add more text to the model...' + BN);
           break; // give-up (&& result = null; ?)
         }
         sent = null;
@@ -268,25 +271,28 @@ Markov.prototype = {
     return 0;
   },
 
-  print: function () {
+  toString: function () {
+    return this.root.asTree(0).replace(/{}/g, '');
+  },
 
-    console && console.log(this.root.asTree(0).replace(/{}/g, ''));
-    return this;
+  ready: function (url) {
+
+    return this.size() > 0;
   },
 
   ////////////////////////////// end API ////////////////////////////////
 
-  _addSentenceSequence: function (toAdd) {
-
-    var node = this.root;
-    for (var i = 0; i < toAdd.length; i++) {
-      toAdd[i] && (node = node.addChild(toAdd[i]));
-    }
-  },
-
-  _getSentenceStart: function () {
-    return this.root.child(SSDLM).select();
-  },
+  // _addSentenceSequence: function (toAdd) {
+  //
+  //   var node = this.root;
+  //   for (var i = 0; i < toAdd.length; i++) {
+  //     toAdd[i] && (node = node.addChild(toAdd[i]));
+  //   }
+  // },
+  //
+  // _getSentenceStart: function () {
+  //   return this.root.child(SSDLM).select();
+  // },
 
   _flatten: function (nodes) {
     return RiTa.untokenize(this._nodesToTokens(nodes));
@@ -320,13 +326,6 @@ Markov.prototype = {
     result.push(sent);
 
     return true;
-  },
-
-  _onGenerationIncomplete: function (tries, successes) {
-
-    console.warn('\nRiMarkov failed to complete after ' + tries +
-      ' tries and ' + successes + ' successful generations.' +
-      ' You may need to add more text to the model...' + BN);
   },
 
   _nodesToTokens(nodes) {
@@ -526,6 +525,7 @@ function Node(parent, word) {
   this.childCount = function () {
     var sum = 0;
     for (var k in this.children) {
+      if (k === SSDLM) continue;
       sum += this.children[k].count;
     }
     return sum;

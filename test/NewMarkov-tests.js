@@ -21,16 +21,16 @@
   generateTokens() x
   generateUntil() x
 
-  getCompletions()
-  getProbabilities()
-  getProbability()
+  getCompletions() x
+  getProbabilities() x
+  getProbability() x
 
-  loadSentences()
-  loadTokens()
+  loadSentences() x
+  loadTokens() x
 
-  print()
-  ready()
-  size()
+  toString() x
+  ready() x
+  size() x
 */
 
 var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
@@ -296,15 +296,15 @@ test("testGetProbability[array]", function () {
 
 test("testLoadSentences", function () {
 
-  // WORKING HERE
   var rm = new RiMarkov(4);
-  var sents = RiTa.splitSentences(sample)
+  var sents = RiTa.splitSentences(sample);
+  var count = 0;
+  for (var i = 0; i < sents.length; i++) {
+    var words = RiTa.tokenize(sents[i]);
+    count += words.length;
+  }
   rm.loadSentences(sents);
-  var start = rm._getSentenceStart();
-  console.log(start);
-  ok(start);
-  //ok(rm.starts.childCount());
-  //ok(rm.generateSentence());
+  equal(rm.size(), count);
 });
 
 test("testLoadTokens", function () { //TODO: revise tests
@@ -340,8 +340,16 @@ test("testLoadTokens", function () { //TODO: revise tests
   notEqual(rm2.getProbability("One"), rm.getProbability("one"));
 });
 
-test("testPrint", function () {ok(1);});
-test("testReady", function () {ok(1);});
+test("testToString", function () {
+  var res, rm = new RiMarkov(4);
+  var exp = "ROOT { The [1,p=0.200] dog [1,p=0.200] ate [1,p=0.200] the [1,p=0.200] cat [1,p=0.200] }";
+  rm.loadTokens('The dog ate the cat'.split(' '));
+  equal(exp, rm.toString().replace(/\n/g," ").replace(/\s+/g," "));
+});
+
+test("testReady", function () {
+  ok(1);
+});
 
 test("testSize", function () {
 
@@ -351,14 +359,6 @@ test("testSize", function () {
   var rm = new RiMarkov(3);
   rm.loadTokens(tokens);
   equal(rm.size(), tokens.length);
-
-  // var rm = new RiMarkov(3, true);
-  // rm.loadText(sample);
-  // equal(rm.size(), tokens.length);
-
-  // var rm = new RiMarkov(3, false);
-  // rm.loadText(sample);
-  // equal(rm.size(), tokens.length);
 });
 
 ////////////////////  Non-api tests  //////////////////
@@ -435,17 +435,6 @@ test("testSearch", function () {
 
   res = rm._search('power is helpful'.split(' '));
   ok(res && res.token === 'helpful' && res.childNodes().length === 1);
-});
-
-test("testGetSentenceStart", function () {
-
-  var rm = new RiMarkov(4);
-  var sents = RiTa.splitSentences(sample)
-  rm.loadSentences(sents);
-  var start = rm._getSentenceStart();
-  for (var i = 0; i < 10; i++) {
-    ok(start.parent === rm.root.child('<s/>'));
-  };
 });
 
 test("testMaxMatchingSequence", function () {
