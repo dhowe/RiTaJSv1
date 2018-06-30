@@ -45,7 +45,7 @@ var samples = [sample, sample2, sample3, sample4];
 
 test("testRiMarkov", function () {
 
-  ok(RiMarkov(4));
+  //ok(RiMarkov(4));
   ok(new RiMarkov(3));
 });
 
@@ -488,7 +488,7 @@ test("testMaxMatchingSequence", function () {
 
 test("Node.probability", function () {
 
-  var root = RiMarkov(3).root;
+  var root = new RiMarkov(3).root;
   var i = root.addChild("I");
   var i2 = root.addChild("I");
   var j = root.addChild("J");
@@ -498,7 +498,7 @@ test("Node.probability", function () {
 });
 
 test("Node.child", function () {
-  var root = RiMarkov(3).root;
+  var root = new RiMarkov(3).root;
   var i = root.addChild("I");
   var j = root.addChild("J");
   equal(root.child("J"), root.child(j));

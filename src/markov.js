@@ -4,24 +4,21 @@ const BN = '\n';
 const SSDLM = '<s/>';
 const MAX_GENERATION_ATTEMPTS = 100;
 
-var Markov = makeClass();
+class Markov {
 
-Markov.prototype = {
-
-  init: function (n) {
+  constructor(n) {
 
     this.N = n;
     this.root = new Node(null, 'ROOT');
-    //this.starts = new Node(null, 'STARTS');
     this.maxLengthMatchingSequence = 0;
-  },
+  }
 
-  size: function () {
+  size() {
 
     return this.root.childCount();
-  },
+  }
 
-  loadSentences: function (sentences) {
+  loadSentences(sentences) {
 
     var tokens = [];
 
@@ -46,9 +43,9 @@ Markov.prototype = {
       }
     }
     //console.log("Loaded " + sentences.length + " sentences");
-  },
+  }
 
-  generateSentences: function (num, minTokens, maxTokens) { // add-arg: start
+  generateSentences(num, minTokens, maxTokens) { // add-arg: start
 
     minTokens = minTokens || 5;
     maxTokens = maxTokens || 35;
@@ -114,14 +111,14 @@ Markov.prototype = {
     }
 
     return result;
-  },
+  }
 
-  generateSentence: function () { // add-arg: start
+  generateSentence() { // add-arg: start
 
     return this.generateSentences(1)[0];
-  },
+  }
 
-  loadTokens: function (tokens) {
+  loadTokens(tokens) {
 
     this.input = tokens.slice(0);
     for (var i = 0; i < tokens.length; i++) {
@@ -132,9 +129,9 @@ Markov.prototype = {
       }
     }
     return this;
-  },
+  }
 
-  generateTokens: function (num) { // add-arg: start
+  generateTokens(num) { // add-arg: start
 
     var node, parent, tries = 0;
     var tokens = [node = this.root.select()];
@@ -168,9 +165,9 @@ Markov.prototype = {
 
     console.error('\n\nFailed after ' + tries + ' tries');
     //, with '+ nodes.length + ' tokens: \'', nodeStr(nodes)+"'");
-  },
+  }
 
-  generateUntil: function (regex, minLength, maxLength) { // add-arg: start
+  generateUntil(regex, minLength, maxLength) { // add-arg: start
 
     minLength = minLength || 1;
     maxLength = maxLength || Number.MAX_VALUE;
@@ -200,9 +197,9 @@ Markov.prototype = {
 
     throw Error(BN + "RiMarkov failed to complete after " + tries + " attempts." +
       "You may need to add more text to your model..." + BN);
-  },
+  }
 
-  getCompletions: function (pre, post) {
+  getCompletions(pre, post) {
 
     var tn, node, atest, nexts, result = [];
 
@@ -237,9 +234,9 @@ Markov.prototype = {
         return hash[b] - hash[a];
       });
     }
-  },
+  }
 
-  getProbabilities: function (path) {
+  getProbabilities(path) {
 
     path = (typeof path === 'string') ? [path] : path;
 
@@ -258,9 +255,9 @@ Markov.prototype = {
     }
 
     return probs;
-  },
+  }
 
-  getProbability: function (data) {
+  getProbability(data) {
 
     if (data && data.length) {
       var tn = (typeof data === 'string') ?
@@ -269,36 +266,24 @@ Markov.prototype = {
     }
 
     return 0;
-  },
+  }
 
-  toString: function () {
-    return this.root.asTree(0).replace(/{}/g, '');
-  },
+  toString() {
+    return this.root.asTree().replace(/{}/g, '');
+  }
 
-  ready: function (url) {
+  ready(url) {
 
     return this.size() > 0;
-  },
+  }
 
   ////////////////////////////// end API ////////////////////////////////
 
-  // _addSentenceSequence: function (toAdd) {
-  //
-  //   var node = this.root;
-  //   for (var i = 0; i < toAdd.length; i++) {
-  //     toAdd[i] && (node = node.addChild(toAdd[i]));
-  //   }
-  // },
-  //
-  // _getSentenceStart: function () {
-  //   return this.root.child(SSDLM).select();
-  // },
-
-  _flatten: function (nodes) {
+  _flatten(nodes) {
     return RiTa.untokenize(this._nodesToTokens(nodes));
-  },
+  }
 
-  _validateSentence: function (result, nodes) {
+  _validateSentence(result, nodes) {
 
     var sent = this._flatten(nodes);
 
@@ -326,14 +311,14 @@ Markov.prototype = {
     result.push(sent);
 
     return true;
-  },
+  }
 
   _nodesToTokens(nodes) {
     //console.log('_nodesToTokens', nodes);
     return nodes.map(function (n) {
       return n.token;
     });
-  },
+  }
 
   /*
    * Follows 'path' (using the last n-1 tokens) from root and returns
@@ -341,7 +326,7 @@ Markov.prototype = {
    * @param  {String[]} path
    * @return {Node}
    */
-  _search: function (path) {
+  _search(path) {
 
     if (!path || !path.length) return this.root;
 
@@ -353,9 +338,9 @@ Markov.prototype = {
     }
 
     if (node) return node;
-  },
+  }
 
-  _findNode: function (path) {
+  _findNode(path) {
 
     var numNodes = Math.min(path.length, this.N - 1),
       firstIdx = Math.max(0, path.length - (this.N - 1)),
@@ -371,10 +356,10 @@ Markov.prototype = {
 
       return nodes[nodes.length - 1];
     }
-  },
+  }
 
   // LATER
-  _chooseChild: function (parent, path) {
+  _chooseChild(parent, path) {
     //console.log("_chooseChild: " + parent.token);
 
     var mlms = this.maxLengthMatchingSequence;
@@ -429,30 +414,44 @@ Markov.prototype = {
 
 /////////////////////////////// Node //////////////////////////////////////////
 
-function Node(parent, word) {
+class Node {
 
-  this.children = {};
-  this.isStart = false;
-  this.parent = parent;
-  this.token = word;
-  this.count = 0;
+  constructor(parent, word) {
 
-  // find a (direct) child with matching token, given a word or node
-  this.child = function (word) {
-    //if (word && word.token) word = word.token; // if a node
+    this.children = {};
+    this.parent = parent;
+    this.token = word;
+    this.count = 0;
+  }
+
+  /*
+   * find a (direct) child with matching token, given a word or node
+   */
+  child(word) {
     return this.children[word && word.token ? word.token : word];
   }
 
-  this.isLeaf = function () {
-    return this.childCount() < 1;
+  /*
+   * increments count for a child node and returns it
+   */
+  addChild(word, count) {
+
+    count = count || 1;
+    var node = this.children[word];
+    if (!node) {
+
+      node = new Node(this, word);
+      this.children[word] = node;
+    }
+    node.count += count;
+
+    return node;
   }
 
-  /**
+  /*
    * Choose a (direct) child according to probability
-   * @param  {String[]} excludes - tokens which may not be selected
-   * @return selected Node or undefined
    */
-  this.select = function (filter) {
+  select(filter) {
 
     function applyFilter(filter, nodes) {
       if (isFunction(filter)) {
@@ -499,30 +498,15 @@ function Node(parent, word) {
       "\nnodes(" + nodes.length + ") -> " + nodes);
   }
 
-  this.childNodes = function () { // remove ?
-    var res = [];
-    for (var k in this.children) {
-      res.push(this.children[k]);
-    }
-    return res;
+  isLeaf() {
+    return this.childCount() < 1;
   }
 
-  // increments child node and returns it
-  this.addChild = function (word, count) {
-
-    count = count || 1;
-    var node = this.children[word];
-    if (!node) {
-
-      node = new Node(this, word);
-      this.children[word] = node;
-    }
-    node.count += count;
-
-    return node;
+  childNodes() {
+    return Object.values(this.children);
   }
 
-  this.childCount = function () {
+  childCount() {
     var sum = 0;
     for (var k in this.children) {
       if (k === SSDLM) continue;
@@ -531,24 +515,16 @@ function Node(parent, word) {
     return sum;
   }
 
-  this.probability = function () {
+  probability() {
     return this.parent ? this.count / this.parent.childCount() : -1;
   }
 
-  this.toString = function () {
+  toString() {
     return this.parent ? this.token + '(' + this.count +
       '/' + this.probability().toFixed(3) + '%)' : 'Root'
   }
 
-  this.stringify = function (theNode, str, depth, sort) {
-
-    var encode = function (tok) {
-      if (tok === BN) tok = '\\n';
-      if (tok === '\r') tok = '\\r';
-      if (tok === '\t') tok = '\\t';
-      if (tok === '\r\n') tok = '\\r\\n';
-      return tok;
-    }
+  stringify(theNode, str, depth, sort) {
 
     var i, j, k, node, mn = theNode,
       l = [],
@@ -556,53 +532,39 @@ function Node(parent, word) {
 
     sort = sort || false;
 
-    for (k in theNode.children) {
-      l.push(theNode.children[k]);
-    }
+    for (k in theNode.children) l.push(theNode.children[k]);
 
     if (!l.length) return str;
 
     if (sort) l.sort();
 
-    for (j = 0; j < depth; j++) {
-      indent += '    ';
-    }
+    for (j = 0; j < depth; j++) indent += '    ';
 
     for (i = 0; i < l.length; i++) {
 
       node = l[i];
-
       if (!node) break;
-
-      var tok = encode(node.token);
-
-      //str += indent + "'" + tok + "'";
+      var tok = this._encode(node.token);
       str += indent + tok;
 
       if (!node.count)
         err("ILLEGAL FREQ: " + node.count + " " + mn.token + "," + node.token);
 
-      if (node.parent) {
-        str += " [" + node.count + ",p=" +
+      if (node.parent) str += " [" + node.count + ",p=" +
           (node.probability().toFixed(3)) + "] {";
-      }
 
-      if (!this.childCount()) {
-        str = this.stringify(node, str, depth + 1, sort);
-      } else {
-        str += "}";
-      }
+      str = !this.childCount() ? this.stringify
+        (node, str, depth + 1, sort) : str + '}';
     }
 
     indent = BN;
-    for (j = 0; j < depth - 1; j++) {
-      indent += "    ";
-    }
+    for (j = 0; j < depth - 1; j++) indent += "    ";
 
     return str + indent + "}";
   }
 
-  this.asTree = function (sort) {
+  asTree(sort) {
+
     var s = this.token + ' ';
     if (this.parent) {
       s += '(' + this.count + ')->';
@@ -610,17 +572,18 @@ function Node(parent, word) {
     s += '{';
     return this.childCount() ? this.stringify(this, s, 1, sort) : s + '}';
   }
+
+  _encode(tok) {
+    
+    if (tok === BN) tok = '\\n';
+    if (tok === '\r') tok = '\\r';
+    if (tok === '\t') tok = '\\t';
+    if (tok === '\r\n') tok = '\\r\\n';
+    return tok;
+  }
 }
 
-function makeClass() { // from: Resig
-  return function (args) {
-    if (this instanceof arguments.callee) {
-      if (typeof this.init == "function") {
-        this.init.apply(this, args && args.callee ? args : arguments);
-      }
-    } else return new arguments.callee(arguments);
-  };
-}
+// --------------------------------------------------------------
 
 function nodeStr(nodes, format) {
   if (format) {
@@ -634,9 +597,8 @@ function nodeStr(nodes, format) {
     s += nodes[i].token + ','
   }
   return s;
-};
+}
 
-// --------------------------------------------------------------
 if (0) {
 
   var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
@@ -675,7 +637,7 @@ function err() {
 
 function isFunction(obj) {
   return !!(obj && obj.constructor && obj.call && obj.apply);
-};
+}
 
 // exports.isSubArray = isSubArray;
 // exports.RiMarkov = Markov;
