@@ -37,38 +37,104 @@ var sample = "One reason people lie is to achieve personal power. Achieving pers
 
 var sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
 
-var sample3 = "One reason people lie is to achieve personal' power. Achieving personal power' is helpful for one who pretends to be more confident' than he really is. For example, one of my " + "friends' threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his' if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
-
-var sample4 = "One reason people lie is to achieve personal power. One reason people run is to achieve flight. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
-
-var samples = [sample, sample2, sample3, sample4];
-
 test("testRiMarkov", function () {
 
   //ok(RiMarkov(4));
   ok(new RiMarkov(3));
 });
 
+test("testGenerateTokens(mlm)", function () {
+
+  var rm = new RiMarkov(4);
+  var maxLengthMatchSeq = 5;
+  rm.loadTokens(RiTa.tokenize(sample));
+
+  for (var i = 0; i < 1; i++) {
+
+    var toks = rm.generateTokens(7, { maxLengthMatch: maxLengthMatchSeq });
+    if (!toks || !toks.length) {
+      ok("failed!");
+      return;
+    }
+
+    console.log(i, toks);
+
+    // All sequences of 4 must be in text
+    for (var j = 0; j < win; j++) {
+      var part = toks.slice(j, j + rm.N);
+      //console.log(i+'.'+j+') ',part);
+      var res = RiTa.untokenize(part);
+      //console.log(i+'.'+j+') '+res);
+      ok(sample.indexOf(res) > -1);
+    }
+
+    if (1) {
+      // No sequences of 5 can be in text
+      var win = (maxLengthMatchSeq - rm.N) + 1;
+      //console.log(win);
+      for (var j = 0; j <= win; j++) {
+        var part = toks.slice(j, j + maxLengthMatchSeq);
+        //equal(part.length, maxLengthMatchSeq);
+        var res = RiTa.untokenize(part);
+        console.log(j + ':', res, "-> " + (sample.indexOf(res) < 0 ? "OK" : "FAIL"));
+        ok(sample.indexOf(res) < 0);
+        //return;
+      }
+    }
+  }
+});
+
 test("testGenerateSentence", function () {
+
   var rm = new RiMarkov(4);
   rm.loadSentences(RiTa.splitSentences(sample));
-  for (var i = 0; i < 10; i++) {
-    var s = rm.generateSentence();
+  for (var i = 0; i < 5; i++) {
+    var s = rm.generateSentence({ minTokens: (3 + i), maxTokens: (10 + i) });
     //console.log(i+") "+s);
     ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
     ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
+    var num = RiTa.tokenize(s).length;
+    ok(num >= i && num <= 10 + i);
+  }
+
+  for (var i = 0; i < 5; i++) {
+    var s = rm.generateSentence({ startToken: 'One' });
+    ok(s.startsWith('One'));
   }
 });
 
 test("testGenerateSentences", function () {
+
   var rm = new RiMarkov(4);
+  var minToks = 7;
+  var maxToks = 15;
+
   rm.loadSentences(RiTa.splitSentences(sample));
 
-  var sents = rm.generateSentences(20);
+  var sents = rm.generateSentences(5, { minTokens: minToks, maxTokens: maxToks });
+  equal(sents.length, 5);
   for (var i = 0; i < sents.length; i++) {
     var s = sents[i];
-    ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-    ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
+    equal(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+    ok(s.match(/[!?.]$/)); //, "FAIL: bad last char in '" + s + " -> " + s[s.length - 1]);
+    var num = RiTa.tokenize(s).length;
+    ok(num >= minToks && num <= maxToks);
+  }
+
+  var start = 'Achieving';
+  for (var i = 0; i < 5; i++) {
+    var arr = rm.generateSentences(1, { startToken: start });
+    ok(arr);
+    equal(arr.length, 1);
+    ok(arr[0].startsWith(start));
+  }
+
+  var start = 'I';
+  for (var i = 0; i < 5; i++) {
+    var arr = rm.generateSentences(2, { startToken: start });
+    ok(arr);
+    equal(arr.length, 2);
+    ok(arr[0].startsWith(start));
   }
 });
 
@@ -90,6 +156,21 @@ test("testGenerateTokens", function () {
     res = RiTa.untokenize(toks);
     equal(toks.length, 20);
     //console.log(i, res);
+  }
+});
+
+test("testGenerateTokens(str)", function () {
+
+  var toks, res, rm = new RiMarkov(4);
+  rm.loadTokens(RiTa.tokenize(sample));
+  for (var i = 0; i < 10; i++) {
+    toks = rm.generateTokens(4, { startToken: "I" });
+    equal(toks.length, 4);
+    equal(toks[0], "I");
+
+    res = RiTa.untokenize(toks);
+    //console.log(i, res);
+    ok(sample.indexOf(res) > -1);
   }
 });
 
@@ -344,7 +425,7 @@ test("testToString", function () {
   var res, rm = new RiMarkov(4);
   var exp = "ROOT { The [1,p=0.200] dog [1,p=0.200] ate [1,p=0.200] the [1,p=0.200] cat [1,p=0.200] }";
   rm.loadTokens('The dog ate the cat'.split(' '));
-  equal(exp, rm.toString().replace(/\n/g," ").replace(/\s+/g," "));
+  equal(exp, rm.toString().replace(/\n/g, " ").replace(/\s+/g, " "));
 });
 
 test("testReady", function () {
@@ -435,53 +516,6 @@ test("testSearch", function () {
 
   res = rm._search('power is helpful'.split(' '));
   ok(res && res.token === 'helpful' && res.childNodes().length === 1);
-});
-
-test("testMaxMatchingSequence", function () {
-
-  //////////////////
-  ok(1);
-  return;
-  //////////////////
-
-  var rm = new RiMarkov(4);
-  rm.maxLengthMatchingSequence = 5;
-  rm.loadTokens(RiTa.tokenize(sample));
-
-  for (var i = 0; i < 1; i++) {
-
-    var toks = rm.generateTokens(7);
-    if (!toks || !toks.length) {
-      ok("failed!");
-      return;
-    }
-    var win = toks.length - rm.N + 1;
-    //console.log(i+') '+RiTa.untokenize(toks));
-    // console.log('');
-
-    // All sequences of 4 must be in text
-    for (var j = 0; j < win; j++) {
-      var part = toks.slice(j, j + rm.N);
-      //console.log(i+'.'+j+') ',part);
-      var res = RiTa.untokenize(part);
-      //console.log(i+'.'+j+') '+res);
-      ok(sample.indexOf(res) > -1);
-    }
-
-    if (0) {
-      // No sequences of 5 can be in text
-      var win = rm.maxLengthMatchingSequence - rm.N + 1;
-      //console.log(win);
-      for (var j = 0; j < win; j++) {
-        var part = toks.slice(j, j + rm.maxLengthMatchingSequence);
-        equal(part.length, rm.maxLengthMatchingSequence);
-        var res = RiTa.untokenize(part);
-        //console.log(j+':', res, sample.indexOf(res));
-        ok(sample.indexOf(res) < 0);
-        //return;
-      }
-    }
-  }
 });
 
 // ----------- Node tests -----------------

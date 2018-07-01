@@ -83,8 +83,3 @@ QUnit.propertiesFromAPI = function(pathToDocs, className) {
 QUnit.moduleStart(function(n) {
   console.log("[INFO] Testing " + n.name);
 });
-
-// Adds some logging to the command-line (Node) test script
-QUnit.moduleDone(function(n) {
-  //console.log("[INFO] Completed "+n.name);
-});

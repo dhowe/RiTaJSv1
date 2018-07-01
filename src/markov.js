@@ -1,7 +1,7 @@
-// TODO: add mlsm arg to generateTokens, generateSentences, add start arg to generateTokens
 // TODO: allow for real-time weighting ala memo
 const BN = '\n';
 const SSDLM = '<s/>';
+const MI = Number.MAX_SAFE_INTEGER;
 const MAX_GENERATION_ATTEMPTS = 100;
 
 class Markov {
@@ -11,111 +11,6 @@ class Markov {
     this.N = n;
     this.root = new Node(null, 'ROOT');
     this.maxLengthMatchingSequence = 0;
-  }
-
-  size() {
-
-    return this.root.childCount();
-  }
-
-  loadSentences(sentences) {
-
-    var tokens = [];
-
-    // collect all the words, marking sentence starts
-    for (var i = 0; i < sentences.length; i++) {
-      var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
-      var words = RiTa.tokenize(sentence);
-      tokens.push(SSDLM);
-      //tokens.push(...tokens); ES6
-      Array.prototype.push.apply(tokens, words);
-    }
-
-    // create all sequences of length N
-    for (var i = 0; i < tokens.length; i++) {
-      //this._addSentenceSequence(tokens.slice(i, i + this.N));
-
-      var toAdd = tokens.slice(i, i + this.N);
-
-      var node = this.root;
-      for (var j = 0; j < toAdd.length; j++) {
-        node = node.addChild(toAdd[j]);
-      }
-    }
-    //console.log("Loaded " + sentences.length + " sentences");
-  }
-
-  generateSentences(num, minTokens, maxTokens) { // add-arg: start
-
-    minTokens = minTokens || 5;
-    maxTokens = maxTokens || 35;
-
-    var node, sent, tries = 0,
-      result = [];
-
-    while (result.length < num) {
-
-      // choose a sentence start, according to probability
-      sent = sent || [node = this.root.child(SSDLM).select()];
-
-      if (node.isLeaf()) {
-
-        node = this._search(sent);
-
-        // we ended up at a another leaf
-        if (!node || node.isLeaf()) {
-
-          if (sent.length > minTokens) {
-            if (!this._validateSentence(result, sent)) {
-              tries++;
-            }
-          }
-          sent = null;
-          continue;
-        }
-      }
-
-      // select the next child, according to probability
-      node = node.select();
-
-      // do we have a candidate for the next start?
-      if (node.token === SSDLM) {
-
-        if (sent.length > minTokens) {
-
-          // its a sentence, or we restart and try again
-          if (!this._validateSentence(result, sent)) {
-            tries++;
-          }
-        }
-
-        sent = null;
-        continue;
-      }
-
-      // add new node to the sentence
-      sent.push(node);
-
-      // check if we've exceeded max-length
-      if (sent.length > maxTokens) {
-
-        //console.log("FAIL(maxlen): " + this._flatten(sent));
-        if (++tries >= MAX_GENERATION_ATTEMPTS) {
-          warn('\nRiMarkov failed to complete after ' + tries +
-            ' tries and ' + result.length + ' successful generations.' +
-            ' You may need to add more text to the model...' + BN);
-          break; // give-up (&& result = null; ?)
-        }
-        sent = null;
-      }
-    }
-
-    return result;
-  }
-
-  generateSentence() { // add-arg: start
-
-    return this.generateSentences(1)[0];
   }
 
   loadTokens(tokens) {
@@ -131,39 +26,128 @@ class Markov {
     return this;
   }
 
-  generateTokens(num) { // add-arg: start
+  loadSentences(sentences) {
 
-    var node, parent, tries = 0;
-    var tokens = [node = this.root.select()];
+    var tokens = [];
+
+    // collect all the words, adding a token for sentence starts
+    for (var i = 0; i < sentences.length; i++) {
+      var sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
+      var words = RiTa.tokenize(sentence);
+      tokens.push(SSDLM, ...words);
+    }
+
+    // create nodes for all sequences of length N
+    for (var i = 0; i < tokens.length; i++) {
+      var node = this.root,
+        toAdd = tokens.slice(i, i + this.N);
+      for (var j = 0; j < toAdd.length; j++) {
+        node = node.addChild(toAdd[j]);
+      }
+    }
+    //console.log("Loaded " + sentences.length + " sentences");
+  }
+
+  generateSentences(num, { minTokens = 5, maxTokens = 35, startToken = undefined, maxLengthMatch = MI } = {}) {
+
+    //console.log(num + " {" + minTokens + "," + maxTokens + "," + startToken + "}");
+
+    var node, sent, tries = 0;
+    var result = [];
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
+
+      if (result.length == num) return result;
+
+      // choose a sentence start, according to probability
+      sent = sent || [node = startToken ?
+        this.root.child(SSDLM).child(startToken) : this.root.child(SSDLM).select()];
+
+      if (!node) {
+        if (startToken) throw Error(startToken ?
+          "No start token found: " + startToken : "Invalid state: " + this);
+      }
+
+      if (node.isLeaf()) {
+        node = this._search(sent);
+
+        // we ended up at a another leaf
+        if (!node || node.isLeaf()) {
+          if (sent.length < minTokens || !this._validateSentence(result, sent)) {
+            tries++;
+          }
+          sent = null;
+          continue;
+        }
+      }
+
+      // select the next child, according to probabilities
+      node = node.select();
+
+      // do we have a candidate for the next start?
+      if (node.token === SSDLM) {
+
+        // its a sentence, or we restart and try again
+        if (sent.length < minTokens || !this._validateSentence(result, sent)) {
+          tries++;
+        }
+        sent = null;
+        continue;
+      }
+
+      // add new node to the sentence
+      sent.push(node);
+
+      // check if we've exceeded max-length
+      if (sent.length > maxTokens) {
+        //console.log("FAIL #"+tries+" (maxlen): " + this._flatten(sent));
+        sent = null;
+        tries++;
+      }
+      //console.log("tries="+tries);
+    }
+
+    //if (tries >= MAX_GENERATION_ATTEMPTS) {
+    throw Error('\nRiMarkov failed to complete after ' + tries +
+      ' tries and ' + result.length + ' successful generation(s).' +
+      ' You may need to add more text to the model...' + BN);
+    //}
+  }
+
+  generateSentence({ minTokens = 5, maxTokens = 35, startToken = undefined, maxLengthMatch = MI } = {}) {
+
+    return this.generateSentences(1, arguments[0])[0];
+  }
+
+  generateTokens(num, { startToken = undefined, maxLengthMatch = MI } = {}) {
+
+    var node, parent, tries = 0;
+    var tokens;
+
+    while (tries < MAX_GENERATION_ATTEMPTS) {
+
+      tokens = tokens || [node = startToken ?
+        this.root.child(startToken) :this.root.select()];
 
       parent = this._search(tokens);
       //node = this._chooseChild(parent, nodes); // TODO: for mlms
 
       if (!parent || parent.isLeaf()) { // try again
-        tokens = [node = this.root.select()];
+        tokens = null;
         tries++;
         continue;
       }
 
       node = parent.select();
 
-      if (node) {
-        tokens.push(node);
+      if (!node) throw Error('Invalid state'); // shouldn't happen
 
-        if (tokens.length == num) {
-          return this._nodesToTokens(tokens);
-        }
+      if (tokens.push(node) < num) continue;
 
-      } else {
-        throw Error('****Failed with: ' + nodeStr(nodes)); // shouldn't happen
-        tokens = [node = this.root.select()];
-        tries++;
-      }
+      return this._nodesToTokens(tokens);
     }
 
-    console.error('\n\nFailed after ' + tries + ' tries');
+    throw Error('\n\nFailed after ' + tries + ' tries');
     //, with '+ nodes.length + ' tokens: \'', nodeStr(nodes)+"'");
   }
 
@@ -272,6 +256,11 @@ class Markov {
     return this.root.asTree().replace(/{}/g, '');
   }
 
+  size() {
+
+    return this.root.childCount();
+  }
+
   ready(url) {
 
     return this.size() > 0;
@@ -280,6 +269,7 @@ class Markov {
   ////////////////////////////// end API ////////////////////////////////
 
   _flatten(nodes) {
+
     return RiTa.untokenize(this._nodesToTokens(nodes));
   }
 
@@ -303,10 +293,10 @@ class Markov {
       return false;
     }
 
-    //     if (result.indexOf(candidate) > -1) {
-    //       console.log("Skipping: duplicate sentence: '" + sent + "'");
-    //       return false;
-    //     }
+    if (result.indexOf(sent) > -1) {
+      //console.log("Skipping: duplicate sentence: '" + sent + "'");
+      return false;
+    }
 
     result.push(sent);
 
@@ -489,9 +479,14 @@ class Node {
     selector = Math.random() * sum;
 
     for (var i = 0; i < nodes.length; i++) {
+
       pTotal += nodes[i].probability();
-      if (selector < pTotal)
-        return nodes[i];
+      if (selector < pTotal) {
+        // make sure we don't return a sentence start (<s/>) node
+        var result = nodes[i].token === SSDLM ? nodes[i].select() : nodes[i];
+        if (!result) throw Error('Unexpected state');
+        return result
+      }
     }
 
     throw Error(this + '\nno hit for select() with filter: ' + filter +
@@ -551,10 +546,9 @@ class Node {
         err("ILLEGAL FREQ: " + node.count + " " + mn.token + "," + node.token);
 
       if (node.parent) str += " [" + node.count + ",p=" +
-          (node.probability().toFixed(3)) + "] {";
+        (node.probability().toFixed(3)) + "] {";
 
-      str = !this.childCount() ? this.stringify
-        (node, str, depth + 1, sort) : str + '}';
+      str = !this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
     }
 
     indent = BN;
@@ -574,7 +568,7 @@ class Node {
   }
 
   _encode(tok) {
-    
+
     if (tok === BN) tok = '\\n';
     if (tok === '\r') tok = '\\r';
     if (tok === '\t') tok = '\\t';
@@ -597,21 +591,6 @@ function nodeStr(nodes, format) {
     s += nodes[i].token + ','
   }
   return s;
-}
-
-if (0) {
-
-  var sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
-
-  var rm = new Markov(4);
-  //rm.maxLengthMatchingSequence = 5;
-  rm.loadTokens(RiTa.tokenize(sample));
-  //rm.print();
-  for (var i = 0; i < 10; i++) {
-    var toks = rm.generateTokens(7);
-    console.log(i, RiTa.untokenize(toks));
-  }
-
 }
 
 function isSubArray(find, arr) {
