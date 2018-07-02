@@ -1,20 +1,4 @@
 /* API
-  generateSentence()
-  generateSentences()
-  generateTokens()
-  generateUntil()
-  getCompletions()
-  getProbabilities()
-  getProbability()
-  loadFrom()
-  loadText()
-  loadTokens()
-  print()
-  ready()
-  size()
-*/
-
-/* New API
   RiMarkov()
   generateSentence() x
   generateSentences() x
@@ -27,6 +11,7 @@
 
   loadSentences() x
   loadTokens() x
+  loadText() ???
 
   toString() x
   ready() x
@@ -37,49 +22,61 @@ var sample = "One reason people lie is to achieve personal power. Achieving pers
 
 var sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
 
+var sample3 = "One reason people lie is to achieve personal power. One reason people fly is wings. One reason people lie was for fun. One reason people lie is for sport. One ton people lie for the sport. One reason people lie could be for games. One reason people lie would be for games.";
+
+
 test("testRiMarkov", function () {
 
-  //ok(RiMarkov(4));
   ok(new RiMarkov(3));
+});
+
+test("testCreateInput", function () {
+
+  var rm = new RiMarkov(4);
+  var txt = "The young boy ate it. The fat boy gave up.";
+  rm.loadTokens(RiTa.tokenize(txt));
+  equal(txt, RiTa.untokenize(rm.input));
 });
 
 test("testGenerateTokens(mlm)", function () {
 
-  var rm = new RiMarkov(4);
-  var maxLengthMatchSeq = 5;
-  rm.loadTokens(RiTa.tokenize(sample));
+  var rm = new RiMarkov(2);
+  var mlms = 4, start = 'The';
+  var txt = "The young boy ate it. The fat boy gave up.";
 
-  for (var i = 0; i < 1; i++) {
+  rm.loadTokens(RiTa.tokenize(txt));
 
-    var toks = rm.generateTokens(7, { maxLengthMatch: maxLengthMatchSeq });
+  for (var i = 0; i < 5; i++) {
+
+    var toks = rm.generateTokens(4, { startToken: start, maxLengthMatch: mlms });
     if (!toks || !toks.length) {
       ok("failed!");
       return;
     }
 
-    console.log(i, toks);
+    //console.log("Gen #"+i, toks);
 
-    // All sequences of 4 must be in text
-    for (var j = 0; j < win; j++) {
+    // All sequences of len=N must be in text
+    for (var j = 0; j <= toks.length - rm.N; j++) {
+
+      //console.log(j, toks.slice(j, j + rm.N));
       var part = toks.slice(j, j + rm.N);
-      //console.log(i+'.'+j+') ',part);
       var res = RiTa.untokenize(part);
-      //console.log(i+'.'+j+') '+res);
-      ok(sample.indexOf(res) > -1);
+      //console.log(j, res);
+      ok(txt.indexOf(res) > -1);
     }
 
-    if (1) {
-      // No sequences of 5 can be in text
-      var win = (maxLengthMatchSeq - rm.N) + 1;
-      //console.log(win);
-      for (var j = 0; j <= win; j++) {
-        var part = toks.slice(j, j + maxLengthMatchSeq);
-        //equal(part.length, maxLengthMatchSeq);
-        var res = RiTa.untokenize(part);
-        console.log(j + ':', res, "-> " + (sample.indexOf(res) < 0 ? "OK" : "FAIL"));
-        ok(sample.indexOf(res) < 0);
-        //return;
-      }
+    //console.log("-------------------\n"+txt);
+
+    // All sequences of len=mlms must NOT  be in text
+    for (var j = 0; j <= toks.length - mlms; j++) {
+
+      //console.log(j, toks.slice(j, j + mlms));
+      var part = toks.slice(j, j + mlms);
+      var res = RiTa.untokenize(part);
+      //console.log(j + '  ', part, "-> " + (txt.indexOf(res) < 0 ? "OK" : "FAIL"));
+      ok(txt.indexOf(res) < 0);
+      ok(res.startsWith("The fat boy ate") || res.startsWith("The young boy gave"));
     }
   }
 });
