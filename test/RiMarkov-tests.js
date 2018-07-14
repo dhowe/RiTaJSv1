@@ -229,7 +229,7 @@ var runtests = function() {
 				ok(arr[j] && arr[j].length);
 			}
 			var res = RiTa.untokenize(arr);
-			console.log(i,res);
+			//console.log(i,res);
 		}
 	});
 
