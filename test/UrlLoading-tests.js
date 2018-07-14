@@ -3,7 +3,8 @@
 
 var runtests = function() {
 
-    var allowLocalWebServer = true;
+    var allowLocalWebServer = !process.env.Travis;
+    console.log("allowLocalWebServer:"+allowLocalWebServer);
 
     RiTa.SILENT = 1;
 
