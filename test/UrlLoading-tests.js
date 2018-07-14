@@ -3,9 +3,8 @@
 
 var runtests = function() {
 
+    // only check this for local tests
     var allowLocalWebServer = !process.env.CI;
-    console.log("env:",process.env);
-    console.log("allowLocalWebServer:"+allowLocalWebServer);
 
     RiTa.SILENT = 1;
 
