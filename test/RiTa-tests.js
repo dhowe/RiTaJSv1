@@ -309,7 +309,7 @@ var runtests = function () {
       var output = RiTa.splitSentences(input);
       var expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
       deepEqual(output, expected);
- 
+
       var input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
       var output = RiTa.splitSentences(input);
       var expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
