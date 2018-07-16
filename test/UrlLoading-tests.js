@@ -4,7 +4,7 @@
 var runtests = function() {
 
     // only check this for local tests
-    var allowLocalWebServer = !process.env.CI;
+    var allowLocalWebServer = !process.env.CI && process.env.ALLOW_URL_TESTS;
 
     RiTa.SILENT = 1;
 
@@ -473,7 +473,7 @@ var runtests = function() {
       });
     }
     else {
-      //console.log("[INFO] UrlLoading-tests: skipping localhost tests");
+      console.log("[INFO] UrlLoading: skipping webserver tests");
     }
 
 }// end runtests
