@@ -18548,7 +18548,7 @@ function _dict() { return {
 'preponderance':['p-r-iy p-aa1-n d-r-ah-n-s','nn'],
 'preposterous':['p-r-ih p-aa1 s-t-er ah-s','jj'],
 'preppie':['p-r-eh1 p-iy','nn'],
-'preppy':['p-r-eh1 p-iy','jj'],
+'preppy':['p-r-eh1 p-iy','nn jj'],
 'prerecord':['p-r-iy-r-iy-k-ao1-r-d','vb'],
 'prerecorded':['p-r-iy r-iy k-ao1-r d-ih-d','vbn'],
 'prerequisite':['p-r-iy r-eh1 k-w-ah z-ah-t','nn'],
