@@ -1268,9 +1268,24 @@ return;
         "larvae","larva",
         "vertebrae","vertebra",
         "memorabilia","memorabilium",
+        "sheafs","sheaf",
+        "spoofs","spoof",
+        "proofs","proof",
+        "roofs","roof",
+        "disbeliefs","disbelief",
+        "indices","index",
+        "accomplices","accomplice"
       ];
       for (var i = 0; i < tests.length; i+=2) {
         equal(RiTa.pluralize(tests[i+1]),tests[i]);
+      }
+      
+      // uncountable
+      tests = [
+        "turf","macaroni","spaghetti","potpourri","electrolysis"
+      ];
+      for (var i = 0; i < tests.length; i++) {
+        equal(RiTa.pluralize(tests[i]),tests[i]);
       }
 
       equal("blondes", RiTa.pluralize("blonde"));
@@ -1349,6 +1364,16 @@ return;
         "larvae","larva",
         "vertebrae","vertebra",
         "memorabilia","memorabilium",
+        "hooves","hoof",
+        "thieves","thief",
+        "rabbis","rabbi",
+        "flu","flu",
+        "safaris","safari",
+        "sheaves","sheaf",
+        "uses","use",
+        "pinches","pinch",
+        "catharses","catharsis",
+        "hankies","hanky"
       ];
       for (var i = 0; i < tests.length; i+=2) {
         equal(RiTa.singularize(tests[i]),tests[i+1]);
@@ -1419,12 +1444,12 @@ return;
 
       equal(RiTa.singularize("toes"), "toe");
 
-      equal("series", RiTa.singularize("series"));
-      equal("ox", RiTa.singularize("oxen"));
-      equal("man", RiTa.singularize("men"));
-      equal("mouse", RiTa.singularize("mice"));
-      equal("louse", RiTa.singularize("lice"));
-      equal("child", RiTa.singularize("children"));
+      equal(RiTa.singularize("series"), "series");
+      equal(RiTa.singularize("oxen"), "ox");
+      equal(RiTa.singularize("men"), "man");
+      equal(RiTa.singularize("mice"), "mouse");
+      equal(RiTa.singularize("lice"), "louse");
+      equal(RiTa.singularize("children"), "child");
 
       equal(RiTa.singularize("gases"), "gas");
       equal(RiTa.singularize("buses"), "bus");

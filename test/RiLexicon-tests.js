@@ -13,37 +13,27 @@ var runtests = function() {
   });
 
   test("test_isPlural", function() {
+    var plurals = ["safaris","millennia","preppies","sheaves","pinches","uses","hankies","catharses","hooves",
+    "veils","cats","boxes","teeth","apples","buses","prognoses","oxen","theses","stimuli","crises","media"];
+    
+    for (var i = 0; i < plurals.length; i++) {
+        if(!lex._isPlural(plurals[i])) console.log("test_isPlural: [This word should be plural!]" + plurals[i]);
+        ok(lex._isPlural(plurals[i]));
+    }
 
-    ok(lex._isPlural("veils"));
-    ok(lex._isPlural("cats"));
-    ok(lex._isPlural("boxes"));
-    ok(lex._isPlural("teeth"));
-    ok(lex._isPlural("apples"));
-    ok(lex._isPlural("buses"));
-    ok(lex._isPlural("prognoses"));
-    ok(lex._isPlural("oxen"));
-    ok(lex._isPlural("theses"));
-    ok(lex._isPlural("stimuli"));
-    ok(lex._isPlural("crises"));
-    ok(lex._isPlural("media"));
+    var uncountable = ["hardness","shortness","dreariness","unwillingness","deer","fish"];
+    for (var i = 0; i < uncountable.length; i++) {
+        if(!lex._isPlural(uncountable[i])) console.log("test_isPlural: [This word should be plural!]" + uncountable[i]);
+        ok(lex._isPlural(uncountable[i]));
+    }
 
-    ok(!lex._isPlural("cat"));
-    ok(!lex._isPlural("funny"));
-    ok(!lex._isPlural("pass"));
-    ok(!lex._isPlural("base"));
-    ok(!lex._isPlural("moved"));
-    ok(!lex._isPlural("went"));
-    ok(!lex._isPlural("spent"));
-    ok(!lex._isPlural("abates"));
+    var notplurals = ["cat","funny","pass","base","moved","went","spent","abates"];
+    for (var i = 0; i < notplurals.length; i++) {
+        if(lex._isPlural(notplurals[i])) console.log("test_isPlural: [This word should not be plural!]" + notplurals[i]);
+        ok(!lex._isPlural(notplurals[i]));
+    }
 
-    ok(lex._isPlural("hardness"));
-    ok(lex._isPlural("shortness"));
-    ok(lex._isPlural("dreariness"));
-    ok(lex._isPlural("unwillingness"));
-    ok(lex._isPlural("deer"));
-    ok(lex._isPlural("fish"));
-
-  });
+});
 
   test("testContainsWord", function() {
 
