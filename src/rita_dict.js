@@ -16505,6 +16505,7 @@ function _dict() { return {
 'ogle':['ow1-g-ah-l','vb'],
 'ogled':['ow1 g-ah-l-d','vbd vbn'],
 'ogles':['ow1 g-ah-l-z','vbz'],
+'ogre':['ow1 g-r-ah','nn'],
 'ogress':['ow1 g-r-ah-s','nn'],
 'oh':['ow1','uh'],
 'oil':['oy1-l','nn'],
