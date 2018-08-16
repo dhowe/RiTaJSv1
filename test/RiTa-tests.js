@@ -779,10 +779,12 @@ var runtests = function () {
       var answer = "";
       equal(result, answer);
 
-
-
       var result = RiTa.getPhonemes("The");
       var answer = "dh-ah";
+      equal(result, answer);
+
+      var result = RiTa.getPhonemes("said");
+      var answer = "s-eh-d";
       equal(result, answer);
 
       var result = RiTa.getPhonemes("The.");
@@ -1279,7 +1281,7 @@ return;
       for (var i = 0; i < tests.length; i+=2) {
         equal(RiTa.pluralize(tests[i+1]),tests[i]);
       }
-      
+
       // uncountable
       tests = [
         "turf","macaroni","spaghetti","potpourri","electrolysis"
