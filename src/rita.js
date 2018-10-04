@@ -3017,35 +3017,35 @@ RiGrammar.prototype = {
       return null; // no rules matched
     }
 
-    var Scope = function(context) { // class
-      "use strict";
-
-      this.names = [];
-      this.eval = function(s) {
-        return eval(s);
-      };
-      this.put = function(name, val) {
-        "use strict";
-        var code = "(function() {\n";
-        code += 'var ' + name + ' = '+val+';\n';
-        code += 'return function(str) {return eval(str)};\n})()';
-        this.eval = this.eval(code);
-        this.names.push(name);
-      };
-
-      if (context) {
-        var scope = this;
-        if (typeof context === 'function') {
-          scope.put(context.name, context);
-        }
-        else if (typeof context === 'object') {
-          okeys(context).forEach(function (f) {
-            if (typeof context[f] === 'function')
-              scope.put(f, context[f]);
-          });
-        }
-      }
-    }
+    // var Scope = function(context) { // class
+    //   "use strict";
+    // 
+    //   this.names = [];
+    //   this.eval = function(s) {
+    //     return eval(s);
+    //   };
+    //   this.put = function(name, val) {
+    //     "use strict";
+    //     var code = "(function() {\n";
+    //     code += 'var ' + name + ' = '+val+';\n';
+    //     code += 'return function(str) {return eval(str)};\n})()';
+    //     this.eval = this.eval(code);
+    //     this.names.push(name);
+    //   };
+    // 
+    //   if (context) {
+    //     var scope = this;
+    //     if (typeof context === 'function') {
+    //       scope.put(context.name, context);
+    //     }
+    //     else if (typeof context === 'object') {
+    //       okeys(context).forEach(function (f) {
+    //         if (typeof context[f] === 'function')
+    //           scope.put(f, context[f]);
+    //       });
+    //     }
+    //   }
+    // }
 
     var handleExec = function(input, context) {
 
@@ -3056,20 +3056,26 @@ RiGrammar.prototype = {
       var res, exec = input.replace(STRIP_TICKS, '$1');
 
       try {
-
-        res = eval(exec); // try in global context
-        return res ? res + E : null;
-
-      } catch (e) {
-
+        // Try first in the local context if
+	// it exists, so that the local context
+	// can override a global function
         if (context) { // create sandbox for context args
-
-          try {
-            res = new Scope(context).eval(exec);
+            // res = new Scope(context).eval(exec);
+	    // context is a closure, so attempt to evaluate
+	    // the exec in that closure
+	    res = context(exec);
             return res ? res + '' : null;
-          }
-          catch (e) { /* fall through */ }
-        }
+        } else {
+	    throw "No context";
+	};
+      } catch (e) {
+	  try {
+              res = eval(exec); // try in global context
+              return res ? res + E : null;
+	  } catch (e) {
+	      // Failed completely; will fall through
+	      // and return input
+	  };
       }
       return input;
     }

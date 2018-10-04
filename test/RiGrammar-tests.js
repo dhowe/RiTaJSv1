@@ -893,6 +893,46 @@ var runtests = function () {
     }
   });
 
+  // Create the frog callback locally, but don't pass
+  // a closure into expand; should fail.
+  test("testExec5", function () {
+
+    var frog = () => 'frog';  
+      
+    var newruleg2 = {
+      '<start>': 'The <noun> chased the `frog()`.',
+      '<noun>': 'dog | cat | mouse',
+    };
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+
+    var res = rg.expand();
+    // console.log(res);
+    ok(res && res.indexOf("`frog()`") > -1);
+  });
+
+  // Create the frog callback locally, and pass
+  // in a local closure; should succeed.
+  test("testExec6", function () {
+
+    var frog = () => 'frog';  
+      
+    var newruleg2 = {
+      '<start>': 'The <noun> chased the `frog()`.',
+      '<noun>': 'dog | cat | mouse',
+    };
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+
+    var res = rg.expand(function (str) { return eval(str); });
+    // console.log(res);
+    ok(res && res.match(/frog\./g));
+  });
+
   test("testExecArgs", function () {
 
     var rl = RiLexicon();
