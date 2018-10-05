@@ -2880,7 +2880,11 @@ var OR_PATT = /\s*\|\s*/, STRIP_TICKS = /`([^`]*)`/g,
   PROB_PATT = /(.*[^\s])\s*\[([0-9.]+)\](.*)/;
 
 RiGrammar.START_RULE = "<start>";
-RiGrammar.EXEC_PATT = /(.*?)(`[^`]+?\(.*?\);?`)(.*)/;
+// Do not require a function call in the exec pattern;
+// this permits a callback such as `varName` which
+// evaluates to the value of varName in the provided
+// closure.
+RiGrammar.EXEC_PATT = /([^`]*)(`[^`]*`)(.*)/;
 
 RiGrammar.prototype = {
 
@@ -3173,36 +3177,6 @@ RiGrammar.prototype = {
       return null; // no rules matched
     }
 
-    // var Scope = function(context) { // class
-    //   "use strict";
-    // 
-    //   this.names = [];
-    //   this.eval = function(s) {
-    //     return eval(s);
-    //   };
-    //   this.put = function(name, val) {
-    //     "use strict";
-    //     var code = "(function() {\n";
-    //     code += 'var ' + name + ' = '+val+';\n';
-    //     code += 'return function(str) {return eval(str)};\n})()';
-    //     this.eval = this.eval(code);
-    //     this.names.push(name);
-    //   };
-    // 
-    //   if (context) {
-    //     var scope = this;
-    //     if (typeof context === 'function') {
-    //       scope.put(context.name, context);
-    //     }
-    //     else if (typeof context === 'object') {
-    //       okeys(context).forEach(function (f) {
-    //         if (typeof context[f] === 'function')
-    //           scope.put(f, context[f]);
-    //       });
-    //     }
-    //   }
-    // }
-
     var handleExec = function(input, context) {
 
       //console.log('handleExec('+input+", ",context+')');
@@ -3213,25 +3187,25 @@ RiGrammar.prototype = {
 
       try {
         // Try first in the local context if
-	// it exists, so that the local context
-	// can override a global function
+        // it exists, so that the local context
+        // can override a global function
         if (context) { // create sandbox for context args
             // res = new Scope(context).eval(exec);
-	    // context is a closure, so attempt to evaluate
-	    // the exec in that closure
-	    res = context(exec);
+            // context is a closure, so attempt to evaluate
+            // the exec in that closure
+            res = context(exec);
             return res ? res + '' : null;
         } else {
-	    throw "No context";
-	};
+            throw "No context";
+        };
       } catch (e) {
-	  try {
+          try {
               res = eval(exec); // try in global context
               return res ? res + E : null;
-	  } catch (e) {
-	      // Failed completely; will fall through
-	      // and return input
-	  };
+          } catch (e) {
+              // Failed completely; will fall through
+              // and return input
+          };
       }
       return input;
     }

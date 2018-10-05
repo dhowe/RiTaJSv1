@@ -897,7 +897,7 @@ var runtests = function () {
   // a closure into expand; should fail.
   test("testExec5", function () {
 
-    var frog = () => 'frog';  
+    var frog = function () { return 'frog';};  
       
     var newruleg2 = {
       '<start>': 'The <noun> chased the `frog()`.',
