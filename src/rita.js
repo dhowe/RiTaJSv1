@@ -3057,25 +3057,25 @@ RiGrammar.prototype = {
 
       try {
         // Try first in the local context if
-	// it exists, so that the local context
-	// can override a global function
+        // it exists, so that the local context
+        // can override a global function
         if (context) { // create sandbox for context args
             // res = new Scope(context).eval(exec);
-	    // context is a closure, so attempt to evaluate
-	    // the exec in that closure
-	    res = context(exec);
+            // context is a closure, so attempt to evaluate
+            // the exec in that closure
+            res = context(exec);
             return res ? res + '' : null;
         } else {
-	    throw "No context";
-	};
+            throw "No context";
+        };
       } catch (e) {
-	  try {
+          try {
               res = eval(exec); // try in global context
               return res ? res + E : null;
-	  } catch (e) {
-	      // Failed completely; will fall through
-	      // and return input
-	  };
+          } catch (e) {
+              // Failed completely; will fall through
+              // and return input
+          };
       }
       return input;
     }
