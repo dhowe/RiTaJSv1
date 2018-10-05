@@ -4,7 +4,8 @@
 var runtests = function() {
 
     // only check this for local tests
-    var allowLocalWebServer = !process.env.CI && process.env.ALLOW_URL_TESTS;
+    var allowLocalWebServer = typeof process != 'undefined'
+      && (!process.env.CI && process.env.ALLOW_URL_TESTS);
 
     RiTa.SILENT = 1;
 
@@ -405,6 +406,7 @@ var runtests = function() {
           RiTa.loadString(serverPath+"sentence1.json", function(s) {
 
               ok(s && s.length > 100);
+              console.log("JSON:",s);
               ok(JSON.parse(s));
               start();
           });
