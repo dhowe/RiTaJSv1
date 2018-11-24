@@ -1089,23 +1089,21 @@ RiLexicon.prototype = {
 
   rhymes: function(word) {
 
-      var p = this._lastStressedPhoneToEnd(word),
-        phones, results = [];
+    var p = this._lastStressedPhoneToEnd(word),
+      phones, results = [];
 
-      for (var i = 0; i < this.size(); i++) {
+    for (var i = 0; i < this.size(); i++) {
 
-        if (this.keys[i] === word)
-          continue;
+      if (this.keys[i] === word)
+        continue;
 
-        phones = this.data[this.keys[i]][0];
+      phones = this.data[this.keys[i]][0];
 
-        if (endsWith(phones, p))
-          results.push(this.keys[i]);
-      }
-      return (results.length > 0) ? results : EA;
+      if (endsWith(phones, p))
+        results.push(this.keys[i]);
+    }
 
-
-    return EA;
+    return (results.length > 0) ? results : EA;
   },
 
   alliterations: function(word, matchMinLength, useLTS) {

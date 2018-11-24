@@ -26,6 +26,7 @@ var testResults = [{
 var runtests = function () {
 
     RiTa.SILENT = 1;
+    RiTa.SILENCE_LTS = 1;
 
     var filePath = (typeof module != 'undefined' && module.exports) ? "./test/html/data/" : "./data/"
 
@@ -37,7 +38,6 @@ var runtests = function () {
 
     // ------------------------------------------------------------------------
     test("testGetSyllables", function () { // new-style
-
 
       var func = RiTa.getSyllables,
         tests = testResults[0].tests;
@@ -70,6 +70,9 @@ var runtests = function () {
       answer = 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n';
       equal(result, answer);
 
+      equal(RiTa.getSyllables("chevrolet"), "sh-eh-v/r-ow/l-ey");
+      equal(RiTa.getSyllables("women"), "w-ih/m-eh-n");
+      equal(RiTa.getSyllables("genuine"), "jh-eh-n/y-uw/w-ah-n");
     });
 
     // ------------------------------------------------------------------------
@@ -815,12 +818,15 @@ var runtests = function () {
       var result = RiTa.getPhonemes("mice");
       var answer = "m-ay-s";
       equal(result, answer);
+
+      equal(RiTa.getPhonemes("chevrolet"), "sh-eh-v-r-ow-l-ey");
+      equal(RiTa.getPhonemes("women"), "w-ih-m-eh-n");
+      equal(RiTa.getPhonemes("genuine"), "jh-eh-n-y-uw-w-ah-n");
     });
 
     test("testGetPosTags", function () {
-RiTa.SILENT=0;
-deepEqual(RiTa.getPosTags("freed"), [ "jj" ]);
-return;
+
+      deepEqual(RiTa.getPosTags("freed"), [ "jj" ]);
 
       deepEqual(RiTa.getPosTags("the top seed"), [ "dt", "jj", "nn" ]);
 
@@ -856,7 +862,7 @@ return;
       var result = RiTa.getPosTags("teeth");
       var answer = ["nns"];
       deepEqual(result, answer);
-      return;
+      //return;
 
       var result = RiTa.getPosTags("memories");
       var answer = ["nns"];
@@ -979,8 +985,6 @@ return;
       var answer = "teeth/nns";
       deepEqual(result, answer);
 
-
-
       var result = RiTa.getPosTagsInline("There is a cat.");
       var answer = "There/ex is/vbz a/dt cat/nn .";
       deepEqual(result, answer);
@@ -1000,8 +1004,6 @@ return;
       var result = RiTa.getStresses("");
       var answer = "";
       equal(result, answer);
-
-
 
       var result = RiTa.getStresses("The emperor had no clothes on");
       var answer = "0 1/0/0 1 1 1 1";
@@ -1027,6 +1029,10 @@ return;
       var result = RiTa.getStresses(txt);
       var answer = "0 1 1 1/0 1 0 1/0 1 . 1 0 1/0 1 1 1/0/0 .";
       equal(result, answer);
+
+      equal(RiTa.getStresses("chevrolet"), "0/0/1");
+      equal(RiTa.getStresses("women"), "1/0");
+      equal(RiTa.getStresses("genuine"), "1/0/0");
     });
 
     test("testGetWordCount", function () {
@@ -1203,8 +1209,6 @@ return;
     });
 
     test("testLTSEngine", function () {
-
-
 
       //getPhonemes
       var result = RiTa.getPhonemes("asdfgasdasdasdasdsadasf");
