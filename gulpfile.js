@@ -2,8 +2,7 @@
 /**
  * USAGE:
  * 	gulp (build | lint | watch | clean | help )
- *  gulp test        # test all without loading RiLexicon
- *  gulp test.full     # test all
+ *  gulp test          # test all 
  *  gulp test --name RiString  # test one
  */
 

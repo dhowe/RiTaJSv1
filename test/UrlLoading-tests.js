@@ -406,7 +406,7 @@ var runtests = function() {
           RiTa.loadString(serverPath+"sentence1.json", function(s) {
 
               ok(s && s.length > 100);
-              console.log("JSON:",s);
+              //console.log("JSON:",s);
               ok(JSON.parse(s));
               start();
           });
