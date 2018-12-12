@@ -1071,7 +1071,7 @@ RiLexicon.prototype = {
 
     if (!this.data || !strOk(word)) return false;
     word = word.toLowerCase();
-    return this.data[word] || this._isPlural(word);
+    return this.data.hasOwnProperty(word) || this._isPlural(word);
   },
 
   isRhyme: function(word1, word2, useLTS) {

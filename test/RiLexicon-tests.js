@@ -1,41 +1,46 @@
-var runtests = function() {
+var runtests = function () {
 
   var lex = RiTa.lexicon;
 
   QUnit.module("RiLexicon", {
-    setup: function() {},
-    teardown: function() {}
+    setup: function () {},
+    teardown: function () {}
   });
 
-  test("testSize", function() {
+  test("testSize", function () {
 
     ok(lex.size() > 20000);
   });
 
-  test("test_isPlural", function() {
-    var plurals = ["safaris","millennia","preppies","sheaves","pinches","uses","hankies","catharses","hooves",
-    "veils","cats","boxes","teeth","apples","buses","prognoses","oxen","theses","stimuli","crises","media"];
-    
+  test("test_isPlural", function () {
+    var plurals = ["safaris", "millennia", "preppies", "sheaves", "pinches", "uses", "hankies", "catharses", "hooves",
+    "veils", "cats", "boxes", "teeth", "apples", "buses", "prognoses", "oxen", "theses", "stimuli", "crises", "media"];
+
     for (var i = 0; i < plurals.length; i++) {
-        if(!lex._isPlural(plurals[i])) console.log("test_isPlural: [This word should be plural!]" + plurals[i]);
-        ok(lex._isPlural(plurals[i]));
+      if (!lex._isPlural(plurals[i])) console.log("test_isPlural: [This word should be plural!]" + plurals[i]);
+      ok(lex._isPlural(plurals[i]));
     }
 
-    var uncountable = ["hardness","shortness","dreariness","unwillingness","deer","fish"];
+    var uncountable = ["hardness", "shortness", "dreariness", "unwillingness", "deer", "fish"];
     for (var i = 0; i < uncountable.length; i++) {
-        if(!lex._isPlural(uncountable[i])) console.log("test_isPlural: [This word should be plural!]" + uncountable[i]);
-        ok(lex._isPlural(uncountable[i]));
+      if (!lex._isPlural(uncountable[i])) console.log("test_isPlural: [This word should be plural!]" + uncountable[i]);
+      ok(lex._isPlural(uncountable[i]));
     }
 
-    var notplurals = ["cat","funny","pass","base","moved","went","spent","abates"];
+    var notplurals = ["cat", "funny", "pass", "base", "moved", "went", "spent", "abates"];
     for (var i = 0; i < notplurals.length; i++) {
-        if(lex._isPlural(notplurals[i])) console.log("test_isPlural: [This word should not be plural!]" + notplurals[i]);
-        ok(!lex._isPlural(notplurals[i]));
+      if (lex._isPlural(notplurals[i])) console.log("test_isPlural: [This word should not be plural!]" + notplurals[i]);
+      ok(!lex._isPlural(notplurals[i]));
     }
 
-});
+  });
 
-  test("testContainsWord", function() {
+  test("testContainsWord", function () {
+
+    var tmp = lex.data['hello'];
+    delete lex.data['hello'];
+    ok(!lex.containsWord("hello"));
+    lex.data['hello'] = tmp; // restore data
 
     ok(lex.containsWord("veils"));
     ok(!lex.containsWord("shalls"));
@@ -49,11 +54,6 @@ var runtests = function() {
     ok(lex.containsWord("hello"));
     ok(lex.containsWord("HeLLo"));
     ok(lex.containsWord("HELLO"));
-
-    var tmp = lex.data['hello'];
-    lex.data['hello'] = undefined;
-    ok(!lex.containsWord("hello"));
-    lex.data['hello'] = tmp; // restore data
 
     // plurals
     ok(lex.containsWord("cats"));
@@ -80,18 +80,18 @@ var runtests = function() {
     ok(!lex.containsWord("pleae"));
   });
 
-  test("testAlliterations", function() {
+  test("testAlliterations", function () {
 
     var result = lex.alliterations("cat");
     ok(result.length > 2000);
-    for(var i = 0; i < result.length; i++) {
-      ok(lex.isAlliteration(result[i],"cat"));
+    for (var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i], "cat"));
     }
 
     var result = lex.alliterations("dog");
     ok(result.length > 1000);
-    for(var i = 0; i < result.length; i++) {
-      ok(lex.isAlliteration(result[i],"dog"));
+    for (var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i], "dog"));
     }
 
     var result = lex.alliterations("umbrella");
@@ -112,18 +112,18 @@ var runtests = function() {
 
   });
 
-  test("testAlliterations(int)", function() {
+  test("testAlliterations(int)", function () {
 
     var result = lex.alliterations("dog", 15);
     ok(result.length < 5);
-    for(var i = 0; i < result.length; i++) {
-      ok(lex.isAlliteration(result[i],"dog"));
+    for (var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i], "dog"));
     }
 
     var result = lex.alliterations("cat", 16);
     ok(result.length < 15);
-    for(var i = 0; i < result.length; i++) {
-       ok(lex.isAlliteration(result[i],"cat"));
+    for (var i = 0; i < result.length; i++) {
+      ok(lex.isAlliteration(result[i], "cat"));
     }
 
   });
@@ -131,7 +131,7 @@ var runtests = function() {
   // TESTS: randomWord(), randomWord(targetLength),
   // randomWord(pos), randomWord(pos, targetLength)
 
-  test("testRandomWord(1)", function() {
+  test("testRandomWord(1)", function () {
 
     var result = lex.randomWord();
     ok(result.length > 0, "randomWord: " + result);
@@ -172,28 +172,27 @@ var runtests = function() {
 
   });
 
-  test("testRandomNNS", function() {
-      for (var i = 0; i < 20; i++) {
-        var result = lex.randomWord("nns");
-        if (!lex._isPlural(result)) {
+  test("testRandomNNS", function () {
+    for (var i = 0; i < 20; i++) {
+      var result = lex.randomWord("nns");
+      if (!lex._isPlural(result)) {
 
-          // For now, just warn here as there are too many edge cases (see #521)
-          console.warn("Pluralize/Singularize problem: RandomNns was '"+result+" ("+
-            "isPlural="+lex._isPlural(result)+"), singularized is "+RiTa.singularize(result));
-        }
-        //ok(lex._isPlural(result), "randomWord nns: " + result);
-
-        //No nn & vbg
-        //No -ness, -ism
-        var pos = lex._getPosData(result);
-        ok(pos.indexOf("vbg") < 0, "randomWord nns: " + result);
-        ok(!result.endsWith("ness"), "randomWord nns: " + result);
-        ok(!result.endsWith("isms"), "randomWord nns: " + result);
+        // For now, just warn here as there are too many edge cases (see #521)
+        console.warn("Pluralize/Singularize problem: RandomNns was '" + result + " (" +
+          "isPlural=" + lex._isPlural(result) + "), singularized is " + RiTa.singularize(result));
       }
+      //ok(lex._isPlural(result), "randomWord nns: " + result);
+
+      //No nn & vbg
+      //No -ness, -ism
+      var pos = lex._getPosData(result);
+      ok(pos.indexOf("vbg") < 0, "randomWord nns: " + result);
+      ok(!result.endsWith("ness"), "randomWord nns: " + result);
+      ok(!result.endsWith("isms"), "randomWord nns: " + result);
+    }
   });
 
-
-  test("testRandomWord(2)", function() {
+  test("testRandomWord(2)", function () {
 
     var pos = ["nn", "jj", "jjr", "wp"];
     for (var j = 0; j < pos.length; j++) {
@@ -206,8 +205,7 @@ var runtests = function() {
     }
   });
 
-
-  test("testRandomWord(3)", function() {
+  test("testRandomWord(3)", function () {
 
     for (var i = 0; i < 10; i++) {
       var result = lex.randomWord(3);
@@ -218,7 +216,7 @@ var runtests = function() {
     }
   });
 
-  test("testRandomWord(4)", function() {
+  test("testRandomWord(4)", function () {
 
     for (var i = 0; i < 10; i++) {
       var result = lex.randomWord(5);
@@ -232,16 +230,16 @@ var runtests = function() {
   });
 
   // double check that we don't always get the same word
-  test("testRandomWord(5)", function() {
-     var pos = ["nn", "jj", "jjr", "nns", "n", "v"];
-     for (var j = 0; j < pos.length; j++) {
-         var result = lex.randomWord(pos[j]);
-         var result2 = lex.randomWord(pos[j]);
-         equal(true, result != result2);
-     }
-   });
+  test("testRandomWord(5)", function () {
+    var pos = ["nn", "jj", "jjr", "nns", "n", "v"];
+    for (var j = 0; j < pos.length; j++) {
+      var result = lex.randomWord(pos[j]);
+      var result2 = lex.randomWord(pos[j]);
+      equal(true, result != result2);
+    }
+  });
 
-  test("testWords", function() {
+  test("testWords", function () {
 
     var result = lex.words();
     ok(result.length > 1000);
@@ -277,7 +275,7 @@ var runtests = function() {
     notDeepEqual(result1, result2);
   });
 
-  test("testIsAdverb", function() {
+  test("testIsAdverb", function () {
 
     ok(!lex.isAdverb("swim"));
     ok(!lex.isAdverb("walk"));
@@ -324,7 +322,7 @@ var runtests = function() {
 
     ok(!lex.isAdverb(""));
 
-    throws(function() {
+    throws(function () {
       RiTa.SILENT = 1;
       try {
         lex.isAdverb("banana split");
@@ -336,7 +334,7 @@ var runtests = function() {
     });
   });
 
-  test("testIsNoun", function() {
+  test("testIsNoun", function () {
 
     ok(lex.isNoun("swim"));
     ok(lex.isNoun("walk"));
@@ -398,9 +396,7 @@ var runtests = function() {
 
     ok(!lex.isNoun(""));
 
-
-
-    throws(function() {
+    throws(function () {
       RiTa.SILENT = 1;
       try {
         lex.isNoun("banana split");
@@ -412,7 +408,7 @@ var runtests = function() {
     });
   });
 
-  test("testIsVerb", function() {
+  test("testIsVerb", function () {
 
     ok(lex.isVerb("dance"));
     ok(lex.isVerb("swim"));
@@ -460,7 +456,7 @@ var runtests = function() {
     ok(!lex.isVerb("excitedly"));
     ok(!lex.isVerb("energetically"));
 
-    throws(function() {
+    throws(function () {
       RiTa.SILENT = 1;
       try {
         lex.isVerb("banana split");
@@ -472,8 +468,7 @@ var runtests = function() {
     });
   });
 
-
-  test("testIsAdjective", function() {
+  test("testIsAdjective", function () {
 
     ok(!lex.isAdjective("swim"));
     ok(!lex.isAdjective("walk"));
@@ -518,8 +513,7 @@ var runtests = function() {
     ok(!lex.isAdjective("excitedly"));
     ok(!lex.isAdjective("energetically"));
 
-
-    throws(function() {
+    throws(function () {
       RiTa.SILENT = 1;
 
       try {
@@ -533,8 +527,7 @@ var runtests = function() {
     });
   });
 
-  test("testIsAlliteration", function() {
-
+  test("testIsAlliteration", function () {
 
     ok(lex.isAlliteration("sally", "silly"));
     ok(lex.isAlliteration("sea", "seven"));
@@ -578,8 +571,7 @@ var runtests = function() {
     ok(!lex.isAlliteration("amicable", "atmosphere"));
   });
 
-
-  test("testIsRhymeStringString", function() {
+  test("testIsRhymeStringString", function () {
 
     ok(!lex.isRhyme("apple", "polo"));
     ok(!lex.isRhyme("this", "these"));
@@ -608,8 +600,7 @@ var runtests = function() {
     ok(!lex.isRhyme("", ""));
   });
 
-  test("testIsRhyme", function() {
-
+  test("testIsRhyme", function () {
 
     var rhymes = [
     "candle", "handle",
@@ -623,52 +614,51 @@ var runtests = function() {
 
     for (var i = 0; i < rhymes.length; i += 2) {
       //System.out.println(rhymes[i] + " + "+rhymes[i+1]+" -> "+lex.isRhyme(rhymes[i], rhymes[i+1]));
-      ok(lex.isRhyme(rhymes[i], rhymes[i+1]), rhymes[i]+"/"+rhymes[i+1]);
-      ok(lex.isRhyme(rhymes[i+1], rhymes[i]), rhymes[i+1]+"/"+rhymes[i]);
+      ok(lex.isRhyme(rhymes[i], rhymes[i + 1]), rhymes[i] + "/" + rhymes[i + 1]);
+      ok(lex.isRhyme(rhymes[i + 1], rhymes[i]), rhymes[i + 1] + "/" + rhymes[i]);
     }
 
     var rhymeSet1 = [
-    "insincere", "persevere", "interfere",  // each should rhyme with the others
-    "career",  "year", "reappear", "brigadier", "pioneer", "rear", "near",
+    "insincere", "persevere", "interfere", // each should rhyme with the others
+    "career", "year", "reappear", "brigadier", "pioneer", "rear", "near",
     "beer", "fear", "sneer", "adhere", "veer", "volunteer", "pamphleteer",
     "sear", "sincere", "smear", "gear", "deer", "here", "queer",
     "financier", "cavalier", "rainier", "mutineer", "unclear", "racketeer",
     "disappear", "austere", "veneer", "overhear", "auctioneer", "spear",
     "pier", "sphere", "cashier", "ear", "steer",
-     "souvenir", "frontier", "chandelier", "shear", "clear",  "mere",
+     "souvenir", "frontier", "chandelier", "shear", "clear", "mere",
     "premier", "rehear", "engineer", "cheer", "appear", "severe",
     ];
 
-    for (var i = 0; i < rhymeSet1.length-1; i++) {
+    for (var i = 0; i < rhymeSet1.length - 1; i++) {
       for (var j = 0; j < rhymeSet1.length; j++) {
 
-    if (i != j){
-      //System.out.println(rhymeSet1[i] + " + "+rhymeSet1[j]+" -> "+lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
-      ok(lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
-    }
-    else
-      ok(!lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+        if (i != j) {
+          //System.out.println(rhymeSet1[i] + " + "+rhymeSet1[j]+" -> "+lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+          ok(lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
+        } else
+          ok(!lex.isRhyme(rhymeSet1[i], rhymeSet1[j]));
       }
     }
 
     var notRhymes = [
     "not", "rhyme",
     "deer", "dear",
-    "candle", "candle" ,
-    "hear","here",
-    "premiere","premier",
-    "peer","pear",
-    "sheer","shear"
+    "candle", "candle",
+    "hear", "here",
+    "premiere", "premier",
+    "peer", "pear",
+    "sheer", "shear"
     ];
 
     for (var i = 0; i < notRhymes.length; i += 2) {
-      ok(!lex.isRhyme(notRhymes[i], notRhymes[i+1]));
-      ok(!lex.isRhyme(notRhymes[i+1], notRhymes[i]));  // either way should be the same
+      ok(!lex.isRhyme(notRhymes[i], notRhymes[i + 1]));
+      ok(!lex.isRhyme(notRhymes[i + 1], notRhymes[i])); // either way should be the same
     }
 
   });
 
-  test("testSimilarByLetter", function() {
+  test("testSimilarByLetter", function () {
     var result;
 
     result = lex.similarByLetter("banana", true);
@@ -679,13 +669,13 @@ var runtests = function() {
 
     //delete the word 'lice', not exists anymore in dict.
     result = lex.similarByLetter("banana");
-    deepEqual(result, ["banal", "bonanza", "cabana","manna"]);
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = lex.similarByLetter("banana", 1, true);
     deepEqual(result, ["cabana"]);
 
     result = lex.similarByLetter("banana", 1, false);
-    deepEqual(result, ["banal", "bonanza", "cabana",  "manna"]);
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = lex.similarByLetter("tornado");
     deepEqual(result, ["torpedo"]);
@@ -715,7 +705,7 @@ var runtests = function() {
     deepEqual(result, []);
   });
 
-  test("testSimilarBySound", function() {
+  test("testSimilarBySound", function () {
 
     var result = lex.similarBySound("tornado");
     deepEqual(result, ["torpedo"]);
@@ -735,7 +725,7 @@ var runtests = function() {
     ok(result.length > answer.length); // more
 
     result = lex.similarBySound("cat");
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t","cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     deepEqual(result, answer);
 
     result = lex.similarBySound("cat", 2);
@@ -745,7 +735,7 @@ var runtests = function() {
     deepEqual(result, ["watchword", "wayward", "wormwood"]);
   });
 
-  test("testSimilarBySoundAndLetter", function() {
+  test("testSimilarBySoundAndLetter", function () {
 
     var result = lex.similarBySoundAndLetter("try");
     deepEqual(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
@@ -763,14 +753,14 @@ var runtests = function() {
     deepEqual(result, []);
   });
 
-  test("testSubstrings", function() {
+  test("testSubstrings", function () {
 
     var result = lex.substrings("thousand");
-    var answer = ["sand",];
+    var answer = ["sand", ];
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 2);
-    var answer = [ 'an', 'and', 'sand', 'us' ];
+    var answer = ['an', 'and', 'sand', 'us'];
     deepEqual(result, answer);
 
     var result = lex.substrings("banana", 1);
@@ -778,7 +768,7 @@ var runtests = function() {
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand", 3);
-    var answer = ["and", "sand" ];
+    var answer = ["and", "sand"];
     deepEqual(result, answer);
 
     var result = lex.substrings("thousand"); // min-length=4
@@ -791,7 +781,7 @@ var runtests = function() {
 
   });
 
-  test("testSuperstrings", function() {
+  test("testSuperstrings", function () {
 
     var result = lex.superstrings("superm");
     var answer = ["supermarket"];
@@ -807,7 +797,7 @@ var runtests = function() {
 
   });
 
-  test("testGetPosData", function() {
+  test("testGetPosData", function () {
 
     var result = lex._getPosData("box");
     deepEqual(result, "nn vb");
@@ -829,7 +819,7 @@ var runtests = function() {
     deepEqual(result, "");
   });
 
-  test("testIsVowel", function() {
+  test("testIsVowel", function () {
 
     ok(lex._isVowel("a"));
     ok(lex._isVowel("e"));
@@ -843,7 +833,7 @@ var runtests = function() {
     ok(!lex._isVowel(""));
   });
 
-  test("testIsConsonant", function() {
+  test("testIsConsonant", function () {
 
     ok(!lex._isConsonant("vv"));
     ok(!lex._isConsonant(""));
@@ -852,7 +842,6 @@ var runtests = function() {
     ok(lex._isConsonant("b"));
     ok(lex._isConsonant("d"));
     ok(lex._isConsonant("q"));
-
 
     ok(!lex._isConsonant("a"));
     ok(!lex._isConsonant("e"));
@@ -864,7 +853,7 @@ var runtests = function() {
 
   });
 
-  test("testLookupRaw", function() {
+  test("testLookupRaw", function () {
 
     var result = lex._lookupRaw("banana");
     deepEqual(result, ["b-ah n-ae1 n-ah", "nn"]);
@@ -884,8 +873,7 @@ var runtests = function() {
 
   //For RiTa.getPhonemes() NOT IN RiTa-Java
 
-  test("testGetPhonemes", function() {
-
+  test("testGetPhonemes", function () {
 
     var result = lex._getPhonemes("The");
     var answer = "dh-ah";
@@ -911,7 +899,7 @@ var runtests = function() {
 
   //For RiTa.getStresses() NOT IN RiTa-Java
 
-  test("testGetStresses", function() {
+  test("testGetStresses", function () {
 
     var result = lex._getStresses("The emperor had no clothes on");
     var answer = "0 1/0/0 1 1 1 1";
@@ -940,7 +928,7 @@ var runtests = function() {
 
   //For RiTa.getSyllables() NOT IN RiTa-Java
 
-  test("testGetSyllables", function() {
+  test("testGetSyllables", function () {
 
     var result = lex._getSyllables("The emperor had no clothes on.");
     var answer = "dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n";
@@ -955,7 +943,7 @@ var runtests = function() {
     equal(result, answer);
   });
 
-  test("RiLexicon-lookups", function() {
+  test("RiLexicon-lookups", function () {
 
     ok(typeof lex.data != 'undefined');
 
@@ -968,7 +956,7 @@ var runtests = function() {
     ok(!lex.isAlliteration("cat", "dog"));
   });
 
-  test("RiLexicon-gets", function() {
+  test("RiLexicon-gets", function () {
 
     var word = "aberration";
     var output1 = lex._getSyllables(word);
@@ -988,7 +976,7 @@ var runtests = function() {
 
   // below modify the lexicon.data field ================================
 
-  test("testAddWord", function() {
+  test("testAddWord", function () {
 
     var result = lex.addWord("bananana", "b-ax-n ae1-n ax ax", "nn");
     ok(lex.containsWord("bananana"));
@@ -1012,7 +1000,7 @@ var runtests = function() {
     lex.keys = Object.keys(lex.data);
   }
 
-  test("testClear", function() {
+  test("testClear", function () {
 
     ok(lex.containsWord("banana"));
     removeWord("banana");
@@ -1031,7 +1019,7 @@ var runtests = function() {
     lex = RiLexicon(); // restore global
   });
 
-  test("testReload", function() {
+  test("testReload", function () {
 
     var originalSize = lex.size();
 
@@ -1039,7 +1027,7 @@ var runtests = function() {
     removeWord("are");
     ok(!lex.containsWord("are"));
     var removeOneWordSize = lex.size();
-    ok(lex.size()===originalSize-1);
+    ok(lex.size() === originalSize - 1);
 
     lex.reload();
     ok(lex.size() === originalSize);
@@ -1047,12 +1035,12 @@ var runtests = function() {
     ok(lex.containsWord("cat"));
     removeWord("cat");
     ok(!lex.containsWord("cat"));
-    ok(lex.size()===originalSize-1);
+    ok(lex.size() === originalSize - 1);
 
     ok(lex.containsWord("are"));
     removeWord("are");
     ok(!lex.containsWord("are"));
-    ok(lex.size()===originalSize-2);
+    ok(lex.size() === originalSize - 2);
 
     lex.reload();
     ok(lex.size() === originalSize);
@@ -1062,7 +1050,7 @@ var runtests = function() {
     lex = RiLexicon(); // restore global
   });
 
-  test("testLexicalData", function() {
+  test("testLexicalData", function () {
 
     var result = lex.lexicalData();
     ok(Object.keys(result).length > 1000);
