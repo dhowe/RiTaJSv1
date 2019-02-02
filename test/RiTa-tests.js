@@ -553,6 +553,26 @@ var runtests = function () {
       var expected = ["The", "boy", "screamed", ",", "\u2018", "Where", "is", "my", "apple", "?", "\u2019"];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
+      
+      var input = "dog, e.g. the cat.";
+      var expected = ["dog", ",", "e.g.", "the", "cat", "."];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+      
+      var input = "dog, i.e. the cat.";
+      var expected = ["dog", ",", "i.e.", "the", "cat", "."];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+      
+      var input = "What does e.g. mean? E.g. is used to introduce a few examples, not a complete list.";
+      var expected = ["What", "does", "e.g.", "mean", "?", "E.g.", "is", "used", "to", "introduce", "a", "few", "examples", ",", "not", "a", "complete", "list", "."];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
+      
+      var input = "What does i.e. mean? I.e. means in other words.";
+      var expected = ["What", "does", "i.e.", "mean", "?", "I.e.", "means", "in", "other", "words", "."];
+      var output = RiTa.tokenize(input);
+      deepEqual(output, expected);
     });
 
     test("testUntokenize", function () {
@@ -641,6 +661,27 @@ var runtests = function () {
       var input = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
+      
+      var expected = "dog, e.g. the cat.";
+      var input = ["dog", ",", "e.g.", "the", "cat", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+      
+      var expected = "dog, i.e. the cat.";
+      var input = ["dog", ",", "i.e.", "the", "cat", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+      
+      var expected = "What does e.g. mean? E.g. is used to introduce a few examples, not a complete list.";
+      var input = ["What", "does", "e.g.", "mean", "?", "E.g.", "is", "used", "to", "introduce", "a", "few", "examples", ",", "not", "a", "complete", "list", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+      
+      var expected = "What does i.e. mean? I.e. means in other words.";
+      var input = ["What", "does", "i.e.", "mean", "?", "I.e.", "means", "in", "other", "words", "."];
+      var output = RiTa.untokenize(input);
+      deepEqual(output, expected);
+      
     });
 
     test("testTokenizeAndBack", function () {
@@ -661,7 +702,11 @@ var runtests = function () {
         "Shouldn't he eat?",
         "It's not that I can't.",
         "We've found the cat.",
-        "We didn't find the cat."
+        "We didn't find the cat.",
+        "dog, e.g. the cat.",
+        "dog, i.e. the cat.",
+        "What does e.g. mean? E.g. is used to introduce a few examples, not a complete list.",
+        "What does i.e. mean? I.e. means in other words."
       ];
 
       for (var i = 0; i < testStrings.length; i++) {
