@@ -893,12 +893,13 @@ var runtests = function () {
     }
   });
 
+
   // Create the frog callback locally, but don't pass
-  // a closure into expand; should fail.
+  // a closure into expand; should FAIL to expand.
   test("testExec5", function () {
 
-    var frog = function () { return 'frog';};  
-      
+    var frog = function () { return 'frog'; };
+
     var newruleg2 = {
       '<start>': 'The <noun> chased the `frog()`.',
       '<noun>': 'dog | cat | mouse',
@@ -907,18 +908,19 @@ var runtests = function () {
     var rg = new RiGrammar(newruleg2);
     rg.execDisabled = false;
     ok(rg);
-
-    var res = rg.expand();
-    // console.log(res);
-    ok(res && res.indexOf("`frog()`") > -1);
+    RiTa.SILENT = true; // ignore max-iterations warning
+    var res = rg.expand(); // expand should fail
+    ok(res && res.endsWith(" chased the `frog()`."));
+    RiTa.SILENT = false;
   });
+
 
   // Create the frog callback locally, and pass
   // in a local closure; should succeed.
   test("testExec6", function () {
 
-    var frog = () => 'frog';  
-      
+    var frog = () => 'frog';
+
     var newruleg2 = {
       '<start>': 'The <noun> chased the `frog()`.',
       '<noun>': 'dog | cat | mouse',

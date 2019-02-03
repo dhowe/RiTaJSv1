@@ -357,6 +357,8 @@ var RiTa = {
     if (regex) return words.split(regex);
 
     words = trim(words);
+    words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_");
+    words = words.replace(/([Ii])[.]([Ee])[.]/g, "_$1$2_");
 
     words = words.replace(/([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ");
     words = words.replace(/\\.\\.\\./g, " ... ");
@@ -388,6 +390,9 @@ var RiTa = {
     words = words.replace(/ ([A-Z]) \\./g, " $1. ");
     words = words.replace(/\\s+/g, SP);
     words = words.replace(/^\\s+/g, E);
+    
+    words = words.replace(/_([Ee])([Gg])_/g, "$1.$2.");
+    words = words.replace(/_([Ii])([Ee])_/g, "$1.$2.");
 
     return trim(words).split(/\s+/);
   },
