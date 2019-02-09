@@ -27515,7 +27515,7 @@ function _dict() { return {
 'egotistical':['iy g-ah t-ih1 s-t-ih k-ah-l','jj'],
 'egregious':['ih g-r-iy1 jh-ah-s','jj'],
 'egregiously':['ih g-r-iy1 jh-ah-s l-iy','rb'],
-'eight':['ey1- t','cd'],
+'eight':['ey1-t','cd'],
 'eighteenth':['ey t-iy1-n-th','jj'],
 'eighth':['ey1-t-th','jj nn'],
 'eighty':['ey1 t-iy','nn'],

@@ -598,6 +598,9 @@ var runtests = function () {
     ok(lex.isRhyme("yo", "bro"));
     ok(!lex.isRhyme("swag", "grab"));
     ok(!lex.isRhyme("", ""));
+
+    ok(lex.isRhyme("weight", "eight"));
+    ok(lex.isRhyme("eight", "weight"));
   });
 
   test("testIsRhyme", function () {
