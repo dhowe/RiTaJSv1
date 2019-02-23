@@ -154,8 +154,6 @@ function tagForWordNet(words) {
   return EA;
 }
 
-'use strict';
-
 var FEATURES = [ 'tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text' ];
 
 var RiTa = {
@@ -296,7 +294,7 @@ var RiTa = {
   },
 
   kwic: function(text, word, options) {
-    wordCount = (options && options.wordCount) || 4;
+    var wordCount = (options && options.wordCount) || 4;
     return Concorder(text, options).kwic(word, wordCount);
   },
 
@@ -390,7 +388,7 @@ var RiTa = {
     words = words.replace(/ ([A-Z]) \\./g, " $1. ");
     words = words.replace(/\\s+/g, SP);
     words = words.replace(/^\\s+/g, E);
-    
+
     words = words.replace(/_([Ee])([Gg])_/g, "$1.$2.");
     words = words.replace(/_([Ii])([Ee])_/g, "$1.$2.");
 
@@ -699,7 +697,7 @@ var RiTa = {
       RiTaEvent({
         name: 'RiTaLoader',
         urls: is(url, S) ? [ url ] : url
-      }, DATA_LOADED, data)._fire();
+      }, RiTa.DATA_LOADED, data)._fire();
   },
 
   isQuestion: function(sentence) {
@@ -916,6 +914,8 @@ var RiTa = {
 for (var i = 0; i < FEATURES.length; i++) {
   RiTa[FEATURES[i].toUpperCase()] = FEATURES[i];
 }
+
+/* global _dict, LetterToSound, YAML */
 
 var RiLexicon = makeClass();
 
@@ -1550,7 +1550,6 @@ RiLexicon.prototype = {
 
     if (!strOk(word)) return E; // return null?
 
-
     var raw = this._lastStressedPhoneToEnd(word, useLTS);
     if (!strOk(raw)) return E; // return null?
 
@@ -1566,7 +1565,7 @@ RiLexicon.prototype = {
         break;
       }
     }
-  word + " " + raw + " last:" + lastSyllable + " idx=" + idx + " result:" + lastSyllable.substring(idx)
+
    return lastSyllable.substring(idx);
   },
 
@@ -20659,10 +20658,9 @@ if (window) { // for browser
   window['RiWordNet'] = RiWordNet;
   window['RiLexicon'] = RiLexicon;
   window['RiTaEvent'] = RiTaEvent;
+}
 
-  var rlfuns = okeys();
-
-} else if (typeof module !== 'undefined') { // for node
+if (typeof module !== 'undefined') { // for node, react, etc
 
   module.exports['RiTa'] = RiTa;
   module.exports['RiString'] = RiString;

@@ -21,10 +21,9 @@ if (window) { // for browser
   window['RiWordNet'] = RiWordNet;
   window['RiLexicon'] = RiLexicon;
   window['RiTaEvent'] = RiTaEvent;
+}
 
-  var rlfuns = okeys();
-
-} else if (typeof module !== 'undefined') { // for node
+if (typeof module !== 'undefined') { // for node, react, etc
 
   module.exports['RiTa'] = RiTa;
   module.exports['RiString'] = RiString;
