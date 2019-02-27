@@ -935,6 +935,39 @@ var runtests = function () {
     ok(res && res.match(/frog\./g));
   });
 
+  // Test a rule with a dynamic weighting
+  test("testExecDynamicWeighting", function () {
+
+    var weight = 1;
+    var noweight = 0;
+
+    var newruleg2 = {
+      '<start>': 'cat [weight] | dog [noweight]'
+    };
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+    var res = rg.expand(function (str) { return eval(str); }); 
+    ok(res && res.indexOf("cat") != -1);
+  });
+
+  // Test a rule with a dynamic weighting, no value
+  test("testExecDynamicWeighting2", function () {
+
+    var weight = 1;
+
+    var newruleg2 = {
+      '<start>': 'cat [weight] | dog [unknownWeight]'
+    };
+
+    var rg = new RiGrammar(newruleg2);
+    rg.execDisabled = false;
+    ok(rg);
+    var res = rg.expand(function (str) { return eval(str); }); 
+    ok(res && res.indexOf("cat") != -1);
+  });
+
   test("testExecArgs", function () {
 
     var rl = RiLexicon();
