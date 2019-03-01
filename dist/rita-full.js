@@ -2890,10 +2890,11 @@ RiGrammar.EXEC_PATT = /([^`]*)(`[^`]*`)(.*)/;
 
 RiGrammar.prototype = {
 
-  init: function(grammar) {
+  init: function(grammar, rng) {
 
     this._rules = {};
     this.execDisabled = false;
+    this.rng = rng ? rng : Math.random;
 
     if (grammar) {
 
@@ -3043,9 +3044,9 @@ RiGrammar.prototype = {
 
   doRule: function(pre, context) {
 
-    var getStochasticRule = function(temp) { // map
+    var getStochasticRule = function(temp, rng) { // map
 
-      var name, dbug = false, p = Math.random(), result, total = 0;
+      var name, dbug = false, p = rng(), result, total = 0;
       if (dbug) log("getStochasticRule(" + temp + ")");
       var rc = [];
       for (name in temp) {
@@ -3098,7 +3099,7 @@ RiGrammar.prototype = {
 
     if (!cnt) return null;
 
-    return (cnt == 1) ? name : getStochasticRule(rules);
+    return (cnt == 1) ? name : getStochasticRule(rules, this.rng);
   },
 
 

@@ -968,6 +968,21 @@ var runtests = function () {
     ok(res && res.indexOf("cat") != -1);
   });
 
+  // Test specifying a random number generator
+  test("testRNG", function () {
+    var newrule = {
+      '<start>': 'cat | dog '
+    };
+    var rg = new RiGrammar(newrule, function () { return 0.25; });
+    ok(rg);
+    var res = rg.expand(function (str) { return eval(str); }); 
+    ok(res && res.indexOf("cat") != -1);
+    rg = new RiGrammar(newrule, function () { return 0.75; });
+    ok(rg);
+    res = rg.expand(function (str) { return eval(str); }); 
+    ok(res && res.indexOf("dog") != -1);
+  });
+
   test("testExecArgs", function () {
 
     var rl = RiLexicon();
