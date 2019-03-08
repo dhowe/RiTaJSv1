@@ -3270,11 +3270,11 @@ RiGrammar.prototype = {
         // Try first in the local context if
         // it exists, so that the local context
         // can override a global function
-        if (context) { // create sandbox for context args
-            // res = new Scope(context).eval(exec);
+        if (context) { 
             // context is a closure, so attempt to evaluate
             // the exec in that closure
             res = context(exec);
+	    // Fix to allow results like 0, '', etc.
             return res ? res + '' : null;
         } else {
             throw "No context";
@@ -3282,7 +3282,7 @@ RiGrammar.prototype = {
       } catch (e) {
           try {
               res = eval(exec); // try in global context
-              return res ? res + E : null;
+              return (res !== null) ? res + E : null;
           } catch (e) {
               // Failed completely; will fall through
               // and return input
