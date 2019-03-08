@@ -3274,8 +3274,8 @@ RiGrammar.prototype = {
             // context is a closure, so attempt to evaluate
             // the exec in that closure
             res = context(exec);
-	    // Fix to allow results like 0, '', etc.
-            return res ? res + '' : null;
+	    // If not a null result, force to a string.
+            return (res !== null) ? res + E : null;
         } else {
             throw "No context";
         };

@@ -919,7 +919,7 @@ var runtests = function () {
   // in a local closure; should succeed.
   test("testExec6", function () {
 
-    var frog = function () { return 'frog'; };
+    var frog = () => 'frog';
 
     var newruleg2 = {
       '<start>': 'The <noun> chased the `frog()`.',
@@ -935,30 +935,10 @@ var runtests = function () {
     ok(res && res.match(/frog\./g));
   });
 
-  // Test that an exec returning 0 is not treated as null
-  test("testExec7", function () {
-
-    var zero = function () { return 0; };
-
-    var newruleg2 = {
-      '<start>': '`zero()`',
-    };
-
-    var rg = new RiGrammar(newruleg2);
-    rg.execDisabled = false;
-    ok(rg);
-
-    var res = rg.expand(function (str) { return eval(str); });
-    // console.log(res);
-    ok(res && res == '0');
-  });
-
   // Test a rule with a dynamic weighting
   test("testExecDynamicWeighting", function () {
 
-    var weight = 1;
-    var noweight = 0;
-
+    var weight = 1, noweight = 0;
     var newruleg2 = {
       '<start>': 'cat [weight] | dog [noweight]'
     };
