@@ -131,6 +131,41 @@ var runtests = function () {
       inBrowser && ok(mode == RiTa.JS);
     });
 
+    test("testRandomOrderingWithSeed", function () {
+
+      var seed = RiTa.random(9999999);
+      RiTa.randomSeed(seed);
+      var result = RiTa.randomOrdering(50);
+      equal(result.length, 50);
+      RiTa.randomSeed(seed);
+      var result2 = RiTa.randomOrdering(50);
+      equal(result2.length, 50);
+
+      deepEqual(result, result2);
+    });
+
+
+    test("testRandomWordWithSeed", function () {
+
+      var seed = RiTa.random(9999999);
+      RiTa.randomSeed(seed);
+      var result = RiTa.randomWord();
+      RiTa.randomSeed(seed);
+      var result2 = RiTa.randomWord();
+
+      equal(result, result2);
+    });
+
+    test("testRandomWithSeed", function () {
+
+      var seed = Math.round(Math.random() * 9999999);
+      RiTa.randomSeed(seed);
+      var result = RiTa.random(9999999);
+      RiTa.randomSeed(seed);
+      var result2 = RiTa.random(9999999);
+      equal(result, result2);
+    });
+
     test("testIsAbbreviation", function () {
 
       ok(RiTa.isAbbreviation("Dr."));
@@ -553,22 +588,22 @@ var runtests = function () {
       var expected = ["The", "boy", "screamed", ",", "\u2018", "Where", "is", "my", "apple", "?", "\u2019"];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
-      
+
       var input = "dog, e.g. the cat.";
       var expected = ["dog", ",", "e.g.", "the", "cat", "."];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
-      
+
       var input = "dog, i.e. the cat.";
       var expected = ["dog", ",", "i.e.", "the", "cat", "."];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
-      
+
       var input = "What does e.g. mean? E.g. is used to introduce a few examples, not a complete list.";
       var expected = ["What", "does", "e.g.", "mean", "?", "E.g.", "is", "used", "to", "introduce", "a", "few", "examples", ",", "not", "a", "complete", "list", "."];
       var output = RiTa.tokenize(input);
       deepEqual(output, expected);
-      
+
       var input = "What does i.e. mean? I.e. means in other words.";
       var expected = ["What", "does", "i.e.", "mean", "?", "I.e.", "means", "in", "other", "words", "."];
       var output = RiTa.tokenize(input);
@@ -661,27 +696,27 @@ var runtests = function () {
       var input = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       var expected = "dog, e.g. the cat.";
       var input = ["dog", ",", "e.g.", "the", "cat", "."];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       var expected = "dog, i.e. the cat.";
       var input = ["dog", ",", "i.e.", "the", "cat", "."];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       var expected = "What does e.g. mean? E.g. is used to introduce a few examples, not a complete list.";
       var input = ["What", "does", "e.g.", "mean", "?", "E.g.", "is", "used", "to", "introduce", "a", "few", "examples", ",", "not", "a", "complete", "list", "."];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
       var expected = "What does i.e. mean? I.e. means in other words.";
       var input = ["What", "does", "i.e.", "mean", "?", "I.e.", "means", "in", "other", "words", "."];
       var output = RiTa.untokenize(input);
       deepEqual(output, expected);
-      
+
     });
 
     test("testTokenizeAndBack", function () {

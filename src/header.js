@@ -110,7 +110,7 @@ function shuffle(oldArray) { // shuffle array
     len = newArray.length,
     i = len;
   while (i--) {
-    var p = parseInt(Math.random() * len),
+    var p = parseInt(RiTa.random() * len),
       t = newArray[i];
     newArray[i] = newArray[p];
     newArray[p] = t;

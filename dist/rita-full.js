@@ -110,7 +110,7 @@ function shuffle(oldArray) { // shuffle array
     len = newArray.length,
     i = len;
   while (i--) {
-    var p = parseInt(Math.random() * len),
+    var p = parseInt(RiTa.random() * len),
       t = newArray[i];
     newArray[i] = newArray[p];
     newArray[p] = t;
@@ -238,17 +238,30 @@ var RiTa = {
 
   stemmers: {},
 
+  _randSource: null,
+
   // Start functions =================================
 
+  _randomSource: function() {
+    if (!RiTa._randSource) {
+      RiTa._randSource = new SeededRandom();
+    }
+    return RiTa._randSource;
+  },
+
   random: function() {
-    var currentRandom = Math.random();
+    var currentRandom = RiTa._randomSource().random();
     if (!arguments.length) return currentRandom;
     return (arguments.length === 1) ? currentRandom * arguments[0] :
       currentRandom * (arguments[1] - arguments[0]) + arguments[0];
   },
 
+  randomSeed: function(theSeed) {
+    RiTa._randomSource().seed(theSeed);
+  },
+
   randomItem: function(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+    return arr[Math.floor(RiTa.random() * arr.length)];
   },
 
   distance: function(x1, y1, x2, y2) {
@@ -819,7 +832,7 @@ var RiTa = {
     if (num) {
       for (var z = 0; z < num; z++) o.push(z);
       // Array shuffle, from http://jsfromhell.com/array/shuffle
-      for (var j, x, i = o.length; i; j = parseInt(Math.random() * i),
+      for (var j, x, i = o.length; i; j = parseInt(RiTa.random() * i),
         x = o[--i], o[i] = o[j], o[j] = x) { /* no-op */ }
     }
     return o;
@@ -1597,7 +1610,7 @@ RiLexicon.prototype = {
   randomWord: function() { // takes nothing, pos, syllableCount, or both
 
     var i, j, rdata, numSyls, pluralize = false,
-      ran = Math.floor(Math.random() * this.size()),
+      ran = Math.floor(RiTa.random() * this.size()),
       found = false, a = arguments, words = this.keys;
 
     var  isNNWithoutNNS = function(w, pos) {
@@ -2138,7 +2151,7 @@ RiMarkov.prototype = {
     while (true) {
 
       pTotal = 0;
-      selector = Math.random();
+      selector = RiTa.random();
       for (var i = 0, j = nodes.length; i < j; i++) {
 
         pTotal += nodes[i].probability();
@@ -2431,6 +2444,60 @@ RiString._syllabify = function(input) { // adapted from FreeTTS
   }
 
   return stringify(syllables);
+};
+
+var SeededRandom = makeClass();
+
+SeededRandom.prototype = { // adapted from https://github.com/bmurray7/mersenne-twister-examples/blob/master/javascript-mersenne-twister.js
+
+  init: function() {
+    this.N = 624;
+    this.M = 397;
+    this.MATRIX_A = 0x9908b0df;
+    this.UPPER_MASK = 0x80000000;
+    this.LOWER_MASK = 0x7fffffff;
+    this.mt = new Array(this.N);
+    this.mti = this.N + 1;
+    this.seed(new Date().getTime());
+  },
+
+  seed: function(s) {
+    this.mt[0] = s >>> 0;
+    for (this.mti=1; this.mti<this.N; this.mti++) {
+      var s = this.mt[this.mti-1] ^ (this.mt[this.mti-1] >>> 30);
+      this.mt[this.mti] = (((((s & 0xffff0000) >>> 16) * 1812433253) << 16)
+        + (s & 0x0000ffff) * 1812433253)+ this.mti;
+      this.mt[this.mti] >>>= 0;
+    }
+  },
+
+  randInt: function() {
+    var y, kk, mag01 = new Array(0x0, this.MATRIX_A);
+    if (this.mti >= this.N) {
+      if (this.mti == this.N+1) this.seed(5489);
+      for (kk=0;kk<this.N-this.M;kk++) {
+        y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk+1]&this.LOWER_MASK);
+        this.mt[kk] = this.mt[kk+this.M] ^ (y >>> 1) ^ mag01[y & 0x1];
+      }
+      for (;kk<this.N-1;kk++) {
+        y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk+1]&this.LOWER_MASK);
+        this.mt[kk] = this.mt[kk+(this.M-this.N)] ^ (y >>> 1) ^ mag01[y & 0x1];
+      }
+      y = (this.mt[this.N-1]&this.UPPER_MASK)|(this.mt[0]&this.LOWER_MASK);
+      this.mt[this.N-1] = this.mt[this.M-1] ^ (y >>> 1) ^ mag01[y & 0x1];
+      this.mti = 0;
+    }
+    y = this.mt[this.mti++];
+    y ^= (y >>> 11);
+    y ^= (y << 7) & 0x9d2c5680;
+    y ^= (y << 15) & 0xefc60000;
+    y ^= (y >>> 18);
+    return y >>> 0;
+  },
+
+  random: function() {
+    return this.randInt()*(1.0/4294967296.0);
+  }
 };
 
 function initFeatureMap(rs) { // for RiString
@@ -3045,7 +3112,7 @@ RiGrammar.prototype = {
 
     var getStochasticRule = function(temp) { // map
 
-      var name, dbug = false, p = Math.random(), result, total = 0;
+      var name, dbug = false, p = RiTa.random(), result, total = 0;
       if (dbug) log("getStochasticRule(" + temp + ")");
       for (name in temp) {
         total += parseFloat(temp[name]);
@@ -3368,7 +3435,7 @@ TextNode.prototype = {
   _select: function(arr, probabalisticSelect) {
     if (!arr) throw TypeError("bad arg to '_select()'");
     probabalisticSelect = probabalisticSelect || false;
-    return (probabalisticSelect ? this._probabalisticSelect(arr) : arr[Math.floor((Math.random() * arr.length))]);
+    return (probabalisticSelect ? this._probabalisticSelect(arr) : arr[Math.floor((RiTa.random() * arr.length))]);
   },
 
   _probabalisticSelect: function(arr) {
@@ -3381,7 +3448,7 @@ TextNode.prototype = {
 
     // select from multiple options based on frequency
     var pTotal = 0,
-      selector = Math.random();
+      selector = RiTa.random();
     for (var i = 0; i < arr.length; i++) {
 
       pTotal += arr[i].probability();
@@ -5535,7 +5602,7 @@ var ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/,
   ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
 
 var NULL_PLURALS = RE( // these don't change for plural/singular
-  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|moose|" + "burmese|chinese|colossus|congolese|discus|electrolysis|emphasis|expertise|finess|flu|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|finnan|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|macaroni|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|potpourri|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spaghetti|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|turf|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "acoustics|aesthetics|aquatics|basics|ceramics|classics|cosmetics|dialectics|dynamics|ethics|harmonics|heroics|mechanics|metrics|optics|physics|polemics|pyrotechnics|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
+  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|moose|" + "burmese|chinese|colossus|congolese|discus|electrolysis|emphasis|expertise|finess|flu|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|macaroni|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|potpourri|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spaghetti|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|turf|dibs|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "acoustics|aesthetics|aquatics|basics|ceramics|classics|cosmetics|dialectics|dynamics|ethics|harmonics|heroics|mechanics|metrics|optics|physics|polemics|pyrotechnics|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
 
 
 // SINGULAR_RULES are extra singular rules on top of Pling stem
