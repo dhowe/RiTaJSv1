@@ -2946,7 +2946,7 @@ RiString.prototype = {
 var RiGrammar = makeClass();
 
 var OR_PATT = /\s*\|\s*/, STRIP_TICKS = /`([^`]*)`/g,
-  PROB_PATT = /(.*[^\s])\s*\[([0-9.]+)\](.*)/;
+    PROB_PATT = /(.*[^\s])\s*\[(.+)\](.*)/;
 
 RiGrammar.START_RULE = "<start>";
 // Do not require a function call in the exec pattern;
@@ -2957,10 +2957,11 @@ RiGrammar.EXEC_PATT = /([^`]*)(`[^`]*`)(.*)/;
 
 RiGrammar.prototype = {
 
-  init: function(grammar) {
+  init: function(grammar, rng) {
 
     this._rules = {};
     this.execDisabled = false;
+    this.rng = rng ? rng : RiTa.random;
 
     if (grammar) {
 
@@ -3108,20 +3109,41 @@ RiGrammar.prototype = {
 
   },
 
-  doRule: function(pre) {
+  doRule: function(pre, context) {
 
-    var getStochasticRule = function(temp) { // map
+    var getStochasticRule = function(temp, rng) { // map
 
       var name, dbug = false, p = RiTa.random(), result, total = 0;
       if (dbug) log("getStochasticRule(" + temp + ")");
+      var rc = [];
       for (name in temp) {
-        total += parseFloat(temp[name]);
+    	  let count = parseFloat(temp[name]);
+    	  if (isNaN(count)) {
+    	      // temp[name] is to be evaluated
+    	      try {
+    		  count = eval(temp[name]); // try in global context
+    	      } catch (e) {
+    	      };
+    	      // Maybe global context didn't work?
+    	      if (isNaN(count) && context) {
+    		  try {
+    		      count = context(temp[name]);
+    		  } catch (e) { /* fall through */ }
+    	      };
+    	      // Maybe specific context didn't work?
+    	      if (isNaN(count)) {
+    		  log('Could not determine a value for rule dynamic weight: "'+temp[name]+'"');
+    		  count = 0;
+    	      };
+    	  };
+    	  rc[name] = count;
+    	  total += count;
       }
 
       if (dbug) log("total=" + total + "p=" + p);
       for (name in temp) {
         if (dbug) log("  name=" + name);
-        var amt = temp[name] / total;
+        var amt = rc[name] / total;
         if (dbug) log("amt=" + amt);
         if (p < amt) {
           result = name;
@@ -3144,9 +3166,8 @@ RiGrammar.prototype = {
 
     if (!cnt) return null;
 
-    return (cnt == 1) ? name : getStochasticRule(rules);
+    return (cnt == 1) ? name : getStochasticRule(rules, this.rng);
   },
-
 
   getGrammar: function() {
 
@@ -3220,7 +3241,7 @@ RiGrammar.prototype = {
 
   expandFrom: function(rule, context) {
 
-    var expandRule = function(g, prod) {
+    var expandRule = function(g, prod, context) {
 
       var entry, idx, pre, expanded, post, dbug = 0;
       if (dbug) log("expandRule(" + prod + ")");
@@ -3235,7 +3256,7 @@ RiGrammar.prototype = {
 
           if (dbug) log('matched: '+name);
           pre = prod.substring(0, idx) || E;
-          expanded = g.doRule(name) || E;
+          expanded = g.doRule(name, context) || E;
           post = prod.substring(idx + name.length) || E;
 
           if (dbug) log("  pre=" + pre + "  expanded=" + expanded +
@@ -3300,7 +3321,7 @@ RiGrammar.prototype = {
 
     while (++tries < maxIterations) {
 
-      var next = expandRule(this, rule);
+      var next = expandRule(this, rule, context);
       if (next && next.length) { // matched a rule
         rule = next;
         continue;
