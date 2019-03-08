@@ -1691,8 +1691,8 @@ RiMarkov.prototype = {
 
     // uh-oh, we failed
     if (tries >= maxTries)
-      err(BN+"RiMarkov failed to complete after " + tries + " attempts." +
-      "You may need to add more text to your model..."+BN);
+      err("\nRiMarkov failed to complete after " + tries + " attempts." +
+      "You may need to add more text to your model...\n");
 
     return tokens;
 
@@ -2024,9 +2024,9 @@ RiMarkov.prototype = {
 
   _onGenerationIncomplete: function(tries, successes) {
 
-    warn(BN+'RiMarkov failed to complete after ' + tries +
+    warn('\nRiMarkov failed to complete after ' + tries +
       ' tries and ' + successes + ' successful generations.' +
-      ' You may need to add more text to the model...'+BN);
+      ' You may need to add more text to the model...\n');
   },
 
   // Loads a sentence[] into the model; each element must be a single sentence
@@ -2840,23 +2840,16 @@ RiGrammar.prototype = {
       if (typeof YAML != 'undefined') { // found a yaml-parser, so try it first
 
         try {
-          //console.log('trying YAML');
           grammar = YAML.parse(grammar);
-
         } catch (e) {
-
           warn('YAML parsing failed, trying JSON');
         }
       }
 
       if (!is(grammar, O)) { // we failed with our yaml-parser, so try JSON
         try {
-
-          //console.log('trying JSON');
           grammar = JSON.parse(grammar);
-
         } catch (e) {
-
           var ex = e;
         }
       }
@@ -2878,7 +2871,6 @@ RiGrammar.prototype = {
           verb + ' yamljs (https://github.com/jeremyfa/yaml.js), e.g. ' +
           syntax, grammar);
       }
-
       return;
     }
 
@@ -2955,33 +2947,32 @@ RiGrammar.prototype = {
 
   doRule: function(pre, context) {
 
-    var getStochasticRule = function(temp, rng) { // map
+    var getStochasticRule = function (temp, rng) { // map
 
-      var name, dbug = false, p = RiTa.random(), result, total = 0;
+      var name, dbug = false, p = rng(), result, total = 0;
       if (dbug) log("getStochasticRule(" + temp + ")");
       var rc = [];
       for (name in temp) {
-    	  let count = parseFloat(temp[name]);
-    	  if (isNaN(count)) {
-    	      // temp[name] is to be evaluated
-    	      try {
-    		  count = eval(temp[name]); // try in global context
-    	      } catch (e) {
-    	      };
-    	      // Maybe global context didn't work?
-    	      if (isNaN(count) && context) {
-    		  try {
-    		      count = context(temp[name]);
-    		  } catch (e) { /* fall through */ }
-    	      };
-    	      // Maybe specific context didn't work?
-    	      if (isNaN(count)) {
-    		  log('Could not determine a value for rule dynamic weight: "'+temp[name]+'"');
-    		  count = 0;
-    	      };
-    	  };
-    	  rc[name] = count;
-    	  total += count;
+        let count = parseFloat(temp[name]);
+        if (isNaN(count)) {
+          // temp[name] is to be evaluated
+          try {
+            count = eval(temp[name]); // try in global context
+          } catch (e) {};
+          // Maybe global context didn't work?
+          if (isNaN(count) && context) {
+            try {
+              count = context(temp[name]);
+            } catch (e) { /* fall through */ }
+          };
+          // Maybe specific context didn't work?
+          if (isNaN(count)) {
+            log('Could not determine a value for dynamic weighting rule: "' + temp[name] + '"');
+            count = 0;
+          };
+        };
+        rc[name] = count;
+        total += count;
       }
 
       if (dbug) log("total=" + total + "p=" + p);
@@ -3155,11 +3146,13 @@ RiGrammar.prototype = {
 
     // -----------------------------------------------------
 
-    if (!okeys(this._rules).length)
+    if (!okeys(this._rules).length) {
       err("(RiGrammar) No grammar rules found!");
+    }
 
-    if (!this.hasRule(rule))
-      err("Rule not found: " + rule + BN + "Rules:" + BN + JSON.stringify(this._rules));
+    if (!this.hasRule(rule)) {
+      err("Rule not found: " + rule+ "\nRules:\n" + JSON.stringify(this._rules));
+    }
 
     var parts, theCall, callResult, tries = 0, maxIterations = 1000;
 
