@@ -340,7 +340,6 @@ var runtests = function () {
     ok(lex.isNoun("walk"));
     ok(lex.isNoun("walker"));
     ok(lex.isNoun("dance"));
-    ok(lex.isNoun("dancing"));
     ok(lex.isNoun("dancer"));
     ok(lex.isNoun("cats"));
     ok(lex.isNoun("boxes"));

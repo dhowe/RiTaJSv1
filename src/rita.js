@@ -2803,6 +2803,7 @@ RiGrammar.prototype = {
 
   init: function(grammar, rng) {
 
+    this.buffer = "";
     this._rules = {};
     this.execDisabled = false;
     this.rng = rng ? rng : RiTa.random;
@@ -3062,9 +3063,9 @@ RiGrammar.prototype = {
     // TODO: tmp, awful hack, write this correctly
     var tries, maxTries = 1000;
     for (tries = 0; tries < maxTries; tries++) {
-      var s = gr.expand();
-      if (s.indexOf(literal) > -1)
-        return s;
+      buffer = gr.expand();
+      if (buffer.indexOf(literal) > -1)
+        return buffer;
     }
     err("RiGrammar failed to complete after " + tries + " tries" + BN);
   },
@@ -3096,9 +3097,11 @@ RiGrammar.prototype = {
 
           if (dbug) log("  pre=" + pre + "  expanded=" + expanded +
             "  post=" + post + "  result=" + pre + expanded + post);
+
           return pre + expanded + post;
         }
       }
+
       return null; // no rules matched
     }
 
@@ -3114,11 +3117,12 @@ RiGrammar.prototype = {
         // Try first in the local context if
         // it exists, so that the local context
         // can override a global function
-        if (context) { 
+        if (context) {
             // context is a closure, so attempt to evaluate
             // the exec in that closure
             res = context(exec);
-	    // If not a null result, force to a string.
+
+	          // If not a null result, force to a string.
             return (res !== null) ? res + E : null;
         } else {
             throw "No context";
@@ -3144,7 +3148,7 @@ RiGrammar.prototype = {
       return count;
     }
 
-    // -----------------------------------------------------
+    // ------------------------ impl -----------------------------
 
     if (!okeys(this._rules).length) {
       err("(RiGrammar) No grammar rules found!");
@@ -3156,18 +3160,20 @@ RiGrammar.prototype = {
 
     var parts, theCall, callResult, tries = 0, maxIterations = 1000;
 
+    buffer = rule;
+
     while (++tries < maxIterations) {
 
-      var next = expandRule(this, rule, context);
+      var next = expandRule(this, buffer, context);
       if (next && next.length) { // matched a rule
-        rule = next;
+        buffer = next;
         continue;
       }
 
       if (this.execDisabled) break; // return
 
       // finished rules, check for back-ticked exec calls
-      parts = RiGrammar.EXEC_PATT.exec(rule);
+      parts = RiGrammar.EXEC_PATT.exec(buffer);
 
       if (!parts || !parts.length) break; // return, no evals
 
@@ -3188,15 +3194,15 @@ RiGrammar.prototype = {
           break; // return
         }
 
-        rule = parts[1] + callResult;
-        if (parts.length > 3) rule += parts[3];
+        buffer = parts[1] + callResult;
+        if (parts.length > 3) buffer += parts[3];
       }
     }
 
     if (tries >= maxIterations)
       log("[WARN] max number of iterations reached: " + maxIterations);
 
-    return RiTa.unescapeHTML(rule);
+    return RiTa.unescapeHTML(buffer);
   }
 
 }; // end RiGrammar
