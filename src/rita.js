@@ -2954,7 +2954,7 @@ RiGrammar.prototype = {
       if (dbug) log("getStochasticRule(" + temp + ")");
       var rc = [];
       for (name in temp) {
-        let count = parseFloat(temp[name]);
+        var count = parseFloat(temp[name]);
         if (isNaN(count)) {
           // temp[name] is to be evaluated
           try {
