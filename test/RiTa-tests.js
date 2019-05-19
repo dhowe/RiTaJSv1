@@ -1697,11 +1697,6 @@ var runtests = function () {
         form: RiTa.GERUND,
       };
       equal(RiTa.conjugate("be", args), "being");
-      return;
-      // var args = {
-      //   form: RiTa.PA,
-      // };
-      // equal(RiTa.conjugate("be", args), "being");
 
       var args = {
         tense: RiTa.PRESENT_TENSE,
