@@ -3566,7 +3566,7 @@ Conjugator.prototype = {
 
   checkRules: function(ruleSet, theVerb) {
 
-    var res, name = ruleSet.name, dbug = 1,
+    var res, name = ruleSet.name, dbug = 0,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
 

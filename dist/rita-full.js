@@ -3722,7 +3722,7 @@ Conjugator.prototype = {
 
   checkRules: function(ruleSet, theVerb) {
 
-    var res, name = ruleSet.name, dbug = 1,
+    var res, name = ruleSet.name, dbug = 0,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
 
@@ -46225,8 +46225,8 @@ function _dict() { return {
 'unturned':['ah-n t-er1-n-d','jj'],
 'unusable':['ah-n y-uw1 z-ah b-ah-l','jj'],
 'unused':['ah-n y-uw1-z-d','jj'],
-'unusual':['ah n-y-uw1 zh-ah w-ah-l','jj'],
-'unusually':['ah n-y-uw1 zh-ah-w ah l-iy','rb'],
+'unusual':['ah n-y-uw1 zh-uw ah-l','jj'],
+'unusually':['ah n-y-uw1 zh-uw ah-l-iy','rb'],
 'unveil':['ah-n v-ey1-l','vb'],
 'unveiled':['ah-n v-ey1-l-d','vbd jj vbn'],
 'unveiling':['ah-n v-ey1 l-ih-ng','vbg'],
