@@ -3690,7 +3690,6 @@ Conjugator.prototype = {
 
     // Now inflect frontVG (if it exists) and push it on restVG
     if (frontVG) {
-
       if (this.form === RiTa.GERUND) { // gerund - use ING form
 
         var pp = this.getPresentParticiple(frontVG);
@@ -3723,7 +3722,7 @@ Conjugator.prototype = {
 
   checkRules: function(ruleSet, theVerb) {
 
-    var res, name = ruleSet.name,
+    var res, name = ruleSet.name, dbug = 1,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
 
@@ -3733,26 +3732,26 @@ Conjugator.prototype = {
 
     for (var i = 0; i < rules.length; i++) {
 
-      //log("checkRules2("+name+").fire("+i+")="+rules[i].regex);
+      dbug && console.log("checkRules("+name+").fire("+i+")="+rules[i].regex);
       if (rules[i].applies(theVerb)) {
 
         var got = rules[i].fire(theVerb);
 
-        //log("HIT("+name+").fire("+i+")="+rules[i].regex+"_returns: "+got);
+        dbug && console.log("HIT("+name+").fire("+i+")="+rules[i].regex+"_returns: "+got);
         return got;
       }
     }
-    //log("NO HIT!");
+    dbug && console.log("NO HIT!");
 
     if (ruleSet.doubling && inArray(VERB_CONS_DOUBLING, theVerb)) {
 
-      //log("doDoubling!");
+      dbug && console.log("doDoubling!");
       theVerb = this.doubleFinalConsonant(theVerb);
     }
 
     res = defRule.fire(theVerb);
 
-    //log("checkRules("+name+").returns: "+res);
+    dbug && console.log("checkRules("+name+").returns: "+res);
 
     return res;
   },
@@ -3826,7 +3825,7 @@ Conjugator.prototype = {
   },
 
   getPresentParticiple: function(theVerb) {
-
+    if (theVerb && theVerb === 'be') return 'being';
     return strOk(theVerb) ? this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb) : E;
   },
 
@@ -20044,11 +20043,11 @@ function _dict() { return {
 'activity':['ae-k t-ih1 v-ah t-iy','nn'],
 'actor':['ae1-k t-er','nn'],
 'actress':['ae1-k t-r-ah-s','nn'],
-'actual':['ae1-k ch-ah w-ah-l','jj'],
-'actuality':['ae-k ch-ah-w ae1 l-ah t-iy','nn'],
-'actually':['ae1-k ch-ah-w ah l-iy','rb'],
-'actuarial':['ae-k ch-ah-w eh1 r-iy ah-l','jj'],
-'actuary':['ae1-k ch-ah-w eh r-iy','nn'],
+'actual':['ae1-k ch-uw ah-l','jj'],
+'actuality':['ae-k ch-uw ae1 l-ah t-iy','nn'],
+'actually':['ae1-k ch-uw ah l-iy','rb'],
+'actuarial':['ae-k ch-uw eh1 r-iy ah-l','jj'],
+'actuary':['ae1-k ch-uw eh r-iy','nn'],
 'acumen':['ah k-y-uw1 m-ah-n','nn'],
 'acupuncture':['ae1 k-y-uw p-ah-ng-k ch-er','nn'],
 'acute':['ah k-y-uw1-t','jj nn'],
@@ -23103,7 +23102,7 @@ function _dict() { return {
 'capitalized':['k-ae1 p-ih t-ah l-ay-z-d','vbn jj vbd'],
 'capitalizes':['k-ae1 p-ah t-ah l-ay z-ih-z','vbz'],
 'capitalizing':['k-ae1 p-ih t-ah l-ay z-ih-ng','vbg'],
-'capitulate':['k-ah-p-ih1-ch-uw-l-ey-t','vb'],
+'capitulate':['k-ah p-ih1 ch-uw l-ey-t','vb'],
 'capitulated':['k-ah p-ih1 ch-ah l-ey t-ih-d','vbd vbn'],
 'capitulation':['k-ah p-ih ch-ah l-ey1 sh-ah-n','nn'],
 'capo':['k-aa1 p-ow','nn'],
@@ -28761,7 +28760,7 @@ function _dict() { return {
 'facetious':['f-ah s-iy1 sh-ah-s','jj'],
 'facetiously':['f-ah s-iy1 sh-ah-s l-iy','rb'],
 'facial':['f-ey1 sh-ah-l','jj'],
-'facile':['f-ae1 s-ah-l','jj'],
+'facile':['f-ae1 s-ih-l','jj'],
 'facilitate':['f-ah s-ih1 l-ah t-ey-t','vb vbp'],
 'facilitated':['f-ah s-ih1 l-ah t-ey t-ih-d','vbn'],
 'facilitates':['f-ah s-ih1 l-ah t-ey-t-s','vbz'],
@@ -31750,6 +31749,7 @@ function _dict() { return {
 'hysteria':['hh-ih s-t-eh1 r-iy ah','nn'],
 'hysterical':['hh-ih s-t-eh1 r-ih k-ah-l','jj'],
 'hysterically':['hh-ih s-t-eh1 r-ih-k l-iy','rb'],
+'i':['ay1','prp'],
 'ice':['ay1-s','nn jj'],
 'iceberg':['ay1-s b-er-g','nn'],
 'icebox':['ay1-s b-aa-k-s','nn'],
@@ -42103,6 +42103,7 @@ function _dict() { return {
 'similar':['s-ih1 m-ah l-er','jj'],
 'similarity':['s-ih m-ah l-eh1 r-ah t-iy','nn'],
 'similarly':['s-ih1 m-ah l-er l-iy','rb'],
+'simile':['s-ih1 m-ah l-iy','nn'],
 'similiar':['s-ih m-ih1 l-aa-r','jj'],
 'simmer':['s-ih1 m-er','vb vbp'],
 'simmered':['s-ih1 m-er-d','vbn vbd'],

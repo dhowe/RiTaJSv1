@@ -1035,6 +1035,8 @@ var runtests = function () {
       deepEqual(RiTa.getPosTags("outnumber"),  [ "vb" ]);
       deepEqual(RiTa.getPosTags("I outnumbered you"), [ "prp", "vbd", "prp" ]);
       deepEqual(RiTa.getPosTags("She outnumbered us"), [ "prp", "vbd", "prp"]);
+
+      deepEqual(RiTa.getPosTags("I outnumbered them"), [ "prp", "vbd", "prp"]);
     });
 
     test("testGetPosTags(endsWithS)", function () {
@@ -1691,7 +1693,15 @@ var runtests = function () {
 
     test("testConjugate", function () {
 
-      // TODO: Check against RiTa-java (why are these all doubling?)
+      var args = {
+        form: RiTa.GERUND,
+      };
+      equal(RiTa.conjugate("be", args), "being");
+      return;
+      // var args = {
+      //   form: RiTa.PA,
+      // };
+      // equal(RiTa.conjugate("be", args), "being");
 
       var args = {
         tense: RiTa.PRESENT_TENSE,
@@ -1854,6 +1864,7 @@ var runtests = function () {
         c = RiTa.conjugate(s[i], args);
         equal(c, a[i]);
       }
+
     });
 
   } // end runtests

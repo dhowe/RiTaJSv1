@@ -3534,7 +3534,6 @@ Conjugator.prototype = {
 
     // Now inflect frontVG (if it exists) and push it on restVG
     if (frontVG) {
-
       if (this.form === RiTa.GERUND) { // gerund - use ING form
 
         var pp = this.getPresentParticiple(frontVG);
@@ -3567,7 +3566,7 @@ Conjugator.prototype = {
 
   checkRules: function(ruleSet, theVerb) {
 
-    var res, name = ruleSet.name,
+    var res, name = ruleSet.name, dbug = 1,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
 
@@ -3577,26 +3576,26 @@ Conjugator.prototype = {
 
     for (var i = 0; i < rules.length; i++) {
 
-      //log("checkRules2("+name+").fire("+i+")="+rules[i].regex);
+      dbug && console.log("checkRules("+name+").fire("+i+")="+rules[i].regex);
       if (rules[i].applies(theVerb)) {
 
         var got = rules[i].fire(theVerb);
 
-        //log("HIT("+name+").fire("+i+")="+rules[i].regex+"_returns: "+got);
+        dbug && console.log("HIT("+name+").fire("+i+")="+rules[i].regex+"_returns: "+got);
         return got;
       }
     }
-    //log("NO HIT!");
+    dbug && console.log("NO HIT!");
 
     if (ruleSet.doubling && inArray(VERB_CONS_DOUBLING, theVerb)) {
 
-      //log("doDoubling!");
+      dbug && console.log("doDoubling!");
       theVerb = this.doubleFinalConsonant(theVerb);
     }
 
     res = defRule.fire(theVerb);
 
-    //log("checkRules("+name+").returns: "+res);
+    dbug && console.log("checkRules("+name+").returns: "+res);
 
     return res;
   },
@@ -3670,7 +3669,7 @@ Conjugator.prototype = {
   },
 
   getPresentParticiple: function(theVerb) {
-
+    if (theVerb && theVerb === 'be') return 'being';
     return strOk(theVerb) ? this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb) : E;
   },
 
