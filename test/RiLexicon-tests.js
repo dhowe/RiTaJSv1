@@ -881,6 +881,14 @@ var runtests = function () {
     var answer = "dh-ah";
     equal(result, answer);
 
+    var result = lex._getPhonemes("coyotes");
+    var answer = "k-ay-ow-t-iy-s";
+    equal(result, answer);
+
+    var result = lex._getPhonemes("women");
+    var answer = "w-ih-m-eh-n";
+    equal(result, answer);
+
     var result = lex._getPhonemes("The.");
     var answer = "dh-ah";
     equal(result, answer);
