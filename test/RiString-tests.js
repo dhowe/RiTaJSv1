@@ -871,31 +871,26 @@ var runtests = function () {
 
   test("testReplaceWord", function () {
 
-    var s = new RiString("This is a \n test");
-    s = s.replaceWord(1, "was");
-    equal(s, "This was a \n test");
-return;
-
     var rs = new RiString("Who are you?");
     rs.replaceWord(2, ""); // nice! this too...
     equal(rs.text(), "Who are?"); // strange case, not sure
     // could also be: equal(rs.text(), "Who are ?");
 
-    rs = new RiString("Who are you?");
+    var rs = new RiString("Who are you?");
     equal("Who are What?", rs.replaceWord(2, "What").text());
 
-    rs = new RiString("Who are you?");
+    var rs = new RiString("Who are you?");
     equal(rs.replaceWord(0, "What").text(), "What are you?");
 
-    rs = new RiString("Who are you?");
+    var rs = new RiString("Who are you?");
     rs.replaceWord(3, "!!");
     equal(rs.text(), "Who are you!!"); // nice! this is a strange one...
 
-    rs = new RiString("Who are you?");
+    var rs = new RiString("Who are you?");
     rs.replaceWord(-1, ".");
     equal(rs.text(), "Who are you.");
 
-    rs = new RiString("Who are you?");
+    var rs = new RiString("Who are you?");
     rs.replaceWord(20, "asfasf");
     equal(rs.text(), "Who are you?");
   });

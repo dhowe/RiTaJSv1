@@ -1182,7 +1182,6 @@ RiLexicon.prototype = {
     switch (a.length) {
 
     case 2:
-      console.log('case 2');
       if (is(a[0], B)) {
 
         shuffled = a[0];
@@ -1196,7 +1195,6 @@ RiLexicon.prototype = {
       break;
 
     case 1:
-      console.log('case 1');
       if (is(a[0], B)) {
         return a[0] ? shuffle(this.keys) : this.keys;
       }
@@ -1206,7 +1204,6 @@ RiLexicon.prototype = {
       break;
 
     case 0:
-console.log('case 0');
       return this.keys;
     }
 
@@ -1217,7 +1214,6 @@ console.log('case 0');
         wordArr.push(this.keys[i]);
       }
     }
-console.log('RETURNED 1');
     return shuffled ? shuffle(wordArr) : wordArr;
   },
 
@@ -2913,11 +2909,7 @@ RiString.prototype = {
 
   replaceWord: function (wordIdx, newWord) {
 
-    console.log("replaceWord: "+wordIdx+", '"+newWord+"'", this.text());
-
-    var words = this._text.split(/ +/);//RiTa.tokenize(this._text);
-
-    console.log('WORDS:',words);
+    var words = this.words(); //  tokenize
 
     if (wordIdx < 0) wordIdx += words.length;
 
