@@ -1,8 +1,9 @@
 language: node_js
 node_js:
-  - "9"
   - "8"
-  - "node"
+  - "9"
+  - "10"
+  - "11"
 before_script:
   - npm install -g gulp
 script: gulp test
