@@ -4163,7 +4163,7 @@ function _dict() { return {
 'cloth':['k-l-ao1-th','nn'],
 'clothe':['k-l-ow1-dh','vb'],
 'clothed':['k-l-ow1-dh-d','vbn jj'],
-'clotheshorse':['k-l-ow1-z hh-ao-r-s','nn'],
+'clothes':['k-l-ow1-dh-z','nns'],
 'clothier':['k-l-ow1 dh-y-er','nn'],
 'clothing':['k-l-ow1 dh-ih-ng','nn'],
 'clotted':['k-l-aa1 t-ah-d','jj'],

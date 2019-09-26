@@ -1,64 +1,88 @@
-var runtests = function () {
+var runtests = function() {
 
-    RiTa.SILENT = 1;
-    lex = RiLexicon();
+  RiTa.SILENT = 1;
+  lex = RiLexicon();
 
-    test("testIsRhymeStringString", function() {
+  test("testTaggingOfProperNouns", function() {
 
-        ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
-        ok(!lex.isRhyme("solo", "yoyo"));
-        ok(!lex.isRhyme("yoyo", "jojo"));
-    });
+    deepEqual(RiTa.getPosTags("This is the house that Jack built."), [
+      "dt",
+      "nns",
+      "dt",
+      "nn",
+      "in",
+      "nnp",
+      "vbn",
+      "."]);
 
-    test("testIsVerb", function() {
+    deepEqual(RiTa.getPosTags("This is the house that the Seahawks built."), [
+      "dt",
+      "nns",
+      "dt",
+      "nn",
+      "in",
+      "nnps",
+      "vbn",
+      "."]);
 
-      ok(lex.isVerb("ducks")); // +n
-      ok(lex.isVerb("dogs")); // +n
-    });
+  });
 
-    test("RiString.stripPunctuation(unicode)", function () {
+  test("testIsRhymeStringString", function() {
 
-        var res = RiTa.stripPunctuation("����������`',;:!?)He,;:!?)([].#l\"\\!@$%&}<>|+$%&}<>|+=-_\\o}<>|+=-_\\/*{^");
-        equal(res, "Hello");
-    });
+    ok(!lex.isRhyme("solo   ", "tomorrow")); // Word with tab space
+    ok(!lex.isRhyme("solo", "yoyo"));
+    ok(!lex.isRhyme("yoyo", "jojo"));
+  });
 
-    test("RiString.replaceWordAt()", function () {
+  test("testIsVerb", function() {
 
-        var rs = new RiString("Who are you?");
-        rs.replaceWordAt(2,"");    // nice! this too...
-        //equal(rs.text(), "Who are?"); // strange case, not sure
-        equal(rs.text(), "Who are ?");
-    });
+    ok(lex.isVerb("ducks")); // +n
+    ok(lex.isVerb("dogs")); // +n
+  });
 
-    test("RiText.replaceWordAt()", function () {
+  test("RiString.stripPunctuation(unicode)", function() {
 
-        var rs = new RiText("Who are you?");
-        rs.replaceWordAt(2,"");    // nice! this too...
-        //equal(rs.text(), "Who are?"); // strange case, not sure
-        equal(rs.text(), "Who are ?");
-    });
+    var res = RiTa.stripPunctuation("����������`',;:!?)He,;:!?)([].#l\"\\!@$%&}<>|+$%&}<>|+=-_\\o}<>|+=-_\\/*{^");
+    equal(res, "Hello");
+  });
 
-    test("RiGrammar.expandWith()", function () { //TODO: fix impl.
+  test("RiString.replaceWordAt()", function() {
 
-        equal("fix impl.");
-    });
+    var rs = new RiString("Who are you?");
+    rs.replaceWordAt(2, "");    // nice! this too...
+    //equal(rs.text(), "Who are?"); // strange case, not sure
+    equal(rs.text(), "Who are ?");
+  });
 
-    test("RiLexicon.rhymes", function () {
-        var lex = RiLexicon();
-         // Problem: no result
-        var result = lex.rhymes("savage");
-        var answer = [ "average", "ravage", "cabbage" ];
-        deepEqual(result, answer);
-    });
+  test("RiText.replaceWordAt()", function() {
 
-    test("RiTa.conjugate", function () {
+    var rs = new RiText("Who are you?");
+    rs.replaceWordAt(2, "");    // nice! this too...
+    //equal(rs.text(), "Who are?"); // strange case, not sure
+    equal(rs.text(), "Who are ?");
+  });
 
-      equal(RiTa.conjugate("make", {
-        tense: RiTa.PAST_TENSE,
-        number: RiTa.SINGULAR,
-        person: RiTa.FIRST_PERSON
-      }), "made");
-    });
+  test("RiGrammar.expandWith()", function() { //TODO: fix impl.
+
+    equal("fix impl.");
+  });
+
+  test("RiLexicon.rhymes", function() {
+    var lex = RiLexicon();
+    // Problem: no result
+    var result = lex.rhymes("savage");
+    var answer = ["average", "ravage", "cabbage"];
+    deepEqual(result, answer);
+  });
+
+  test("RiTa.conjugate", function() {
+
+    equal(RiTa.conjugate("make", {
+      tense: RiTa.PAST_TENSE,
+      number: RiTa.SINGULAR,
+      person: RiTa.FIRST_PERSON
+    }), "made");
+  });
 }
 
 if (typeof exports != 'undefined') runtests(); //exports.unwrap = runtests;

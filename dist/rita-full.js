@@ -246,39 +246,39 @@ var RiTa = {
 
   // Start functions =================================
 
-  _randomSource: function () {
+  _randomSource: function() {
     if (!RiTa._randSource) {
       RiTa._randSource = new SeededRandom();
     }
     return RiTa._randSource;
   },
 
-  random: function () {
+  random: function() {
     var currentRandom = RiTa._randomSource().random();
     if (!arguments.length) return currentRandom;
     return (arguments.length === 1) ? currentRandom * arguments[0] :
       currentRandom * (arguments[1] - arguments[0]) + arguments[0];
   },
 
-  randomSeed: function (theSeed) {
+  randomSeed: function(theSeed) {
     RiTa._randomSource().seed(theSeed);
   },
 
-  randomItem: function (arr) {
+  randomItem: function(arr) {
     return arr[Math.floor(RiTa.random() * arr.length)];
   },
 
-  distance: function (x1, y1, x2, y2) {
+  distance: function(x1, y1, x2, y2) {
     var dx = x1 - x2,
       dy = y1 - y2;
     return Math.sqrt(dx * dx + dy * dy);
   },
 
-  getPosTags: function (words, useWordNetTags) {
+  getPosTags: function(words, useWordNetTags) {
     return (useWordNetTags) ? tagForWordNet(words) : tagForPENN(words);
   },
 
-  getPosTagsInline: function (words, delimiter) {
+  getPosTagsInline: function(words, delimiter) {
 
     if (!words || !words.length) return E;
 
@@ -299,32 +299,32 @@ var RiTa = {
     return sb.trim();
   },
 
-  getPresentParticiple: function (verb) {
+  getPresentParticiple: function(verb) {
     return Conjugator().getPresentParticiple(verb);
   },
 
-  getPastParticiple: function (verb) {
+  getPastParticiple: function(verb) {
     return Conjugator().getPastParticiple(verb);
   },
 
-  concordance: function (text, options) {
+  concordance: function(text, options) {
     return Concorder(text, options).concordance();
   },
 
-  kwic: function (text, word, options) {
+  kwic: function(text, word, options) {
     var wordCount = (options && options.wordCount) || 4;
     return Concorder(text, options).kwic(word, wordCount);
   },
 
-  conjugate: function (verb, args) {
+  conjugate: function(verb, args) {
     return Conjugator().conjugate(verb, args);
   },
 
-  upperCaseFirst: function (s) {
+  upperCaseFirst: function(s) {
     return s.charAt(0).toUpperCase() + s.substring(1);
   },
 
-  pluralize: function (word) {
+  pluralize: function(word) {
 
     if (!strOk(word)) return E;
 
@@ -344,7 +344,7 @@ var RiTa = {
     return DEFAULT_PLURAL_RULE.fire(word);
   },
 
-  singularize: function (word) {
+  singularize: function(word) {
 
     if (!strOk(word)) return E;
 
@@ -362,11 +362,11 @@ var RiTa = {
     return this.stem(word, 'Pling');
   },
 
-  trim: function (str) {
+  trim: function(str) {
     return trim(str); // delegate to private
   },
 
-  tokenize: function (words, regex) {
+  tokenize: function(words, regex) {
 
     if (!is(words, S)) return [];
 
@@ -413,7 +413,7 @@ var RiTa = {
     return trim(words).split(/\s+/);
   },
 
-  untokenize: function (arr, delim) {
+  untokenize: function(arr, delim) {
 
     delim = delim || SP;
 
@@ -494,7 +494,7 @@ var RiTa = {
     return result.trim();
   },
 
-  splitSentences: function (text, regex) {
+  splitSentences: function(text, regex) {
 
     if (!text || !text.length) return [text];
 
@@ -526,10 +526,10 @@ var RiTa = {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   },
 
-  isAbbreviation: function (input, caseSensitive) {
+  isAbbreviation: function(input, caseSensitive) {
 
     // Converts 'input' to Titlecase (1st letter upper, rest lower)
-    var titleCase = function (input) {
+    var titleCase = function(input) {
 
       if (!input || !input.length) return input;
       return input.substring(0, 1).toUpperCase() + input.substring(1);
@@ -541,9 +541,9 @@ var RiTa = {
     return inArray(this.ABBREVIATIONS, input);
   },
 
-  loadString: function (url, callback, linebreakChars) {
+  loadString: function(url, callback, linebreakChars) {
 
-    var loadStringNode = function (url, callback, linebreakChars) {
+    var loadStringNode = function(url, callback, linebreakChars) {
 
       var data = '',
         lb = linebreakChars || BN,
@@ -554,24 +554,24 @@ var RiTa = {
 
       if (isUrl) {
 
-        var httpcb = function (response) {
-          response.on('data', function (chunk) {
+        var httpcb = function(response) {
+          response.on('data', function(chunk) {
             data += chunk;
           });
-          response.on('error', function (e) {
+          response.on('error', function(e) {
             throw e;
           });
-          response.on('end', function () {
+          response.on('end', function() {
             data = data.toString('utf-8').replace(/[\r\n]+/g, lb).trim();
             me.fireDataLoaded(url, callback, data);
           });
         };
 
         var req = require('http').request(url, httpcb);
-        req.on('socket', function (socket) { // shouldnt be needed
+        req.on('socket', function(socket) { // shouldnt be needed
 
           socket.setTimeout(5000); // ?
-          socket.on('timeout', function () {
+          socket.on('timeout', function() {
             req.abort();
             throw Error("[RiTa] loadString timed-out and aborted request");
           });
@@ -583,7 +583,7 @@ var RiTa = {
 
         // try with node file-system
         var rq = require('fs');
-        rq.readFile(url, function (e, data) {
+        rq.readFile(url, function(e, data) {
           if (e || !data) {
             err("[Node] Error reading file: " + url + BN + e);
             throw e;
@@ -606,12 +606,12 @@ var RiTa = {
       lb = linebreakChars || BN,
       req = new XMLHttpRequest();
 
-    req.addEventListener('error', function () {
+    req.addEventListener('error', function() {
       console.error('[RiTa] loadStrings() unable to load ' + url);
     });
 
     req.open('GET', url, true);
-    req.onreadystatechange = function () {
+    req.onreadystatechange = function() {
       if (req.readyState === 4) {
         if (req.status === 200) {
           var ret = [];
@@ -632,9 +632,9 @@ var RiTa = {
     return res;
   },
 
-  loadStrings: function (url, callback, linebreakChars) {
+  loadStrings: function(url, callback, linebreakChars) {
 
-    var loadStringsNode = function (url, callback) {
+    var loadStringsNode = function(url, callback) {
 
       var data = '',
         isUrl = /.+?:\/\/.+/.test(url),
@@ -649,23 +649,23 @@ var RiTa = {
 
       if (isUrl) {
 
-        var httpcb = function (response) {
-          response.on('data', function (chunk) {
+        var httpcb = function(response) {
+          response.on('data', function(chunk) {
             data += chunk;
           });
-          response.on('error', function (e) {
+          response.on('error', function(e) {
             throw e;
           });
-          response.on('end', function () {
+          response.on('end', function() {
             processResponse(data);
           });
         };
 
         var req = require('http').request(url, httpcb);
-        req.on('socket', function (socket) { // shouldnt be needed
+        req.on('socket', function(socket) { // shouldnt be needed
 
           socket.setTimeout(5000); // ?
-          socket.on('timeout', function () {
+          socket.on('timeout', function() {
             req.abort();
             throw Error("[RiTa] loadString timed-out and aborted request");
           });
@@ -676,7 +676,7 @@ var RiTa = {
 
         // try with node file-system
         var rq = require('fs');
-        rq.readFile(url, function (e, data) {
+        rq.readFile(url, function(e, data) {
           if (e || !data) {
             err("[Node] Error reading file: " + url + BN + e);
             throw e;
@@ -698,12 +698,12 @@ var RiTa = {
       lb = linebreakChars || BN,
       req = new XMLHttpRequest();
 
-    req.addEventListener('error', function () {
+    req.addEventListener('error', function() {
       console.error('[RiTa] loadStrings() unable to load ' + url);
     });
 
     req.open('GET', url, true);
-    req.onreadystatechange = function () {
+    req.onreadystatechange = function() {
       if (req.readyState === 4) {
         if (req.status === 200) {
 
@@ -724,7 +724,7 @@ var RiTa = {
     return res;
   },
 
-  fireDataLoaded: function (url, callback, data) {
+  fireDataLoaded: function(url, callback, data) {
 
     //log('fireDataLoaded: '+url, callback, data);
     return (callback) ? callback(data, url) :
@@ -734,7 +734,7 @@ var RiTa = {
       }, RiTa.DATA_LOADED, data)._fire();
   },
 
-  isQuestion: function (sentence) {
+  isQuestion: function(sentence) {
 
     var sentenceArr = RiTa.tokenize(sentence);
 
@@ -745,7 +745,7 @@ var RiTa = {
     return false;
   },
 
-  isSentenceEnd: function (currentWord, nextWord) {
+  isSentenceEnd: function(currentWord, nextWord) {
 
     if (!is(currentWord, S) || !is(nextWord, S))
       return false;
@@ -761,7 +761,7 @@ var RiTa = {
       return false;
 
     if (cWL > 2 && ((currentWord.charAt(0) == '\'' && currentWord.charAt(1) == '\'') ||
-        (currentWord.charAt(0) == '`' && currentWord.charAt(1) == '`')) &&
+      (currentWord.charAt(0) == '`' && currentWord.charAt(1) == '`')) &&
       RiTa.isAbbreviation(currentWord.substring(2))) {
       return false;
     }
@@ -777,10 +777,10 @@ var RiTa = {
     // nextToken does not begin with an upper case,
     // [`'"([{<] + upper case, `` + upper case, or < -> middle of sent.
     if (!(nextToken0 == nextToken0.toUpperCase() ||
-        (nextToken1 == nextToken1.toUpperCase() && nextToken0.indexOf("`'\"([{<") != -1) ||
-        (nextToken2 == nextToken2.toUpperCase() && ((nextToken0 == '`' && nextToken1 == '`') ||
-          (nextToken0 == '\'' && nextToken1 == '\''))) ||
-        nextWord == "_" || nextToken0 == '<'))
+      (nextToken1 == nextToken1.toUpperCase() && nextToken0.indexOf("`'\"([{<") != -1) ||
+      (nextToken2 == nextToken2.toUpperCase() && ((nextToken0 == '`' && nextToken1 == '`') ||
+        (nextToken0 == '\'' && nextToken1 == '\''))) ||
+      nextWord == "_" || nextToken0 == '<'))
       return false;
 
     // ends with ?, !, [!?.]["'}>)], or [?!.]'' -> end of sentence
@@ -807,7 +807,7 @@ var RiTa = {
     return true;
   },
 
-  isW_Question: function (sentence) {
+  isW_Question: function(sentence) {
     var sentenceArr = RiTa.tokenize((sentence));
     for (var i = 0; i < W_QUESTION_STARTS.length; i++)
       if (equalsIgnoreCase(sentenceArr[0], W_QUESTION_STARTS[i]))
@@ -815,14 +815,14 @@ var RiTa = {
     return false;
   },
 
-  unescapeHTML: function (input) {
+  unescapeHTML: function(input) {
 
     if (!input || !input.length) return input;
 
     var answer = input.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
       .replace(/&amp;/g, "&").replace(/&quot;/g, "\"");
 
-    String.fromCharCodePoint = function () { // uggh
+    String.fromCharCodePoint = function() { // uggh
       var codeunits = [];
       for (var i = 0; i < arguments.length; i++) {
         var c = arguments[i];
@@ -837,16 +837,16 @@ var RiTa = {
       return String.fromCharCode.apply(String, codeunits);
     };
 
-    answer = answer.replace(/&#(\d+);/g, function (_, n) {
+    answer = answer.replace(/&#(\d+);/g, function(_, n) {
       return String.fromCharCodePoint(parseInt(n, 10));
-    }).replace(/&#x([0-9a-f]+);/gi, function (_, n) {
+    }).replace(/&#x([0-9a-f]+);/gi, function(_, n) {
       return String.fromCharCodePoint(parseInt(n, 16));
     });
 
     return answer;
   },
 
-  randomOrdering: function (num) {
+  randomOrdering: function(num) {
 
     var o = [];
     if (num) {
@@ -860,7 +860,7 @@ var RiTa = {
 
   // Trims punctuation from each side of token
   //   (doesnt trim whitespace or internal punctuation).
-  trimPunctuation: function (text) {
+  trimPunctuation: function(text) {
 
     if (!is(text, S)) return text;
 
@@ -870,45 +870,45 @@ var RiTa = {
     return (text === E) ? E : text.replace(regex, E);
   },
 
-  stripPunctuation: function (text) {
+  stripPunctuation: function(text) {
     return (text === E) ? E : text.replace(PUNCTUATION_CLASS, E);
   },
 
-  isPunctuation: function (text) {
+  isPunctuation: function(text) {
     if (!text || !text.length) return false;
     return ONLY_PUNCT.test(text);
   },
 
-  hasPunctuation: function (text) {
+  hasPunctuation: function(text) {
     if (!text || !text.length) return false;
     return ONLY_PUNCT.test(text);
   },
 
-  env: function () {
+  env: function() {
     return isNode() ? RiTa.NODE : RiTa.JS;
   },
 
-  chomp: function (txt) {
+  chomp: function(txt) {
     return txt.replace(/\s+$|^\s+/g, E);
   },
 
-  getPhonemes: function (words) {
+  getPhonemes: function(words) {
     return RiString(words).analyze().get(RiTa.PHONEMES);
   },
 
-  getStresses: function (words) {
+  getStresses: function(words) {
     return RiString(words).analyze().get(RiTa.STRESSES);
   },
 
-  getSyllables: function (words) {
+  getSyllables: function(words) {
     return RiString(words).analyze().get(RiTa.SYLLABLES);
   },
 
-  getWordCount: function (words) {
+  getWordCount: function(words) {
     return RiTa.tokenize(words).length;
   },
 
-  stem: function (word, type) {
+  stem: function(word, type) {
 
     type = type || 'Porter';
 
@@ -935,7 +935,7 @@ var RiTa = {
    * Takes pair of strings or string-arrays and returns the med
    * @param normalized based on max-length if 3rd (optional) parameter is true
    */
-  minEditDistance: function (a, b, adjusted) {
+  minEditDistance: function(a, b, adjusted) {
 
     var func = adjusted ? MinEditDist.computeAdjusted : MinEditDist.computeRaw;
     return func.call(MinEditDist, a, b);
@@ -956,7 +956,7 @@ RiLexicon.SILENCE_LTS = false;
 
 RiLexicon.prototype = {
 
-  init: function () {
+  init: function() {
 
     if (typeof _dict === 'undefined') {
       this.data = {};
@@ -965,20 +965,20 @@ RiLexicon.prototype = {
       this.reload();
   },
 
-  clear: function () {
+  clear: function() {
 
     this.data = {};
     this.keys = [];
   },
 
-  reload: function () {
+  reload: function() {
     if (typeof _dict != 'undefined') {
       this.data = _dict();
       this.keys = okeys(this.data); // cache
     }
   },
 
-  addWord: function (word, pronunciationData, posData) {
+  addWord: function(word, pronunciationData, posData) {
 
     this.data[word.toLowerCase()] = [
       pronunciationData.toLowerCase(),
@@ -988,7 +988,7 @@ RiLexicon.prototype = {
     return this;
   },
 
-  similarByLetter: function (input, minAllowedDist, preserveLength) {
+  similarByLetter: function(input, minAllowedDist, preserveLength) {
 
     var minVal = Number.MAX_VALUE,
       minLen = 2,
@@ -1041,7 +1041,7 @@ RiLexicon.prototype = {
     return result;
   },
 
-  similarBySound: function (input, minEditDist, minimumWordLen) {
+  similarBySound: function(input, minEditDist, minimumWordLen) {
 
     minEditDist = minEditDist || 1;
 
@@ -1094,7 +1094,7 @@ RiLexicon.prototype = {
     return result;
   },
 
-  similarBySoundAndLetter: function (word) {
+  similarBySoundAndLetter: function(word) {
 
     function intersect() { // https://gist.github.com/lovasoa/3361645
       var i, all, n, len, ret = [],
@@ -1143,7 +1143,7 @@ RiLexicon.prototype = {
     return intersect(simSound, simLetter);
   },
 
-  substrings: function (word, minLength) {
+  substrings: function(word, minLength) {
 
     minLength = minLength || (minLength === 0) || 4;
 
@@ -1159,7 +1159,7 @@ RiLexicon.prototype = {
     return result;
   },
 
-  superstrings: function (word) {
+  superstrings: function(word) {
 
     var result = [];
 
@@ -1173,7 +1173,7 @@ RiLexicon.prototype = {
     return result;
   },
 
-  words: function () {
+  words: function() {
 
     var a = arguments,
       shuffled = false,
@@ -1181,30 +1181,30 @@ RiLexicon.prototype = {
 
     switch (a.length) {
 
-    case 2:
-      if (is(a[0], B)) {
+      case 2:
+        if (is(a[0], B)) {
 
-        shuffled = a[0];
-        regex = (is(a[1], R)) ? a[1] : new RegExp(a[1]);
-      } else {
+          shuffled = a[0];
+          regex = (is(a[1], R)) ? a[1] : new RegExp(a[1]);
+        } else {
 
-        shuffled = a[1];
+          shuffled = a[1];
+          regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
+        }
+
+        break;
+
+      case 1:
+        if (is(a[0], B)) {
+          return a[0] ? shuffle(this.keys) : this.keys;
+        }
+
         regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
-      }
 
-      break;
+        break;
 
-    case 1:
-      if (is(a[0], B)) {
-        return a[0] ? shuffle(this.keys) : this.keys;
-      }
-
-      regex = (is(a[0], R)) ? a[0] : new RegExp(a[0]);
-
-      break;
-
-    case 0:
-      return this.keys;
+      case 0:
+        return this.keys;
     }
 
     for (var i = 0; i < this.size(); i++) {
@@ -1217,18 +1217,18 @@ RiLexicon.prototype = {
     return shuffled ? shuffle(wordArr) : wordArr;
   },
 
-  _isVowel: function (c) {
+  _isVowel: function(c) {
 
     return (strOk(c) && RiTa.VOWELS.indexOf(c) > -1);
   },
 
-  _isConsonant: function (p) {
+  _isConsonant: function(p) {
 
     return (typeof p === S && p.length === 1 &&
       RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
   },
 
-  _isPlural: function (word) {
+  _isPlural: function(word) {
 
     if (NULL_PLURALS.applies(word))
       return true;
@@ -1263,14 +1263,14 @@ RiLexicon.prototype = {
     return false;
   },
 
-  containsWord: function (word) {
+  containsWord: function(word) {
 
     if (!this.data || !strOk(word)) return false;
     word = word.toLowerCase();
     return this.data.hasOwnProperty(word) || this._isPlural(word);
   },
 
-  isRhyme: function (word1, word2, useLTS) {
+  isRhyme: function(word1, word2, useLTS) {
     var phones1 = this._getRawPhones(word1, useLTS),
       phones2 = this._getRawPhones(word2, useLTS);
 
@@ -1283,7 +1283,7 @@ RiLexicon.prototype = {
     return (strOk(p1) && strOk(p2) && p1 === p2);
   },
 
-  rhymes: function (word) {
+  rhymes: function(word) {
 
     var p = this._lastStressedPhoneToEnd(word),
       phones, results = [];
@@ -1302,7 +1302,7 @@ RiLexicon.prototype = {
     return (results.length > 0) ? results : EA;
   },
 
-  alliterations: function (word, matchMinLength, useLTS) {
+  alliterations: function(word, matchMinLength, useLTS) {
 
     if (word.indexOf(" ") > -1) return [];
 
@@ -1328,7 +1328,7 @@ RiLexicon.prototype = {
     return shuffle(results);
   },
 
-  isAlliteration: function (word1, word2, useLTS) {
+  isAlliteration: function(word1, word2, useLTS) {
 
     if (!strOk(word1) || !strOk(word2) || word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1)
       return false;
@@ -1342,7 +1342,7 @@ RiLexicon.prototype = {
     return strOk(c1) && strOk(c2) && c1 === c2;
   },
 
-  _firstSyllable: function (word, useLTS) {
+  _firstSyllable: function(word, useLTS) {
     var raw = this._getRawPhones(word, useLTS);
     if (!strOk(raw)) return E;
     if (word === "URL") console.log(raw);
@@ -1350,7 +1350,7 @@ RiLexicon.prototype = {
     return syllables[0];
   },
 
-  _firstStressedSyllable: function (word, useLTS) {
+  _firstStressedSyllable: function(word, useLTS) {
 
     var raw = this._getRawPhones(word, useLTS),
       idx = -1,
@@ -1379,12 +1379,12 @@ RiLexicon.prototype = {
     return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
   },
 
-  isVerb: function (word) {
+  isVerb: function(word) {
 
     return this._checkType(word, PosTagger.VERBS);
   },
 
-  isNoun: function (word) {
+  isNoun: function(word) {
 
     var result = this._checkType(word, PosTagger.NOUNS);
     if (!result) {
@@ -1396,17 +1396,17 @@ RiLexicon.prototype = {
     return result;
   },
 
-  isAdverb: function (word) {
+  isAdverb: function(word) {
 
     return this._checkType(word, PosTagger.ADV);
   },
 
-  isAdjective: function (word) {
+  isAdjective: function(word) {
 
     return this._checkType(word, PosTagger.ADJ);
   },
 
-  size: function () {
+  size: function() {
     var s = this.keys.length;
     if (RiTa.LEX_WARN && s === 0) {
       warn(RiTa.LEX_WARN);
@@ -1415,7 +1415,7 @@ RiLexicon.prototype = {
     return s;
   },
 
-  _checkType: function (word, tagArray) {
+  _checkType: function(word, tagArray) {
 
     if (word && word.indexOf(SP) != -1)
       throw Error("[RiTa] _checkType() expects a single word, found: " + word);
@@ -1434,7 +1434,7 @@ RiLexicon.prototype = {
     return false;
   },
 
-  _getSyllables: function (word) {
+  _getSyllables: function(word) {
 
     // TODO: use feature cache?
     if (!strOk(word)) return E;
@@ -1447,7 +1447,7 @@ RiLexicon.prototype = {
     return RiTa.untokenize(raw).replace(/1/g, E).trim();
   },
 
-  _getPhonemes: function (word) {
+  _getPhonemes: function(word) {
 
     if (!strOk(word)) return E;
 
@@ -1468,7 +1468,7 @@ RiLexicon.prototype = {
     return RiTa.untokenize(raw).replace(/1/g, E).trim();
   },
 
-  _getStresses: function (word) {
+  _getStresses: function(word) {
 
     var i, stresses = [],
       phones, raw = [],
@@ -1502,7 +1502,7 @@ RiLexicon.prototype = {
     return stresses.join(SP).replace(/ \//g, "/");
   },
 
-  lexicalData: function (dictionaryDataObject) {
+  lexicalData: function(dictionaryDataObject) {
 
     if (arguments.length === 1) {
       this.data = dictionaryDataObject;
@@ -1513,7 +1513,7 @@ RiLexicon.prototype = {
   },
 
   /* Returns the raw (RiTa-format) dictionary entry for the given word   */
-  _lookupRaw: function (word) {
+  _lookupRaw: function(word) {
 
     word = word && word.toLowerCase();
     if (this.data && this.data[word])
@@ -1521,7 +1521,7 @@ RiLexicon.prototype = {
     //log("[RiTa] No lexicon entry for '" + word + "'");
   },
 
-  _getRawPhones: function (word, useLTS) {
+  _getRawPhones: function(word, useLTS) {
 
     var phones, lts, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
@@ -1537,26 +1537,26 @@ RiLexicon.prototype = {
     return (rdata && rdata.length === 2) ? rdata[0] : E;
   },
 
-  _getPosData: function (word) {
+  _getPosData: function(word) {
 
     var rdata = this._lookupRaw(word);
     return (rdata && rdata.length === 2) ? rdata[1] : E;
   },
 
-  _getPosArr: function (word) {
+  _getPosArr: function(word) {
 
     var pl = this._getPosData(word);
     if (!strOk(pl)) return EA;
     return pl.split(SP);
   },
 
-  _getBestPos: function (word) {
+  _getBestPos: function(word) {
 
     var pl = this._getPosArr(word);
     return (pl.length > 0) ? pl[0] : [];
   },
 
-  _firstPhoneme: function (rawPhones) {
+  _firstPhoneme: function(rawPhones) {
 
     if (!strOk(rawPhones)) return E;
 
@@ -1567,7 +1567,7 @@ RiLexicon.prototype = {
     return E; // return null?
   },
 
-  _firstConsonant: function (rawPhones) {
+  _firstConsonant: function(rawPhones) {
 
     if (!strOk(rawPhones)) return E;
 
@@ -1583,7 +1583,7 @@ RiLexicon.prototype = {
     return E; // return null?
   },
 
-  _lastStressedVowelPhonemeToEnd: function (word, useLTS) {
+  _lastStressedVowelPhonemeToEnd: function(word, useLTS) {
 
     if (!strOk(word)) return E; // return null?
 
@@ -1606,7 +1606,7 @@ RiLexicon.prototype = {
     return lastSyllable.substring(idx);
   },
 
-  _lastStressedPhoneToEnd: function (word, useLTS) {
+  _lastStressedPhoneToEnd: function(word, useLTS) {
 
     if (!strOk(word)) return E; // return null?
 
@@ -1631,7 +1631,7 @@ RiLexicon.prototype = {
     return result;
   },
 
-  randomWord: function () { // takes nothing, pos, syllableCount, or both
+  randomWord: function() { // takes nothing, pos, syllableCount, or both
 
     var i, j, rdata, numSyls, pluralize = false,
       ran = Math.floor(RiTa.random() * this.size()),
@@ -1639,7 +1639,7 @@ RiLexicon.prototype = {
       a = arguments,
       words = this.keys;
 
-    var isNNWithoutNNS = function (w, pos) {
+    var isNNWithoutNNS = function(w, pos) {
       if (w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0) {
         // console.log(w);
         return true;
@@ -1665,30 +1665,13 @@ RiLexicon.prototype = {
 
     switch (a.length) {
 
-    case 2: // a[0]=pos  a[1]=syllableCount
-
-      for (i = 0; i < words.length; i++) {
-        j = (ran + i) % words.length;
-        rdata = this.data[words[j]];
-        numSyls = rdata[0].split(SP).length;
-        if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-          if (!pluralize) return words[j];
-          else if (!isNNWithoutNNS(words[j], rdata[1])) {
-            return RiTa.pluralize(words[j]);
-          }
-        }
-      }
-
-      //warn("No words with pos=" + a[0] + " found");
-
-    case 1:
-
-      if (is(a[0], S)) { // a[0] = pos
+      case 2: // a[0]=pos  a[1]=syllableCount
 
         for (i = 0; i < words.length; i++) {
           j = (ran + i) % words.length;
           rdata = this.data[words[j]];
-          if (a[0] === rdata[1].split(SP)[0]) {
+          numSyls = rdata[0].split(SP).length;
+          if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
             if (!pluralize) return words[j];
             else if (!isNNWithoutNNS(words[j], rdata[1])) {
               return RiTa.pluralize(words[j]);
@@ -1696,29 +1679,46 @@ RiLexicon.prototype = {
           }
         }
 
-        //warn("No words with pos=" + a[0] + " found");
+      //warn("No words with pos=" + a[0] + " found");
 
-      } else {
+      case 1:
 
-        // a[0] = syllableCount
-        for (i = 0; i < words.length; i++) {
-          j = (ran + i) % words.length;
-          rdata = this.data[words[j]];
-          if (rdata[0].split(SP).length === a[0]) {
-            return words[j];
+        if (is(a[0], S)) { // a[0] = pos
+
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
+            if (a[0] === rdata[1].split(SP)[0]) {
+              if (!pluralize) return words[j];
+              else if (!isNNWithoutNNS(words[j], rdata[1])) {
+                return RiTa.pluralize(words[j]);
+              }
+            }
+          }
+
+          //warn("No words with pos=" + a[0] + " found");
+
+        } else {
+
+          // a[0] = syllableCount
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
+            if (rdata[0].split(SP).length === a[0]) {
+              return words[j];
+            }
           }
         }
-      }
-      return E;
+        return E;
 
-    case 0:
-      return words[ran];
+      case 0:
+        return words[ran];
     }
 
     return E;
   },
 
-  _letterToSound: function () { // lazy load
+  _letterToSound: function() { // lazy load
     if (!this.lts) {
       if (typeof LetterToSound !== 'undefined')
         this.lts = new LetterToSound();
@@ -1731,12 +1731,14 @@ RiLexicon.prototype = {
 var RiMarkov = makeClass();
 
 RiMarkov.MAX_GENERATION_ATTEMPTS = 5000;
-var SSRE = /"?[A-Z][a-z"',;`-]*/;
-var SSDLM = 'D=l1m_';
+RiMarkov.SSRE = /"?[A-ZА-Я][a-zа-я"',;`-]*/;
+RiMarkov.FMAT = /[A-ZА-Я]\S*/;
+RiMarkov.LMAT = /[!?.]/;
+RiMarkov.SSDLM = 'D=l1m_';
 
 RiMarkov.prototype = {
 
-  init: function (nFactor, recognizeSentences, allowDuplicates) {
+  init: function(nFactor, recognizeSentences, allowDuplicates) {
 
     var a = this._initArgs.apply(this, arguments);
 
@@ -1756,7 +1758,7 @@ RiMarkov.prototype = {
     this.printIgnoredText = false;
   },
 
-  _initArgs: function () {
+  _initArgs: function() {
 
     var a = arguments,
       t = get(a[0]);
@@ -1766,17 +1768,16 @@ RiMarkov.prototype = {
     return a;
   },
 
-  getProbability: function (data) {
+  getProbability: function(data) {
 
     if (!this.root) err("Model not initd: null root!");
 
     var tn = is(data, S) ? this.root.lookup(data) : this._findNode(data);
 
     return (tn) ? tn.probability() : 0;
-
   },
 
-  getProbabilities: function (path) {
+  getProbabilities: function(path) {
 
     if (is(path, S)) path = [path];
 
@@ -1801,7 +1802,7 @@ RiMarkov.prototype = {
     return probs;
   },
 
-  getCompletions: function (pre, post) {
+  getCompletions: function(pre, post) {
 
     var tn, result = [],
       node, atest, nexts;
@@ -1837,13 +1838,13 @@ RiMarkov.prototype = {
     } else { // fill the end
 
       var hash = this.getProbabilities(pre);
-      return okeys(hash).sort(function (a, b) {
+      return okeys(hash).sort(function(a, b) {
         return hash[b] - hash[a];
       });
     }
   },
 
-  generateUntil: function (regex, minLength, maxLength) {
+  generateUntil: function(regex, minLength, maxLength) {
 
     minLength = minLength || 1;
     maxLength = maxLength || Number.MAX_VALUE;
@@ -1881,7 +1882,7 @@ RiMarkov.prototype = {
 
   },
 
-  generateTokens: function (targetNumber, start) {
+  generateTokens: function(targetNumber, start) {
 
     var mn, tries = 0,
       maxTries = 500,
@@ -1930,7 +1931,7 @@ RiMarkov.prototype = {
     return res;
   },
 
-  sentenceAware: function () {
+  sentenceAware: function() {
 
     if (arguments.length > 0)
       throw Error('sentenceAware() takes no arguments, instead ' +
@@ -1938,17 +1939,17 @@ RiMarkov.prototype = {
     return this.isSentenceAware;
   },
 
-  print: function () {
+  print: function() {
 
     if (console) console.log(this.root.asTree(false));
     return this;
   },
 
-  ready: function (url) {
+  ready: function(url) {
     return this.size() > 0;
   },
 
-  loadFrom: function (url, multiplier, regex, callback) {
+  loadFrom: function(url, multiplier, regex, callback) {
 
     var me = this;
 
@@ -1962,7 +1963,7 @@ RiMarkov.prototype = {
       regex = undefined;
     }
 
-    RiTa.loadStrings(url, function (data) {
+    RiTa.loadStrings(url, function(data) {
 
       data = data.join(BN);
       me.loadText(data, multiplier, regex);
@@ -1970,7 +1971,7 @@ RiMarkov.prototype = {
     });
   },
 
-  loadText: function (text, multiplier, regex, progress) {
+  loadText: function(text, multiplier, regex, progress) {
 
     //log("loadText: "+text.length + " "+this.isSentenceAware);
 
@@ -1987,7 +1988,7 @@ RiMarkov.prototype = {
     return result;
   },
 
-  loadTokens: function (tokens, multiplier) {
+  loadTokens: function(tokens, multiplier) {
 
     multiplier = Math.round(multiplier || 1);
 
@@ -2018,12 +2019,12 @@ RiMarkov.prototype = {
     return this;
   },
 
-  generateSentence: function () {
+  generateSentence: function() {
 
     return this.generateSentences(1)[0];
   },
 
-  generateSentences: function (num) {
+  generateSentences: function(num) {
 
     if (!this.isSentenceAware) {
       err('generateSentences() can only be called when the model is ' +
@@ -2094,19 +2095,19 @@ RiMarkov.prototype = {
     return result;
   },
 
-  _validateSentence: function (sent) {
+  _validateSentence: function(sent) {
 
     var tokens = RiTa.tokenize(sent),
       first = tokens[0],
       last = tokens[tokens.length - 1];
 
-    if (!first.match(/[A-Z]\S*/)) {
+    if (!first.match(RiMarkov.FMAT)) {
       if (this.printIgnoredText)
         log("Skipping: bad first char in '" + sent + "'");
       return false;
     }
 
-    if (!last.match(/[!?.]/)) {
+    if (!last.match(RiMarkov.LMAT)) {
       if (this.printIgnoredText)
         log("Bad last token: '" + last + "' in: " + sent);
       return false;
@@ -2143,7 +2144,7 @@ RiMarkov.prototype = {
     return true;
   },
 
-  _tracePathFromRoot: function (node) {
+  _tracePathFromRoot: function(node) {
 
     node.pathFromRoot(this.pathTrace);
 
@@ -2157,7 +2158,7 @@ RiMarkov.prototype = {
     return mn;
   },
 
-  _nextNodeForArr: function (previousTokens) {
+  _nextNodeForArr: function(previousTokens) {
 
     // Follow the seed path down the tree
     var firstLookupIdx = Math.max(0, previousTokens.length - (this.N - 1)),
@@ -2172,7 +2173,7 @@ RiMarkov.prototype = {
     return node ? node.selectChild(null, true) : null;
   },
 
-  _nextNodeForNode: function (current) {
+  _nextNodeForNode: function(current) {
 
     var attempts = 0,
       selector, pTotal = 0,
@@ -2204,12 +2205,12 @@ RiMarkov.prototype = {
     }
   },
 
-  _clean: function (sentence) {
+  _clean: function(sentence) {
 
     return RiTa.trim(sentence.replace(/\s+/, SP));
   },
 
-  _onGenerationIncomplete: function (tries, successes) {
+  _onGenerationIncomplete: function(tries, successes) {
 
     warn('\nRiMarkov failed to complete after ' + tries +
       ' tries and ' + successes + ' successful generations.' +
@@ -2217,7 +2218,7 @@ RiMarkov.prototype = {
   },
 
   // Loads a sentence[] into the model; each element must be a single sentence
-  _loadSentences: function (text, multiplier, progress) {
+  _loadSentences: function(text, multiplier, progress) {
 
     var i, j, toAdd, tokens, allWords = [],
       sentences = RiTa.splitSentences(text),
@@ -2238,7 +2239,7 @@ RiMarkov.prototype = {
 
       //log("Added sentence start] " + tokens);
 
-      allWords.push(SSDLM + tokens[0]); // hack for sentence-starts
+      allWords.push(RiMarkov.SSDLM + tokens[0]); // hack for sentence-starts
 
       for (j = 1; j < tokens.length; j++) {
         allWords.push(tokens[j]);
@@ -2270,17 +2271,17 @@ RiMarkov.prototype = {
     return this;
   },
 
-  size: function () {
+  size: function() {
 
     return this.root.count;
   },
 
-  _validSentenceStart: function (word) {
+  _validSentenceStart: function(word) {
 
-    return (!this.isSentenceAware || word && word.match(SSRE));
+    return (!this.isSentenceAware || word && word.match(RiMarkov.SSRE));
   },
 
-  _addSentenceSequence: function (toAdd) {
+  _addSentenceSequence: function(toAdd) {
 
     var node = this.root;
 
@@ -2290,9 +2291,9 @@ RiMarkov.prototype = {
 
       var add = toAdd[i];
 
-      if (startsWith(add, SSDLM)) {
+      if (startsWith(add, RiMarkov.SSDLM)) {
 
-        add = add.substring(SSDLM.length);
+        add = add.substring(RiMarkov.SSDLM.length);
 
         var parent = node;
         node = node.addChild(add, 1);
@@ -2309,7 +2310,7 @@ RiMarkov.prototype = {
     }
   },
 
-  _getSentenceStart: function () {
+  _getSentenceStart: function() {
 
     if (!this.isSentenceAware) {
       err("getSentenceStart() can only " +
@@ -2322,7 +2323,7 @@ RiMarkov.prototype = {
     return this.root.lookup(RiTa.randomItem(this.sentenceStarts));
   },
 
-  _findNode: function (path) {
+  _findNode: function(path) {
 
     if (!path || !is(path, A) || !path.length)
       return null;
@@ -2347,7 +2348,7 @@ RiMarkov.prototype = {
   }
 };
 
-var RiWordNet = function () { // stub
+var RiWordNet = function() { // stub
   throw Error("RiWordNet is not yet implemented in JavaScript!");
 };
 
@@ -2373,11 +2374,11 @@ RiString._phones = {
   ]
 };
 
-RiString._syllabify = function (input) { // adapted from FreeTTS
+RiString._syllabify = function(input) { // adapted from FreeTTS
 
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
-  var stringify = function (syllables) {
+  var stringify = function(syllables) {
 
     var i, j, ret = [];
     for (i = 0; i < syllables.length; i++) {
@@ -2485,7 +2486,7 @@ var SeededRandom = makeClass();
 
 SeededRandom.prototype = { // adapted from https://github.com/bmurray7/mersenne-twister-examples/blob/master/javascript-mersenne-twister.js
 
-  init: function () {
+  init: function() {
     this.N = 624;
     this.M = 397;
     this.MATRIX_A = 0x9908b0df;
@@ -2496,7 +2497,7 @@ SeededRandom.prototype = { // adapted from https://github.com/bmurray7/mersenne-
     this.seed(new Date().getTime());
   },
 
-  seed: function (s) {
+  seed: function(s) {
     this.mt[0] = s >>> 0;
     for (this.mti = 1; this.mti < this.N; this.mti++) {
       var s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
@@ -2506,7 +2507,7 @@ SeededRandom.prototype = { // adapted from https://github.com/bmurray7/mersenne-
     }
   },
 
-  randInt: function () {
+  randInt: function() {
     var y, kk, mag01 = new Array(0x0, this.MATRIX_A);
     if (this.mti >= this.N) {
       if (this.mti == this.N + 1) this.seed(5489);
@@ -2530,7 +2531,7 @@ SeededRandom.prototype = { // adapted from https://github.com/bmurray7/mersenne-
     return y >>> 0;
   },
 
-  random: function () {
+  random: function() {
     return this.randInt() * (1.0 / 4294967296.0);
   }
 };
@@ -2539,7 +2540,7 @@ function initFeatureMap(rs) { // for RiString
   if (!rs._features) {
     rs._features = {};
   } else {
-    ['tokens', 'stresses', 'phonemes', 'syllables', 'pos'].forEach(function (f) {
+    ['tokens', 'stresses', 'phonemes', 'syllables', 'pos'].forEach(function(f) {
       delete rs._features[f];
     });
   }
@@ -2548,7 +2549,7 @@ function initFeatureMap(rs) { // for RiString
 
 RiString.prototype = {
 
-  init: function (text) {
+  init: function(text) {
 
     if (is(text, N)) {
 
@@ -2566,7 +2567,7 @@ RiString.prototype = {
     this._features = undefined;
   },
 
-  copy: function () {
+  copy: function() {
 
     var rs = RiString(this._text),
       feats = this.features();
@@ -2582,7 +2583,7 @@ RiString.prototype = {
     return rs;
   },
 
-  features: function () {
+  features: function() {
 
     if (!this._features) {
       this.analyze();
@@ -2590,7 +2591,7 @@ RiString.prototype = {
     return this._features;
   },
 
-  analyze: function () {
+  analyze: function() {
 
     var phonemes = E,
       syllables = E,
@@ -2662,7 +2663,7 @@ RiString.prototype = {
     return this;
   },
 
-  get: function (featureName) {
+  get: function(featureName) {
 
     this._features || this.analyze();
 
@@ -2677,7 +2678,7 @@ RiString.prototype = {
     return s;
   },
 
-  set: function (featureName, featureValue) {
+  set: function(featureName, featureValue) {
 
     this._features || (this._features = {});
     this._features[featureName] = featureValue;
@@ -2685,17 +2686,17 @@ RiString.prototype = {
     return this;
   },
 
-  endsWith: function (substr) {
+  endsWith: function(substr) {
 
     return endsWith(this._text, substr);
   },
 
-  equals: function (arg) {
+  equals: function(arg) {
 
     return is(arg.text, F) && arg.text() === this._text;
   },
 
-  equalsIgnoreCase: function (arg) {
+  equalsIgnoreCase: function(arg) {
 
     if (typeof arg === S) {
 
@@ -2707,7 +2708,7 @@ RiString.prototype = {
     }
   },
 
-  text: function (theText) {
+  text: function(theText) {
 
     if (arguments.length > 0) {
       this._text = theText;
@@ -2717,7 +2718,7 @@ RiString.prototype = {
     return this._text;
   },
 
-  pos: function () {
+  pos: function() {
 
     var words = RiTa.tokenize(this._text);
     var tags = PosTagger.tag(words);
@@ -2730,7 +2731,7 @@ RiString.prototype = {
     return tags;
   },
 
-  posAt: function (index) {
+  posAt: function(index) {
 
     var tags = this.pos();
 
@@ -2741,7 +2742,7 @@ RiString.prototype = {
       tags.length + index : index, tags.length - 1)];
   },
 
-  wordAt: function (index) {
+  wordAt: function(index) {
 
     var words = this.words();
     if (index < 0 || index >= words.length)
@@ -2749,42 +2750,42 @@ RiString.prototype = {
     return words[index];
   },
 
-  wordCount: function () {
+  wordCount: function() {
 
     return this._text.length ? this.words().length : 0;
   },
 
-  words: function () {
+  words: function() {
 
     return RiTa.tokenize(this._text);
   },
 
-  indexOf: function (searchstring, start) {
+  indexOf: function(searchstring, start) {
 
     return this._text.indexOf(searchstring, start);
   },
 
-  lastIndexOf: function (searchstring, start) {
+  lastIndexOf: function(searchstring, start) {
 
     return this._text.lastIndexOf(searchstring, start);
   },
 
-  length: function () {
+  length: function() {
 
     return this._text.length;
   },
 
-  match: function (regex) {
+  match: function(regex) {
 
     return this._text.match(regex) || [];
   },
 
-  slice: function (begin, end) {
+  slice: function(begin, end) {
 
     return this._text.slice(begin, end) || E;
   },
 
-  insertChar: function (idx, toInsert) {
+  insertChar: function(idx, toInsert) {
 
     var s = this.text();
 
@@ -2803,7 +2804,7 @@ RiString.prototype = {
     return this.text(beg + end);
   },
 
-  removeChar: function (idx) {
+  removeChar: function(idx) {
 
     var s = this.text();
 
@@ -2817,7 +2818,7 @@ RiString.prototype = {
     return this;
   },
 
-  replaceChar: function (idx, replaceWith) {
+  replaceChar: function(idx, replaceWith) {
 
     var s = this.text();
 
@@ -2837,7 +2838,7 @@ RiString.prototype = {
     return this.text(beg + end);
   },
 
-  replaceFirst: function (regex, replaceWith) {
+  replaceFirst: function(regex, replaceWith) {
 
     // strip out global if we have it
     if (regex && !is(regex, S) && regex.global) {
@@ -2853,7 +2854,7 @@ RiString.prototype = {
     return this;
   },
 
-  replaceAll: function (pattern, replacement) {
+  replaceAll: function(pattern, replacement) {
 
     var flags = 'g';
 
@@ -2879,12 +2880,12 @@ RiString.prototype = {
     return this;
   },
 
-  removeWord: function (wordIdx) {
+  removeWord: function(wordIdx) {
 
     return this.replaceWord(wordIdx, E);
   },
 
-  insertWord: function (wordIdx, newWord) {
+  insertWord: function(wordIdx, newWord) {
 
     var words = this.words(); //  tokenize
 
@@ -2902,12 +2903,12 @@ RiString.prototype = {
     return this;
   },
 
-  toCharArray: function () {
+  toCharArray: function() {
 
     return this._text.split(RiTa.E);
   },
 
-  replaceWord: function (wordIdx, newWord) {
+  replaceWord: function(wordIdx, newWord) {
 
     var words = this.words(); //  tokenize
 
@@ -2923,7 +2924,7 @@ RiString.prototype = {
     return this;
   },
 
-  split: function (separator, limit) {
+  split: function(separator, limit) {
 
     var parts = this._text.split(separator, limit);
     var rs = [];
@@ -2934,47 +2935,47 @@ RiString.prototype = {
     return rs;
   },
 
-  startsWith: function (substr) {
+  startsWith: function(substr) {
 
     return this.indexOf(substr) === 0;
   },
 
-  substr: function (start, length) {
+  substr: function(start, length) {
 
     return this._text.substr(start, length);
   },
 
-  substring: function (from, to) {
+  substring: function(from, to) {
 
     return this._text.substring(from, to);
   },
 
-  toLowerCase: function () {
+  toLowerCase: function() {
 
     return this.text(this._text.toLowerCase());
   },
 
-  toString: function () {
+  toString: function() {
 
     return '[' + this._text + ']';
   },
 
-  toUpperCase: function () {
+  toUpperCase: function() {
 
     return this.text(this._text.toUpperCase());
   },
 
-  trim: function () {
+  trim: function() {
 
     return this.text(trim(this._text));
   },
 
-  charAt: function (index) {
+  charAt: function(index) {
 
     return this._text.charAt(index);
   },
 
-  concat: function (riString) {
+  concat: function(riString) {
 
     return this._text.concat(riString.text());
   }
@@ -2995,7 +2996,7 @@ RiGrammar.EXEC_PATT = /([^`]*)(`[^`]*`)(.*)/;
 
 RiGrammar.prototype = {
 
-  init: function (grammar, rng) {
+  init: function(grammar, rng) {
 
     this.buffer = "";
     this._rules = {};
@@ -3010,14 +3011,14 @@ RiGrammar.prototype = {
     }
   },
 
-  ready: function (url) {
+  ready: function(url) {
 
     return (okeys(this._rules).length > 0);
   },
 
-  loadFrom: function (url, callback) {
+  loadFrom: function(url, callback) {
 
-    RiTa.loadStrings(url, function (data) {
+    RiTa.loadStrings(url, function(data) {
 
       data = data.join(BN);
       this.load(data);
@@ -3026,7 +3027,7 @@ RiGrammar.prototype = {
     }.bind(this));
   },
 
-  load: function (grammar) {
+  load: function(grammar) {
 
     this.reset();
 
@@ -3058,9 +3059,9 @@ RiGrammar.prototype = {
       } else {
         var isnode = RiTa.env() === RiTa.NODE,
           verb = isnode ? 'require' :
-          'include',
+            'include',
           syntax = isnode ? "YAML = require('yamljs')" :
-          '<script src="yaml.min.js"></script>';
+            '<script src="yaml.min.js"></script>';
 
         err('Grammar appears to be invalid JSON, please check it at ' +
           'http://jsonlint.com/. If you are using YAML, be sure to ' +
@@ -3077,7 +3078,7 @@ RiGrammar.prototype = {
     return this;
   },
 
-  addRule: function (name, theRule, weight) {
+  addRule: function(name, theRule, weight) {
 
     var dbug = false;
 
@@ -3128,22 +3129,22 @@ RiGrammar.prototype = {
     return this;
   },
 
-  removeRule: function (name) {
+  removeRule: function(name) {
 
     delete this._rules[name];
     return this;
   },
 
-  reset: function () {
+  reset: function() {
 
     this._rules = {};
     return this;
 
   },
 
-  doRule: function (pre, context) {
+  doRule: function(pre, context) {
 
-    var getStochasticRule = function (temp, rng) { // map
+    var getStochasticRule = function(temp, rng) { // map
 
       var name, dbug = false,
         p = rng(),
@@ -3156,7 +3157,7 @@ RiGrammar.prototype = {
           // temp[name] is to be evaluated
           try {
             count = eval(temp[name]); // try in global context
-          } catch (e) {};
+          } catch (e) { };
           // Maybe global context didn't work?
           if (isNaN(count) && context) {
             try {
@@ -3202,7 +3203,7 @@ RiGrammar.prototype = {
     return (cnt == 1) ? name : getStochasticRule(rules, this.rng);
   },
 
-  getGrammar: function () {
+  getGrammar: function() {
 
     var s = E;
     for (var name in this._rules) {
@@ -3215,7 +3216,7 @@ RiGrammar.prototype = {
     return RiTa.chomp(s);
   },
 
-  print: function () {
+  print: function() {
 
     if (console) {
       var ln = "\n------------------------------";
@@ -3224,14 +3225,14 @@ RiGrammar.prototype = {
     return this;
   },
 
-  hasRule: function (name) {
+  hasRule: function(name) {
 
     return (typeof this._rules[name] !== 'undefined');
   },
 
-  expandWith: function (literal, symbol) { // TODO: finish
+  expandWith: function(literal, symbol) { // TODO: finish
 
-    var copy = function (rs) {
+    var copy = function(rs) {
 
       var tmp = RiGrammar();
       for (var name in rs._rules) {
@@ -3267,14 +3268,14 @@ RiGrammar.prototype = {
     err("RiGrammar failed to complete after " + tries + " tries" + BN);
   },
 
-  expand: function (context) {
+  expand: function(context) {
 
     return this.expandFrom(RiGrammar.START_RULE, context);
   },
 
-  expandFrom: function (rule, context) {
+  expandFrom: function(rule, context) {
 
-    var expandRule = function (g, prod, context) {
+    var expandRule = function(g, prod, context) {
 
       var entry, idx, pre, expanded, post, dbug = 0;
       if (dbug) log("expandRule(" + prod + ")");
@@ -3302,7 +3303,7 @@ RiGrammar.prototype = {
       return null; // no rules matched
     }
 
-    var handleExec = function (input, context) {
+    var handleExec = function(input, context) {
 
       //console.log('handleExec('+input+", ",context+')');
       if (!input || !input.length) return null;
@@ -3336,7 +3337,7 @@ RiGrammar.prototype = {
       return input;
     }
 
-    var countTicks = function (theCall) {
+    var countTicks = function(theCall) {
       var count = 0;
       for (var i = 0; i < theCall.length; i++) {
         if (theCall.charAt(i) == '`')
@@ -3411,7 +3412,7 @@ var RiTaEvent = makeClass();
 RiTaEvent.ID = 0;
 RiTaEvent.prototype = {
 
-  init: function (source, eventType, data) {
+  init: function(source, eventType, data) {
 
     is(source, O) || ok(source, S);
     this._id = ++RiTaEvent.ID;
@@ -3420,7 +3421,7 @@ RiTaEvent.prototype = {
     this._type = eventType || RiTa.UNKNOWN;
   },
 
-  toString: function () {
+  toString: function() {
     var s = 'RiTaEvent[#' + this._id + ' type=' +
       '(' + this._type + ') source=' + this._source.toString();
     s += !this._data ? s += ' data=null' :
@@ -3428,11 +3429,11 @@ RiTaEvent.prototype = {
     return s + ']';
   },
 
-  isType: function (t) {
+  isType: function(t) {
     return this._type === t;
   },
 
-  _fire: function (callback) {
+  _fire: function(callback) {
 
     callback = callback || window.onRiTaEvent;
     if (callback && is(callback, F)) {
@@ -3455,7 +3456,7 @@ var StringTokenizer = makeClass();
 
 StringTokenizer.prototype = {
 
-  init: function (str, delim) {
+  init: function(str, delim) {
 
     this.idx = 0;
     this.text = str;
@@ -3463,7 +3464,7 @@ StringTokenizer.prototype = {
     this.tokens = str.split(delim);
   },
 
-  nextToken: function () {
+  nextToken: function() {
 
     return (this.idx < this.tokens.length) ? this.tokens[this.idx++] : null;
   }
@@ -3473,14 +3474,14 @@ var TextNode = makeClass();
 
 TextNode.prototype = {
 
-  init: function (parent, token) {
+  init: function(parent, token) {
     this.count = 0;
     this.children = {};
     this.parent = parent;
     this.token = token;
   },
 
-  pathFromRoot: function (result) {
+  pathFromRoot: function(result) {
     var mn = this;
     while (true) {
       if (mn.isRoot()) break;
@@ -3489,18 +3490,18 @@ TextNode.prototype = {
     }
   },
 
-  selectChild: function (regex, probabalisticSelect) {
+  selectChild: function(regex, probabalisticSelect) {
     var ps = probabalisticSelect || true;
     return this.children ? this._select(this.childNodes(regex), ps) : null;
   },
 
-  _select: function (arr, probabalisticSelect) {
+  _select: function(arr, probabalisticSelect) {
     if (!arr) throw TypeError("bad arg to '_select()'");
     probabalisticSelect = probabalisticSelect || false;
     return (probabalisticSelect ? this._probabalisticSelect(arr) : arr[Math.floor((RiTa.random() * arr.length))]);
   },
 
-  _probabalisticSelect: function (arr) {
+  _probabalisticSelect: function(arr) {
 
     if (!arr) throw TypeError("bad arg to '_probabalisticSelect()'");
 
@@ -3520,7 +3521,7 @@ TextNode.prototype = {
     err("Invalid State in RiTa.probabalisticSelect()");
   },
 
-  addChild: function (newToken, initialCount) {
+  addChild: function(newToken, initialCount) {
 
     initialCount = initialCount || 1;
 
@@ -3540,7 +3541,7 @@ TextNode.prototype = {
     return node;
   },
 
-  asTree: function (sort) {
+  asTree: function(sort) {
     var s = this.token + " ";
     if (!this.isRoot())
       s += "(" + this.count + ")->";
@@ -3550,20 +3551,20 @@ TextNode.prototype = {
     return s + "}";
   },
 
-  isRoot: function () {
+  isRoot: function() {
     return !this.parent;
   },
 
-  isLeaf: function () {
+  isLeaf: function() {
     return this.childCount() === 0;
   },
 
-  probability: function () {
+  probability: function() {
     //log('probability: '+ this.count+'/'+this.siblingCount());
     return this.count / this.siblingCount();
   },
 
-  childNodes: function (regex) {
+  childNodes: function(regex) {
     if (!this.children) return EA;
     regex = is(regex, S) ? new RegExp(regex) : regex;
     var res = [];
@@ -3576,12 +3577,12 @@ TextNode.prototype = {
     return res;
   },
 
-  siblingCount: function () {
+  siblingCount: function() {
     if (!this.parent) err("Illegal siblingCount on ROOT!");
     return this.parent.childCount();
   },
 
-  childCount: function () {
+  childCount: function() {
     if (!this.children) return 0;
     var sum = 0;
     for (var k in this.children) {
@@ -3592,13 +3593,13 @@ TextNode.prototype = {
   },
 
   // takes node or string, returns node
-  lookup: function (obj) {
+  lookup: function(obj) {
     if (!obj) return null;
     obj = (typeof obj != S && obj.token) ? obj.token : obj;
     return obj ? this.children[obj] : null;
   },
 
-  childrenToString: function (textNode, str, depth, sort) {
+  childrenToString: function(textNode, str, depth, sort) {
 
     var i, j, k, mn = textNode,
       l = [],
@@ -3639,7 +3640,7 @@ TextNode.prototype = {
 
       if (!node.isRoot())
         str += " [" + node.count + ",p=" + //formatter.format
-        (node.probability().toFixed(3)) + "]->{";
+          (node.probability().toFixed(3)) + "]->{";
 
       if (node.children)
         str = this.childrenToString(node, str, depth + 1, sort);
@@ -3654,7 +3655,7 @@ TextNode.prototype = {
     return str + indent + "}";
   },
 
-  toString: function () {
+  toString: function() {
     return '[ ' + this.token + " (" + this.count + '/' + this.probability().toFixed(3) + '%)]';
   }
 };
@@ -3663,7 +3664,7 @@ var Conjugator = makeClass();
 
 Conjugator.prototype = {
 
-  init: function () {
+  init: function() {
 
     this.perfect = this.progressive = this.passive = this.interrogative = false;
     this.tense = RiTa.PRESENT_TENSE;
@@ -3673,7 +3674,7 @@ Conjugator.prototype = {
   },
 
   // !@# TODO: add handling of past tense modals.
-  conjugate: function (theVerb, args) {
+  conjugate: function(theVerb, args) {
 
     var v, s, actualModal, conjs = [],
       frontVG, verbForm;
@@ -3762,7 +3763,7 @@ Conjugator.prototype = {
     return trim(s);
   },
 
-  checkRules: function (ruleSet, theVerb) {
+  checkRules: function(ruleSet, theVerb) {
 
     var res, name = ruleSet.name,
       dbug = 0,
@@ -3799,42 +3800,42 @@ Conjugator.prototype = {
     return res;
   },
 
-  doubleFinalConsonant: function (word) {
+  doubleFinalConsonant: function(word) {
     return word + word.charAt(word.length - 1);
   },
 
-  getPast: function (theVerb, pers, numb) {
+  getPast: function(theVerb, pers, numb) {
 
     if (theVerb.toLowerCase() == "be") {
 
       switch (numb) {
 
-      case RiTa.SINGULAR:
+        case RiTa.SINGULAR:
 
-        switch (pers) {
+          switch (pers) {
 
-        case RiTa.FIRST_PERSON:
+            case RiTa.FIRST_PERSON:
+              break;
+
+            case RiTa.THIRD_PERSON:
+              return "was";
+
+            case RiTa.SECOND_PERSON:
+              return "were";
+
+          }
           break;
 
-        case RiTa.THIRD_PERSON:
-          return "was";
+        case RiTa.PLURAL:
 
-        case RiTa.SECOND_PERSON:
           return "were";
-
-        }
-        break;
-
-      case RiTa.PLURAL:
-
-        return "were";
       }
     }
 
     return this.checkRules(PAST_TENSE_RULESET, theVerb);
   },
 
-  getPresent: function (theVerb, person, number) {
+  getPresent: function(theVerb, person, number) {
 
     person = person || this.person;
     number = number || this.number;
@@ -3848,14 +3849,14 @@ Conjugator.prototype = {
 
         switch (person) {
 
-        case RiTa.FIRST_PERSON:
-          return "am";
+          case RiTa.FIRST_PERSON:
+            return "am";
 
-        case RiTa.SECOND_PERSON:
-          return "are";
+          case RiTa.SECOND_PERSON:
+            return "are";
 
-        case RiTa.THIRD_PERSON:
-          return "is";
+          case RiTa.THIRD_PERSON:
+            return "is";
 
           // default: ???
         }
@@ -3867,28 +3868,28 @@ Conjugator.prototype = {
     return theVerb;
   },
 
-  getPresentParticiple: function (theVerb) {
+  getPresentParticiple: function(theVerb) {
     if (theVerb && theVerb === 'be') return 'being';
     return strOk(theVerb) ? this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb) : E;
   },
 
-  getPastParticiple: function (theVerb) {
+  getPastParticiple: function(theVerb) {
 
     return strOk(theVerb) ? this.checkRules(PAST_PARTICIPLE_RULESET, theVerb) : E;
   },
 
-  getVerbForm: function (theVerb, tense, person, number) {
+  getVerbForm: function(theVerb, tense, person, number) {
 
     switch (tense) {
-    case RiTa.PRESENT_TENSE:
-      return this.getPresent(theVerb, person, number);
-    case RiTa.PAST_TENSE:
-      return this.getPast(theVerb, person, number);
+      case RiTa.PRESENT_TENSE:
+        return this.getPresent(theVerb, person, number);
+      case RiTa.PAST_TENSE:
+        return this.getPast(theVerb, person, number);
     }
     return theVerb;
   },
 
-  toString: function () {
+  toString: function() {
     return "  ---------------------" + BN + "  Passive = " + this.passive +
       BN + "  Perfect = " + this.perfect + BN + "  Progressive = " +
       this.progressive + BN + "  ---------------------" + BN + "  Number = " +
@@ -3905,23 +3906,23 @@ var PosTagger = { // singleton
   ADV: ['rb', 'rbr', 'rbs', 'rp'],
   DBUG: 0,
 
-  isVerb: function (tag) {
+  isVerb: function(tag) {
     return inArray(this.VERBS, tag);
   },
 
-  isNoun: function (tag) {
+  isNoun: function(tag) {
     return inArray(this.NOUNS, tag);
   },
 
-  isAdverb: function (tag) {
+  isAdverb: function(tag) {
     return inArray(this.ADV, tag);
   },
 
-  isAdj: function (tag) {
+  isAdj: function(tag) {
     return inArray(this.ADJ, tag);
   },
 
-  hasTag: function (choices, tag) {
+  hasTag: function(choices, tag) {
     ok(choices, A);
     var choiceStr = choices.join();
     return (choiceStr.indexOf(tag) > -1);
@@ -3929,7 +3930,7 @@ var PosTagger = { // singleton
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
-  tag: function (words) {
+  tag: function(words) {
 
     var result = [],
       choices2d = [],
@@ -3955,7 +3956,6 @@ var PosTagger = { // singleton
       if (!data.length) {
 
         // use stemmer categories if no lexicon
-
         choices2d[i] = [];
         var tag = 'nn';
         if (endsWith(words[i], 's')) {
@@ -3998,11 +3998,12 @@ var PosTagger = { // singleton
             //common plurals
           }
         }
-
+        // TODO: Handle proper nouns in sentence
         result.push(tag);
 
       } else {
 
+        // TODO: Handle proper nouns in sentence
         result.push(data[0]);
         choices2d[i] = data;
       }
@@ -4012,7 +4013,7 @@ var PosTagger = { // singleton
     return this._applyContext(words, result, choices2d);
   },
 
-  _handleSingleLetter: function (c) {
+  _handleSingleLetter: function(c) {
 
     var result = c;
 
@@ -4026,16 +4027,16 @@ var PosTagger = { // singleton
     return result;
   },
 
-  _ct: function (i, frm, to) { // log custom tag
+  _ct: function(i, frm, to) { // log custom tag
 
     if (this.DBUG) console.log("\n  Custom(" +
       i + ") tagged '" + frm + "' -> '" + to + "'\n\n");
   },
 
   // Applies a customized subset of the Brill transformations
-  _applyContext: function (words, result, choices) {
+  _applyContext: function(words, result, choices) {
 
-    (this.DBUG) && console.log("ac(" + words + "," + result + "," + choices + ")");
+    (this.DBUG) && console.log("ac(" + words + ", " + result + ", " + choices + ")");
     var sW = startsWith,
       eW = endsWith,
       eic = equalsIgnoreCase;
@@ -4175,7 +4176,7 @@ var PosTagger = { // singleton
     return result;
   },
 
-  _lexHas: function (pos, words) { // takes ([n|v|a|r] or a full tag)
+  _lexHas: function(pos, words) { // takes ([n|v|a|r] or a full tag)
 
     var words = is(words, A) || [words];
 
@@ -4205,31 +4206,31 @@ var PosTagger = { // singleton
 
 // Default Stemmer (adapted from https://github.com/kristopolous/Porter-Stemmer)
 // Stemming demo/comparison - http://text-processing.com/demo/stem/
-RiTa.stemmers.Porter = (function () {
+RiTa.stemmers.Porter = (function() {
 
   var step2list = {
-      'ational': 'ate',
-      'tional': 'tion',
-      'enci': 'ence',
-      'anci': 'ance',
-      'izer': 'ize',
-      'bli': 'ble',
-      'alli': 'al',
-      'entli': 'ent',
-      'eli': 'e',
-      'ousli': 'ous',
-      'ization': 'ize',
-      'ation': 'ate',
-      'ator': 'ate',
-      'alism': 'al',
-      'iveness': 'ive',
-      'fulness': 'ful',
-      'ousness': 'ous',
-      'aliti': 'al',
-      'iviti': 'ive',
-      'biliti': 'ble',
-      'logi': 'log'
-    },
+    'ational': 'ate',
+    'tional': 'tion',
+    'enci': 'ence',
+    'anci': 'ance',
+    'izer': 'ize',
+    'bli': 'ble',
+    'alli': 'al',
+    'entli': 'ent',
+    'eli': 'e',
+    'ousli': 'ous',
+    'ization': 'ize',
+    'ation': 'ate',
+    'ator': 'ate',
+    'alism': 'al',
+    'iveness': 'ive',
+    'fulness': 'ful',
+    'ousness': 'ous',
+    'aliti': 'al',
+    'iviti': 'ive',
+    'biliti': 'ble',
+    'logi': 'log'
+  },
 
     step3list = {
       'icate': 'ic',
@@ -4251,7 +4252,7 @@ RiTa.stemmers.Porter = (function () {
     mgr1 = '^(' + C + ')?' + V + C + V + C, // [C]VCVC... is m>1
     s_v = '^(' + C + ')?' + v; // vowel in stem
 
-  return function (w) {
+  return function(w) {
 
     var fp, stem, suffix, firstch, re, re2, re3, re4, origword = w;
 
@@ -4386,7 +4387,7 @@ RiTa.stemmers.Porter = (function () {
 
 })();
 
-RiTa.stemmers.Lancaster = (function () {
+RiTa.stemmers.Lancaster = (function() {
 
   function accept(token) {
 
@@ -5074,7 +5075,7 @@ RiTa.stemmers.Lancaster = (function () {
     }]
   };
 
-  return function (token) {
+  return function(token) {
 
     return applyRules(token.toLowerCase(), true);
   };
@@ -5151,7 +5152,7 @@ function checkPluralNoLex(s) {
 }
 
 /* From the PlingStemmer impl in the Java Tools package (see http://mpii.de/yago-naga/javatools). */
-RiTa.stemmers.Pling = (function () {
+RiTa.stemmers.Pling = (function() {
 
   function isPlural(s) {
     return s !== stem(s);
@@ -5352,24 +5353,24 @@ RiTa.stemmers.Pling = (function () {
     return (s);
   }
 
-  return function (token) {
+  return function(token) {
 
     return stem(token.toLowerCase());
   };
 
 })();
 
-Array.prototype._arrayContains = function (ele) {
+Array.prototype._arrayContains = function(ele) {
   return (this.indexOf(ele) > -1);
 };
 
-String.prototype._endsWith = function (suffix) {
+String.prototype._endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
 var MinEditDist = {
 
-  _min3: function (a, b, c) {
+  _min3: function(a, b, c) {
 
     var min = a;
     if (b < min) min = b;
@@ -5378,7 +5379,7 @@ var MinEditDist = {
   },
 
   // med where each array element either matches or does not
-  _computeRawArray: function (srcArr, trgArr) {
+  _computeRawArray: function(srcArr, trgArr) {
 
     //log((srcArr)+" "+(trgArr));
 
@@ -5436,7 +5437,7 @@ var MinEditDist = {
   },
 
   // med for 2 strings (or 2 arrays)
-  computeRaw: function (source, target) {
+  computeRaw: function(source, target) {
 
     //log('computeRaw: '+arguments.length+ " "+Type.get(source));
 
@@ -5497,7 +5498,7 @@ var MinEditDist = {
   },
 
   // med 2 strings (or 2 string arrays) divided by max of their lengths
-  computeAdjusted: function (source, target) {
+  computeAdjusted: function(source, target) {
 
     var st = get(source),
       tt = get(source);
@@ -5521,7 +5522,7 @@ var Concorder = makeClass();
 
 Concorder.prototype = {
 
-  init: function (text, options) {
+  init: function(text, options) {
 
     this.model = null;
     this.wordsToIgnore = [];
@@ -5542,13 +5543,13 @@ Concorder.prototype = {
     this.words = is(text, A) ? text : RiTa.tokenize(text);
   },
 
-  count: function (word) {
+  count: function(word) {
 
     var value = this.lookup(word);
     return value === null ? 0 : value.count;
   },
 
-  concordance: function () {
+  concordance: function() {
 
     if (!this.model) this.build();
 
@@ -5560,7 +5561,7 @@ Concorder.prototype = {
     return result;
   },
 
-  kwic: function (word, numWords) {
+  kwic: function(word, numWords) {
 
     var value = this.lookup(word),
       result = [];
@@ -5577,7 +5578,7 @@ Concorder.prototype = {
     return result;
   },
 
-  build: function () {
+  build: function() {
 
     if (!this.words) throw Error('No text in model');
 
@@ -5601,7 +5602,7 @@ Concorder.prototype = {
     }
   },
 
-  ignorable: function (key) {
+  ignorable: function(key) {
 
     if (this.ignorePunctuation && RiTa.isPunctuation(key))
       return true;
@@ -5614,11 +5615,11 @@ Concorder.prototype = {
     return false;
   },
 
-  compareKey: function (word) {
+  compareKey: function(word) {
     return this.ignoreCase ? word.toLowerCase() : word;
   },
 
-  lookup: function (word) {
+  lookup: function(word) {
     var key = this.compareKey(word);
     if (!this.model) this.build();
     return this.model[key];
@@ -5629,31 +5630,31 @@ var RE = makeClass();
 
 RE.prototype = {
 
-  init: function (regex, offset, suffix) {
+  init: function(regex, offset, suffix) {
     this.regex = new RegExp(regex);
     this.offset = offset;
     this.suffix = suffix || '';
   },
 
-  applies: function (word) {
+  applies: function(word) {
     return this.regex.test(trim(word));
   },
 
-  fire: function (word) {
+  fire: function(word) {
     return this.truncate(trim(word)) + this.suffix;
   },
 
-  analyze: function (word) {
+  analyze: function(word) {
     return ((this.suffix != E) && endsWith(word, this.suffix)) ? true : false;
   },
 
-  truncate: function (word) {
+  truncate: function(word) {
     return (this.offset === 0) ? word : word.substr(0, word.length - this.offset);
   }
 };
 
 var QUESTION_STARTS = ["Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would",
-                          "How", "If", "Who", "Is", "Could", "Might", "Does", "Are", "Have"];
+  "How", "If", "Who", "Is", "Could", "Might", "Does", "Are", "Have"];
 
 var W_QUESTION_STARTS = ["Was", "What", "When", "Where", "Which", "Why", "Who", "Will", "Would"];
 
@@ -5705,50 +5706,50 @@ var C = "[bcdfghjklmnpqrstvwxyz]",
   VL = "[lraeiou]";
 
 var PLURAL_RULES = [
-    RE("prognosis", 2, "es"),
-    NULL_PLURALS,
-    RE("(human|german|roman)$", 0, "s"),
-    RE("^(monarch|loch|stomach)$", 0, "s"),
-    RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
-    RE("(chief|proof|ref|relief|roof|belief|sheaf|spoof|golf|grief)$", 0, "s"),
-    RE("^(wildlife)$", 0, "s"),
-    RE("^(appendix|index|matrix|apex|cortex)", 2, "ices"),
-    RE("^concerto$", 1, "i"),
-    RE(C + "o$", 0, "es"),
-    RE(C + "y$", 1, "ies"),
-    RE("^ox$", 0, "en"),
-    RE("^(stimul|alumn|termin)us$", 2, "i"),
-    RE("^corpus$", 2, "ora"),
-    RE("(xis|sis)$", 2, "es"),
-    RE("whiz$", 0, "zes"),
-    RE("([zsx]|ch|sh)$", 0, "es"),
-    RE(VL + "fe$", 2, "ves"),
-    RE(VL + "f$", 1, "ves"),
-    RE("(eu|eau)$", 0, "x"),
-    RE("(man|woman)$", 2, "en"),
-    RE("money$", 2, "ies"),
-    RE("person$", 4, "ople"),
-    RE("motif$", 0, "s"),
-    RE("^meninx|phalanx$", 1, "ges"),
-    RE("schema$", 0, "ta"),
-    RE("^bus$", 0, "ses"),
-    RE("child$", 0, "ren"),
-    RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
-    RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
-    RE("^aide-de-camp$", 8, "s-de-camp"),
-    RE("^weltanschauung$", 0, "en"),
-    RE("^lied$", 0, "er"),
-    RE("^tooth$", 4, "eeth"),
-    RE("^[lm]ouse$", 4, "ice"),
-    RE("^foot$", 3, "eet"),
-    RE("femur", 2, "ora"),
-    RE("goose", 4, "eese"),
-    RE("^(co|no)$", 0, "'s"),
-    RE("^blond$", 0, "es"),
-    RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
-    // Latin stems
-    RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a")
-  ],
+  RE("prognosis", 2, "es"),
+  NULL_PLURALS,
+  RE("(human|german|roman)$", 0, "s"),
+  RE("^(monarch|loch|stomach)$", 0, "s"),
+  RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
+  RE("(chief|proof|ref|relief|roof|belief|sheaf|spoof|golf|grief)$", 0, "s"),
+  RE("^(wildlife)$", 0, "s"),
+  RE("^(appendix|index|matrix|apex|cortex)", 2, "ices"),
+  RE("^concerto$", 1, "i"),
+  RE(C + "o$", 0, "es"),
+  RE(C + "y$", 1, "ies"),
+  RE("^ox$", 0, "en"),
+  RE("^(stimul|alumn|termin)us$", 2, "i"),
+  RE("^corpus$", 2, "ora"),
+  RE("(xis|sis)$", 2, "es"),
+  RE("whiz$", 0, "zes"),
+  RE("([zsx]|ch|sh)$", 0, "es"),
+  RE(VL + "fe$", 2, "ves"),
+  RE(VL + "f$", 1, "ves"),
+  RE("(eu|eau)$", 0, "x"),
+  RE("(man|woman)$", 2, "en"),
+  RE("money$", 2, "ies"),
+  RE("person$", 4, "ople"),
+  RE("motif$", 0, "s"),
+  RE("^meninx|phalanx$", 1, "ges"),
+  RE("schema$", 0, "ta"),
+  RE("^bus$", 0, "ses"),
+  RE("child$", 0, "ren"),
+  RE("^(curi|formul|vertebr|larv|uln|alumn|signor|alg|minuti)a$", 0, "e"),
+  RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
+  RE("^aide-de-camp$", 8, "s-de-camp"),
+  RE("^weltanschauung$", 0, "en"),
+  RE("^lied$", 0, "er"),
+  RE("^tooth$", 4, "eeth"),
+  RE("^[lm]ouse$", 4, "ice"),
+  RE("^foot$", 3, "eet"),
+  RE("femur", 2, "ora"),
+  RE("goose", 4, "eese"),
+  RE("^(co|no)$", 0, "'s"),
+  RE("^blond$", 0, "es"),
+  RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
+  // Latin stems
+  RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a")
+],
 
   ANY_STEM = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$",
   CONS = "[bcdfghjklmnpqrstvwxyz]",
@@ -23958,7 +23959,7 @@ function _dict() { return {
 'cloth':['k-l-ao1-th','nn'],
 'clothe':['k-l-ow1-dh','vb'],
 'clothed':['k-l-ow1-dh-d','vbn jj'],
-'clotheshorse':['k-l-ow1-z hh-ao-r-s','nn'],
+'clothes':['k-l-ow1-dh-z','nns'],
 'clothier':['k-l-ow1 dh-y-er','nn'],
 'clothing':['k-l-ow1 dh-ih-ng','nn'],
 'clotted':['k-l-aa1 t-ah-d','jj'],
@@ -42344,6 +42345,7 @@ function _dict() { return {
 'sleet':['s-l-iy1-t','nn'],
 'sleeve':['s-l-iy1-v','nn'],
 'sleight':['s-l-ay1-t','nn'],
+'sleigh':['s-l-ay1','vb'],
 'slender':['s-l-eh1-n d-er','jj'],
 'slept':['s-l-eh1-p-t','vbd vbn'],
 'sleuth':['s-l-uw1-th','nn'],

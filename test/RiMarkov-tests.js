@@ -290,11 +290,36 @@ var runtests = function() {
 		}
 	});
 
+	test("testSentenceStarts()", function() {
+		var rm = new RiMarkov(3);
+		ok(rm._validSentenceStart("A"));
+		ok(rm._validSentenceStart("Dog"));
+
+		ok(!rm._validSentenceStart("dog"));
+
+		// non-unicode chars
+		ok(rm._validSentenceStart("Bо"));
+	});
+
 	test("testGenerateSentences()", function() {
 
 		var dbug = 0;
+		var russian = 'Во времена Советского Союза исследование космоса было одной из важнейших задач. И именно из СССР была отправлена ракета, совершившая первый полет в космос. Произошло это 12 апреля 1961 года. Этот день стал важной частью истории. Космонавтом на борту был летчик Юрий Алексеевич Гагарин. Давайте узнаем кое-что о жизни этой поистине героической личности.'
 
-
+		var rm = new RiMarkov(3);
+		rm._validSentenceStart = function(word) {
+			return word && word.match(/"?[A-ZА-Я][a-zа-я"',;`-]*/);
+		}
+		rm.loadText(russian);
+		for (var i = 0; i < 1; i++) {
+			var sents = rm.generateSentences(3);
+			for (var j = 0; j < sents.length; j++) {
+				if (dbug)console.log(i + "." + j + ") " + sents[j]);
+				ok(sents[j]);
+			}
+			ok(sents.length == 3);
+		}
+	
 		// TODO: This should test proper handling of apostrophes (#477)
 		/*var rm = new RiMarkov(4, true, true);
 		rm.loadText(sample3);
