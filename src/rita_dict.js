@@ -14137,7 +14137,7 @@ function _dict() { return {
 'lightweight':['l-ay1-t w-ey1-t','jj nn'],
 'lignite':['l-ih1-g n-ay-t','jj nn'],
 'likable':['l-ay1 k-ah b-ah-l','jj'],
-'like':['l-ay1-k','in jj nn vb vbp'],
+'like':['l-ay1-k','nn vb vbp'],
 'liked':['l-ay1-k-t','vbd vbn'],
 'likelier':['l-ay1-k l-iy er','jjr'],
 'likeliest':['l-ay1-k l-iy ah-s-t','jjs'],
