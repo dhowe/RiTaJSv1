@@ -68,7 +68,7 @@ Create a new file on your desktop called 'test.html' and download the latest rit
     noStroke();
 
     let words = RiTa.tokenize("The elephant took a bite!")
-    for (let i=0, j = words.length; i<j; i++) {
+    for (let i=0; i < words.length; i++) {
         text(words[i], 50, 50 + i*20);
     }
   }
@@ -120,7 +120,7 @@ Create a new file on your desktop called 'test.html' and download the latest rit
       noStroke();
 
       String words = RiTa.tokenize("The elephant took a bite!");
-      for (int i=0, j = words.length; i<j; i++) {
+      for (int i=0; i < words.length; i++) {
           text(words[i], 50, 50 + i*20);
       }
     }
