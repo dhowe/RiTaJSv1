@@ -46,8 +46,8 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 To install: `$ npm install rita`
 
 ```javascript
-var rita = require('rita');
-var rs = rita.RiString("The elephant took a bite!");
+let rita = require('rita');
+let rs = rita.RiString("The elephant took a bite!");
 console.log(rs.features());
 ```
 
@@ -67,8 +67,8 @@ Create a new file on your desktop called 'test.html' and download the latest rit
     textSize(20);
     noStroke();
 
-    var words = RiTa.tokenize("The elephant took a bite!")
-    for (var i=0, j = words.length; i<j; i++) {
+    let words = RiTa.tokenize("The elephant took a bite!")
+    for (let i=0, j = words.length; i<j; i++) {
         text(words[i], 50, 50 + i*20);
     }
   }
@@ -87,7 +87,7 @@ Create a file called 'main.js' with the following code:
 ```java
 require('rita');
 
-var rs = RiString("The elephant took a bite!");
+let rs = RiString("The elephant took a bite!");
 console.log(rs.features());
 ```
 Now install RiTa
