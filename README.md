@@ -30,11 +30,12 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 
 ```html
 <html>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="./rita.min.js"></script>
   <script>
     window.onload = function() {
-      $('#content').text(RiTa.tokenize("The elephant took a bite!"));
+      let words = RiTa.tokenize("The elephant took a bite!");
+      $('#content').text(words);
     };
   </script>
   <div id="content" width=200 height=200></div>
