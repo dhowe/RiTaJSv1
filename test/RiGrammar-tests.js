@@ -826,7 +826,6 @@ var runtests = function () {
     //}
   });
 
-
   test("testExec2", function () {
 
     var newruleg = {
@@ -847,7 +846,7 @@ var runtests = function () {
 
     for (var i = 0; i < 10; i++) {
       var res = rg.expand();
-      //console.log(res);
+      ///console.log(res);
       ok(res && res.match(/ chased the rhino\./g));
     }
     //}

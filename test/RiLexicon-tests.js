@@ -32,7 +32,36 @@ var runtests = function () {
       if (lex._isPlural(notplurals[i])) console.log("test_isPlural: [This word should not be plural!]" + notplurals[i]);
       ok(!lex._isPlural(notplurals[i]));
     }
+  });
 
+  test("testAddToLexicon", function () {
+    let toAdd = {
+      'deg': ['d-eh1-g', 'nn'],
+      'wadly': ['w-ae1-d l-iy', 'rb'],
+    }
+    Object.keys(toAdd).forEach(w => RiTa.lexicon.data[w] = toAdd[w]);
+    ok(lex.containsWord("run"));
+    ok(lex.containsWord("walk"));
+    ok(lex.containsWord("deg"));
+    ok(lex.containsWord("wadly"));
+    ok(lex.isAlliteration("wadly", "welcome"));
+    Object.keys(toAdd).forEach(w => delete RiTa.lexicon.data[w]);
+  });
+
+  test("testUseCustomLexicon", function () {
+    let orig = RiTa.lexicon.data;
+    RiTa.lexicon.data = {
+      'dog': ['d-ao1-g', 'nn'],
+      'cat': ['k-ae1-t', 'nn'],
+      'happily': ['hh-ae1 p-ah l-iy', 'rb'],
+      'walk': ['w-ao1-k', 'vb vbp nn'],
+      'welcome': ['w-eh1-l k-ah-m', 'jj nn vb vbp'],
+      'sadly': ['s-ae1-d l-iy', 'rb'],
+    }
+    ok(!lex.containsWord("run"));
+    ok(lex.containsWord("walk"));
+    ok(lex.isAlliteration("walk","welcome"));
+    RiTa.lexicon.data = orig;
   });
 
   test("testContainsWord", function () {
