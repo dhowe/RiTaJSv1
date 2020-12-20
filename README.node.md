@@ -27,8 +27,8 @@ To install, do the following from a terminal prompt
 then use require() from your code
 
 ```javascript
-var rita = require('rita');
-var rs = rita.RiString("The elephant took a bite!");
+let rita = require('rita');
+let rs = rita.RiString("The elephant took a bite!");
 console.log(rs.features());
 ```
 
